@@ -371,32 +371,36 @@ function commandWorks(command, args) {
   return spawnSync(command, args, { stdio: 'ignore' }).status === 0
 }
 
-async function showStartupAnimation() {
-  const label = 'ScholarSeeker 正在启动'
-  const shouldAnimate = process.stdout.isTTY || process.env.SCHOLARSEEKER_FORCE_ANIMATION === '1'
-  if (!shouldAnimate) {
-    console.log(`⟳ ${label}...`)
-    return
-  }
-  const spinnerFrames = ['◐', '◓', '◑', '◒']
-  const word = 'ScholarSeeker'
-  const characters = Array.from(word)
-  const frameCount = characters.length * 2
-  const interval = Number(process.env.SCHOLARSEEKER_ANIMATION_INTERVAL_MS || 80)
-  process.stdout.write('\x1b[?25l')
-  try {
-    for (let index = 0; index < frameCount; index += 1) {
-      const offset = index % characters.length
-      const rotatingWord = characters.slice(offset).concat(characters.slice(0, offset)).join('')
-      process.stdout.write(
-        `\r\x1b[2K${spinnerFrames[index % spinnerFrames.length]} \x1b[1;36m${rotatingWord}\x1b[0m 文字旋转启动中...`,
-      )
-      if (interval > 0) await delay(interval)
-    }
-    process.stdout.write('\r\x1b[2K✓ \x1b[1;36mScholarSeeker\x1b[0m 启动动画完成\n')
-  } finally {
-    process.stdout.write('\x1b[?25h')
-  }
+function startupAnimationEnabled() {
+  return process.stdout.isTTY || process.env.SCHOLARSEEKER_FORCE_ANIMATION === '1'
+}
+
+function startupCardLine(value, width) {
+  const visibleValue = value.replace(/\x1b\[[0-9;]*m/g, '')
+  const padding = ' '.repeat(Math.max(0, width - displayWidth(visibleValue)))
+  return `\x1b[2m│\x1b[22m ${value}${padding} \x1b[2m│\x1b[0m`
+}
+
+function printStartupCard() {
+  const terminalWidth = process.stdout.columns || 80
+  const contentWidth = Math.max(28, Math.min(56, terminalWidth - 4))
+  const border = '─'.repeat(contentWidth + 2)
+  console.log(`\x1b[2m╭${border}╮\x1b[0m`)
+  console.log(startupCardLine('\x1b[1;36m>_ ScholarSeeker\x1b[0m', contentWidth))
+  console.log(startupCardLine('', contentWidth))
+  console.log(startupCardLine('Intelligent academic search · starting services', contentWidth))
+  console.log(`\x1b[2m╰${border}╯\x1b[0m`)
+}
+
+function shimmer(value, frame) {
+  const characters = Array.from(value)
+  const head = frame % (characters.length + 8)
+  return characters.map((character, index) => {
+    const distance = head - index
+    if (distance === 0) return `\x1b[1;96m${character}\x1b[0m`
+    if (distance > 0 && distance <= 3) return `\x1b[36m${character}\x1b[0m`
+    return `\x1b[2m${character}\x1b[0m`
+  }).join('')
 }
 
 function isPortAvailable(port) {
@@ -540,6 +544,93 @@ async function runScript(root, script, args) {
   })
 }
 
+async function runStartScript(root, args) {
+  if (!startupAnimationEnabled()) return runScript(root, 'start.sh', args)
+  const path = join(root, 'scripts', 'start.sh')
+  if (!(await exists(path))) throw new Error(`缺少启动脚本：${path}`)
+
+  printStartupCard()
+  const startedAt = Date.now()
+  let frame = 0
+  let status = args.includes('--no-build')
+    ? 'Starting ScholarSeeker services'
+    : 'Building ScholarSeeker services'
+  let stdout = ''
+  let stderr = ''
+  const maximumCapturedOutput = 2 * 1024 * 1024
+  const child = spawn('bash', [path, ...args], {
+    cwd: root,
+    env: {
+      ...process.env,
+      COMPOSE_BAKE: 'true',
+      SCHOLARSEEKER_COMPOSE_PROGRESS: 'quiet',
+    },
+    stdio: ['inherit', 'pipe', 'pipe'],
+  })
+
+  const capture = (target, chunk) => {
+    const next = `${target}${chunk}`
+    return next.length > maximumCapturedOutput ? next.slice(-maximumCapturedOutput) : next
+  }
+  child.stdout.setEncoding('utf8')
+  child.stderr.setEncoding('utf8')
+  child.stdout.on('data', (chunk) => {
+    stdout = capture(stdout, chunk)
+    if (stdout.includes('Waiting for ScholarSeeker services')) {
+      status = 'Checking ScholarSeeker service health'
+    }
+  })
+  child.stderr.on('data', (chunk) => {
+    stderr = capture(stderr, chunk)
+  })
+
+  const render = () => {
+    const elapsed = Math.floor((Date.now() - startedAt) / 1000)
+    process.stdout.write(`\r\x1b[2K• ${shimmer(status, frame)} \x1b[2m(${elapsed}s)\x1b[0m`)
+    frame += 1
+  }
+  process.stdout.write('\x1b[?25l')
+  render()
+  const timer = setInterval(render, Number(process.env.SCHOLARSEEKER_ANIMATION_INTERVAL_MS || 65))
+
+  return new Promise((resolveExit, reject) => {
+    const cleanup = () => {
+      clearInterval(timer)
+      process.stdout.write('\r\x1b[2K\x1b[?25h')
+    }
+    const onInterrupt = () => child.kill('SIGINT')
+    process.once('SIGINT', onInterrupt)
+    child.once('error', (error) => {
+      process.removeListener('SIGINT', onInterrupt)
+      cleanup()
+      reject(error)
+    })
+    child.once('exit', (code, signal) => {
+      process.removeListener('SIGINT', onInterrupt)
+      cleanup()
+      const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1)
+      if (signal) {
+        reject(new Error(`进程被信号 ${signal} 终止`))
+        return
+      }
+      if (code !== 0) {
+        if (stdout.trim()) process.stdout.write(`${stdout.trimEnd()}\n`)
+        if (stderr.trim()) process.stderr.write(`${stderr.trimEnd()}\n`)
+        reject(new Error(`命令执行失败，退出码 ${code}`))
+        return
+      }
+
+      console.log(`✓ \x1b[1;36mScholarSeeker\x1b[0m services ready \x1b[2m(${elapsed}s)\x1b[0m`)
+      const summaryIndex = stdout.indexOf('ScholarSeeker is ready.')
+      if (summaryIndex >= 0) {
+        const summary = stdout.slice(summaryIndex + 'ScholarSeeker is ready.'.length).trim()
+        if (summary) console.log(`\n${summary}`)
+      }
+      resolveExit()
+    })
+  })
+}
+
 async function main() {
   const [command = '--help', ...args] = process.argv.slice(2)
   if (command === '--help' || command === '-h' || command === 'help') return printHelp()
@@ -555,10 +646,9 @@ async function main() {
   }
   if (command === 'start') {
     if (!(await exists(join(root, '.env')))) await setupProject(root)
-    await showStartupAnimation()
     await ensureDockerReady()
     await resolvePortConflicts(root)
-    return runScript(root, 'start.sh', args)
+    return runStartScript(root, args)
   }
   if (command === 'stop') return runScript(root, 'stop.sh', args)
   if (command === 'status') return runScript(root, 'status.sh', args)

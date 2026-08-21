@@ -37,6 +37,14 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+compose() {
+  if [[ -n "${SCHOLARSEEKER_COMPOSE_PROGRESS:-}" ]]; then
+    COMPOSE_BAKE="${COMPOSE_BAKE:-true}" docker compose --progress "$SCHOLARSEEKER_COMPOSE_PROGRESS" "$@"
+  else
+    docker compose "$@"
+  fi
+}
+
 if [[ ! -f .env ]]; then
   cp .env.example .env
   echo "Created .env from .env.example."
@@ -55,15 +63,15 @@ if [[ "$WITH_RERANKER" == true ]]; then
 fi
 
 if [[ "$PULL" == true ]]; then
-  docker compose pull
+  compose pull
 fi
 
 if [[ "$BUILD" == true ]]; then
-  if ! docker compose up -d --build; then
+  if ! compose up -d --build; then
     echo
     echo "Compose failed to start all services. Current status:" >&2
-    docker compose ps -a
-    if docker compose logs --no-color --tail=160 api postgres 2>/dev/null \
+    compose ps -a
+    if compose logs --no-color --tail=160 api postgres 2>/dev/null \
       | grep -q "password authentication failed"; then
       echo >&2
       echo "PostgreSQL credentials do not match the existing persistent volume." >&2
@@ -73,10 +81,10 @@ if [[ "$BUILD" == true ]]; then
     exit 1
   fi
 else
-  if ! docker compose up -d; then
+  if ! compose up -d; then
     echo
-    docker compose ps -a
-    docker compose logs --no-color --tail=120 api
+    compose ps -a
+    compose logs --no-color --tail=120 api
     exit 1
   fi
 fi
@@ -105,7 +113,7 @@ while (( SECONDS < deadline )); do
 done
 
 echo "Timed out waiting for services." >&2
-docker compose ps
+compose ps
 echo
-docker compose logs --tail=80 api web
+compose logs --tail=80 api web
 exit 1

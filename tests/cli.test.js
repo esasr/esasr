@@ -135,12 +135,12 @@ test('moves an occupied web port and continues startup', async (context) => {
   const saved = readFileSync(envPath, 'utf8')
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /ScholarSeeker 正在启动/)
+  assert.match(result.stdout, /Waiting for ScholarSeeker services/)
   assert.match(result.stdout, new RegExp(`Web 端口 ${occupiedPort} 已被占用，自动改用`))
   assert.doesNotMatch(saved, new RegExp(`^WEB_PORT=${occupiedPort}$`, 'm'))
 })
 
-test('animates the ScholarSeeker word by rotating its letters', async () => {
+test('renders a Codex-style startup card and shimmer status', async () => {
   const temporary = mkdtempSync(join(tmpdir(), 'scholarseeker-animation-'))
   const destination = join(temporary, 'project')
   const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
@@ -173,6 +173,9 @@ test('animates the ScholarSeeker word by rotating its letters', async () => {
   })
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /cholarSeekerS/)
-  assert.match(result.stdout, /ScholarSeeker\x1b\[0m 启动动画完成/)
+  const plainOutput = result.stdout.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '')
+  assert.match(plainOutput, />_ ScholarSeeker/)
+  assert.match(plainOutput, /Building ScholarSeeker services/)
+  assert.match(plainOutput, /ScholarSeeker services ready/)
+  assert.doesNotMatch(plainOutput, /Compose can now delegate builds/)
 })
