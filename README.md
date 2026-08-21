@@ -40,6 +40,10 @@ scholarseeker stop
 在 macOS 上，如果执行 `scholarseeker start` 时 Docker Desktop 尚未运行，CLI
 会询问是否自动启动它，并等待 Docker daemon 就绪后继续部署。
 
+启动时终端会显示 `ScholarSeeker` 旋转动效。若 8080、8000、5432、6379、7474
+或 7687 已被其他程序占用，CLI 会自动寻找相邻空闲端口、保存到 `.env`，再继续
+启动，避免 Docker 因 `port is already allocated` 中断。
+
 也可以不全局安装，直接运行 GitHub 包：
 
 ```bash

@@ -14,6 +14,7 @@ import {
   writeFile,
 } from 'node:fs/promises'
 import { constants } from 'node:fs'
+import { createServer } from 'node:net'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { emitKeypressEvents } from 'node:readline'
@@ -323,6 +324,97 @@ function commandWorks(command, args) {
   return spawnSync(command, args, { stdio: 'ignore' }).status === 0
 }
 
+async function showStartupAnimation() {
+  const label = 'ScholarSeeker 正在启动'
+  if (!process.stdout.isTTY) {
+    console.log(`⟳ ${label}...`)
+    return
+  }
+  const frames = ['◐', '◓', '◑', '◒']
+  process.stdout.write('\x1b[?25l')
+  try {
+    for (let index = 0; index < 16; index += 1) {
+      process.stdout.write(
+        `\r\x1b[2K${frames[index % frames.length]} \x1b[1;36mScholarSeeker\x1b[0m 正在启动...`,
+      )
+      await delay(80)
+    }
+    process.stdout.write('\r\x1b[2K✓ \x1b[1;36mScholarSeeker\x1b[0m 启动流程已开始\n')
+  } finally {
+    process.stdout.write('\x1b[?25h')
+  }
+}
+
+function isPortAvailable(port) {
+  return new Promise((resolveAvailable) => {
+    const server = createServer()
+    server.unref()
+    server.once('error', () => resolveAvailable(false))
+    server.listen({ host: '0.0.0.0', port, exclusive: true }, () => {
+      server.close(() => resolveAvailable(true))
+    })
+  })
+}
+
+function composeOwnsPort(root, service, containerPort, hostPort) {
+  const result = spawnSync(
+    'docker',
+    ['compose', 'port', service, String(containerPort)],
+    { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
+  )
+  if (result.status !== 0) return false
+  const published = result.stdout.trim().split(':').at(-1)
+  return Number(published) === hostPort
+}
+
+async function nextAvailablePort(start, reserved) {
+  for (let port = start; port < start + 100; port += 1) {
+    if (!reserved.has(port) && await isPortAvailable(port)) return port
+  }
+  throw new Error(`无法在 ${start}-${start + 99} 范围内找到空闲端口`)
+}
+
+async function resolvePortConflicts(root) {
+  const envPath = join(root, '.env')
+  const original = await readFile(envPath, 'utf8')
+  const current = parseEnv(original)
+  const bindings = [
+    ['WEB_PORT', 8080, 'Web', 'web', 80],
+    ['API_PORT', 8000, 'API', 'api', 8000],
+    ['POSTGRES_PORT', 5432, 'PostgreSQL', 'postgres', 5432],
+    ['REDIS_PORT', 6379, 'Redis', 'redis', 6379],
+    ['NEO4J_HTTP_PORT', 7474, 'Neo4j HTTP', 'neo4j', 7474],
+    ['NEO4J_BOLT_PORT', 7687, 'Neo4j Bolt', 'neo4j', 7687],
+  ]
+  const reserved = new Set(
+    bindings.map(([key, fallback]) => Number(current.get(key) || fallback)),
+  )
+  const updates = {}
+
+  for (const [key, fallback, label, service, containerPort] of bindings) {
+    const requested = Number(current.get(key) || fallback)
+    if (!Number.isInteger(requested) || requested < 1 || requested > 65535) {
+      throw new Error(`${key}=${current.get(key)} 不是有效端口`)
+    }
+    if (
+      await isPortAvailable(requested) ||
+      composeOwnsPort(root, service, containerPort, requested)
+    ) continue
+
+    reserved.delete(requested)
+    const replacement = await nextAvailablePort(requested + 1, reserved)
+    reserved.add(replacement)
+    updates[key] = String(replacement)
+    console.log(`⚠ ${label} 端口 ${requested} 已被占用，自动改用 ${replacement}`)
+  }
+
+  if (Object.keys(updates).length) {
+    await writeFile(envPath, updateEnv(original, updates), { mode: 0o600 })
+    await chmod(envPath, 0o600)
+    console.log('✓ 新端口已保存到 .env')
+  }
+}
+
 async function ensureDockerReady() {
   if (!commandWorks('docker', ['--version'])) {
     throw new Error('未安装 Docker。请先安装并启动 Docker Desktop：https://www.docker.com/products/docker-desktop/')
@@ -409,7 +501,9 @@ async function main() {
   }
   if (command === 'start') {
     if (!(await exists(join(root, '.env')))) await setupProject(root)
+    await showStartupAnimation()
     await ensureDockerReady()
+    await resolvePortConflicts(root)
     return runScript(root, 'start.sh', args)
   }
   if (command === 'stop') return runScript(root, 'stop.sh', args)
