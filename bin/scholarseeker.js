@@ -71,11 +71,58 @@ function printHelp() {
   scholarseeker --help        显示帮助`)
 }
 
+function characterWidth(character) {
+  if (/\p{Mark}/u.test(character)) return 0
+  const codePoint = character.codePointAt(0)
+  if (
+    codePoint >= 0x1100 && (
+      codePoint <= 0x115f || codePoint === 0x2329 || codePoint === 0x232a ||
+      (codePoint >= 0x2e80 && codePoint <= 0xa4cf && codePoint !== 0x303f) ||
+      (codePoint >= 0xac00 && codePoint <= 0xd7a3) ||
+      (codePoint >= 0xf900 && codePoint <= 0xfaff) ||
+      (codePoint >= 0xfe10 && codePoint <= 0xfe19) ||
+      (codePoint >= 0xfe30 && codePoint <= 0xfe6f) ||
+      (codePoint >= 0xff00 && codePoint <= 0xff60) ||
+      (codePoint >= 0xffe0 && codePoint <= 0xffe6) ||
+      (codePoint >= 0x1f300 && codePoint <= 0x1faff)
+    )
+  ) return 2
+  return 1
+}
+
+function displayWidth(value) {
+  return Array.from(value).reduce((width, character) => width + characterWidth(character), 0)
+}
+
+function wrapByDisplayWidth(value, maximumWidth) {
+  const lines = []
+  let line = ''
+  let width = 0
+  for (const character of Array.from(value)) {
+    const nextWidth = characterWidth(character)
+    if (line && width + nextWidth > maximumWidth) {
+      lines.push(line)
+      line = ''
+      width = 0
+    }
+    line += character
+    width += nextWidth
+  }
+  if (line) lines.push(line)
+  return lines
+}
+
 function printBanner() {
   const title = '第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目'
-  const border = '═'.repeat(54)
+  const terminalWidth = process.stdout.columns || 80
+  const contentWidth = Math.max(10, Math.min(72, terminalWidth - 4))
+  const border = '═'.repeat(contentWidth + 2)
+  const lines = wrapByDisplayWidth(title, contentWidth)
   console.log(`\n╔${border}╗`)
-  console.log(`  ${title}`)
+  for (const line of lines) {
+    const padding = ' '.repeat(contentWidth - displayWidth(line))
+    console.log(`║ ${line}${padding} ║`)
+  }
   console.log(`╚${border}╝\n`)
 }
 
@@ -326,20 +373,27 @@ function commandWorks(command, args) {
 
 async function showStartupAnimation() {
   const label = 'ScholarSeeker 正在启动'
-  if (!process.stdout.isTTY) {
+  const shouldAnimate = process.stdout.isTTY || process.env.SCHOLARSEEKER_FORCE_ANIMATION === '1'
+  if (!shouldAnimate) {
     console.log(`⟳ ${label}...`)
     return
   }
-  const frames = ['◐', '◓', '◑', '◒']
+  const spinnerFrames = ['◐', '◓', '◑', '◒']
+  const word = 'ScholarSeeker'
+  const characters = Array.from(word)
+  const frameCount = characters.length * 2
+  const interval = Number(process.env.SCHOLARSEEKER_ANIMATION_INTERVAL_MS || 80)
   process.stdout.write('\x1b[?25l')
   try {
-    for (let index = 0; index < 16; index += 1) {
+    for (let index = 0; index < frameCount; index += 1) {
+      const offset = index % characters.length
+      const rotatingWord = characters.slice(offset).concat(characters.slice(0, offset)).join('')
       process.stdout.write(
-        `\r\x1b[2K${frames[index % frames.length]} \x1b[1;36mScholarSeeker\x1b[0m 正在启动...`,
+        `\r\x1b[2K${spinnerFrames[index % spinnerFrames.length]} \x1b[1;36m${rotatingWord}\x1b[0m 文字旋转启动中...`,
       )
-      await delay(80)
+      if (interval > 0) await delay(interval)
     }
-    process.stdout.write('\r\x1b[2K✓ \x1b[1;36mScholarSeeker\x1b[0m 启动流程已开始\n')
+    process.stdout.write('\r\x1b[2K✓ \x1b[1;36mScholarSeeker\x1b[0m 启动动画完成\n')
   } finally {
     process.stdout.write('\x1b[?25h')
   }

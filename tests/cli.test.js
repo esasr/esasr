@@ -32,8 +32,25 @@ test('shows the competition project banner when initializing', () => {
   })
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目/)
+  const bannerLines = result.stdout.split('\n').filter((line) => /^[╔║╚]/.test(line))
+  assert.ok(bannerLines.length >= 4)
+  assert.ok(bannerLines.every((line) => terminalWidth(line) <= 80))
+  const renderedTitle = bannerLines
+    .filter((line) => line.startsWith('║'))
+    .map((line) => line.slice(1, -1).trim())
+    .join('')
+  assert.equal(
+    renderedTitle,
+    '第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目',
+  )
 })
+
+function terminalWidth(value) {
+  return Array.from(value).reduce((width, character) => {
+    if (/\p{Mark}/u.test(character)) return width
+    return width + (/[\u2e80-\ua4cf\uac00-\ud7a3\uf900-\ufaff\uff00-\uff60]/u.test(character) ? 2 : 1)
+  }, 0)
+}
 
 test('creates a clean project without copying local secrets or dependencies', () => {
   const destination = join(mkdtempSync(join(tmpdir(), 'scholarseeker-cli-')), 'project')
@@ -121,4 +138,41 @@ test('moves an occupied web port and continues startup', async (context) => {
   assert.match(result.stdout, /ScholarSeeker 正在启动/)
   assert.match(result.stdout, new RegExp(`Web 端口 ${occupiedPort} 已被占用，自动改用`))
   assert.doesNotMatch(saved, new RegExp(`^WEB_PORT=${occupiedPort}$`, 'm'))
+})
+
+test('animates the ScholarSeeker word by rotating its letters', async () => {
+  const temporary = mkdtempSync(join(tmpdir(), 'scholarseeker-animation-'))
+  const destination = join(temporary, 'project')
+  const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  assert.equal(initialized.status, 0, initialized.stderr)
+  copyFileSync(join(destination, '.env.example'), join(destination, '.env'))
+  copyFileSync(join(destination, 'config_example.yaml'), join(destination, 'config.yaml'))
+
+  const fakeBin = join(temporary, 'bin')
+  mkdirSync(fakeBin)
+  const fakeDocker = join(fakeBin, 'docker')
+  writeFileSync(fakeDocker, '#!/bin/sh\nexit 0\n')
+  chmodSync(fakeDocker, 0o755)
+  const fakeCurl = join(fakeBin, 'curl')
+  writeFileSync(fakeCurl, '#!/bin/sh\nexit 0\n')
+  chmodSync(fakeCurl, 0o755)
+
+  const result = spawnSync(process.execPath, [cli, 'start'], {
+    cwd: destination,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: {
+      ...process.env,
+      PATH: `${fakeBin}:${process.env.PATH}`,
+      SCHOLARSEEKER_FORCE_ANIMATION: '1',
+      SCHOLARSEEKER_ANIMATION_INTERVAL_MS: '0',
+    },
+  })
+
+  assert.equal(result.status, 0, result.stderr)
+  assert.match(result.stdout, /cholarSeekerS/)
+  assert.match(result.stdout, /ScholarSeeker\x1b\[0m 启动动画完成/)
 })
