@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
@@ -17,11 +17,11 @@ const colorMode = useColorMode({
 const authStore = useAuthStore()
 const papersStore = usePapersStore()
 
-const activeMenu = ref(route.path)
+const activeMenu = computed(() => route.path)
 
 const handleSelect = (key: string) => {
-  if (key !== activeMenu.value) {
-    router.push(key)
+  if (key !== route.path) {
+    void router.push(key)
   }
 }
 
