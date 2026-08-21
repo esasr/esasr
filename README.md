@@ -35,6 +35,9 @@ scholarseeker logs api web
 scholarseeker stop
 ```
 
+在 macOS 上，如果执行 `scholarseeker start` 时 Docker Desktop 尚未运行，CLI
+会询问是否自动启动它，并等待 Docker daemon 就绪后继续部署。
+
 也可以不全局安装，直接运行 GitHub 包：
 
 ```bash

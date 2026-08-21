@@ -17,6 +17,7 @@ import { constants } from 'node:fs'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createInterface } from 'node:readline/promises'
+import { setTimeout as delay } from 'node:timers/promises'
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const PROVIDERS = {
@@ -266,6 +267,41 @@ function commandWorks(command, args) {
   return spawnSync(command, args, { stdio: 'ignore' }).status === 0
 }
 
+async function ensureDockerReady() {
+  if (!commandWorks('docker', ['--version'])) {
+    throw new Error('未安装 Docker。请先安装并启动 Docker Desktop：https://www.docker.com/products/docker-desktop/')
+  }
+  if (!commandWorks('docker', ['compose', 'version'])) {
+    throw new Error('需要 Docker Compose v2，请更新 Docker Desktop 后重试')
+  }
+  if (commandWorks('docker', ['info'])) return
+
+  if (process.platform !== 'darwin' || !process.stdin.isTTY) {
+    throw new Error('Docker 未运行。请启动 Docker Desktop，等待其显示 Running 后重试')
+  }
+  if (!(await askYesNo('Docker Desktop 尚未运行，是否现在启动并等待就绪', true))) {
+    throw new Error('Docker 未运行。启动 Docker Desktop 后再次执行 scholarseeker start')
+  }
+  const opened = spawnSync('open', ['-a', 'Docker'], { stdio: 'ignore' })
+  if (opened.status !== 0) {
+    throw new Error('无法启动 Docker Desktop。请确认已经安装，然后手动打开它')
+  }
+
+  const timeoutMs = Number(process.env.SCHOLARSEEKER_DOCKER_WAIT_MS || 180000)
+  const deadline = Date.now() + timeoutMs
+  process.stdout.write('正在等待 Docker Desktop')
+  while (Date.now() < deadline) {
+    if (commandWorks('docker', ['info'])) {
+      process.stdout.write('\n✓ Docker Desktop 已就绪\n')
+      return
+    }
+    process.stdout.write('.')
+    await delay(2000)
+  }
+  process.stdout.write('\n')
+  throw new Error('等待 Docker Desktop 超时。确认其显示 Running 后再次执行 scholarseeker start')
+}
+
 async function doctor(root) {
   const checks = []
   checks.push(['Docker', commandWorks('docker', ['--version'])])
@@ -316,6 +352,7 @@ async function main() {
   }
   if (command === 'start') {
     if (!(await exists(join(root, '.env')))) await setupProject(root)
+    await ensureDockerReady()
     return runScript(root, 'start.sh', args)
   }
   if (command === 'stop') return runScript(root, 'stop.sh', args)
