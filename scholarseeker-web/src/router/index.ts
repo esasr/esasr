@@ -16,6 +16,12 @@ const router = createRouter({
           meta: { title: 'ScholarSeeker · 智能学术搜索' },
         },
         {
+          path: 'about',
+          name: 'about',
+          component: () => import('../views/AboutView.vue'),
+          meta: { title: '关于项目 · ScholarSeeker' },
+        },
+        {
           path: 'search',
           name: 'search-results',
           component: () => import('../views/SearchResultsView.vue'),

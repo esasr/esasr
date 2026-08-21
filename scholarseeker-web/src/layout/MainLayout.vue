@@ -257,4 +257,41 @@ const handleUserCommand = async (command: string) => {
   background-color: var(--bg-color);
   padding: 24px 40px;
 }
+
+@media (max-width: 760px) {
+  .header {
+    padding: 0 14px;
+  }
+
+  .logo {
+    margin-right: 10px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .auth-btn,
+  .auth-btn-primary {
+    display: none;
+  }
+
+  .main-content {
+    padding: 20px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    display: none;
+  }
+
+  .logo {
+    margin-right: 4px;
+  }
+
+  .action-dropdown:first-child {
+    display: none;
+  }
+}
 </style>
