@@ -36,16 +36,21 @@ test('shows the competition project banner when initializing', () => {
 
   assert.equal(result.status, 0, result.stderr)
   const bannerLines = result.stdout.split('\n').filter((line) => /^[╔║╚]/.test(line))
-  assert.ok(bannerLines.length >= 4)
+  assert.equal(bannerLines.length, 4)
   assert.ok(bannerLines.every((line) => terminalWidth(line) <= 80))
   const renderedTitle = bannerLines
     .filter((line) => line.startsWith('║'))
     .map((line) => line.slice(1, -1).trim())
-    .join('')
-  assert.equal(
-    renderedTitle,
-    '第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目',
-  )
+  assert.deepEqual(renderedTitle, [
+    '第八届中国研究生人工智能创新大赛企业赛题',
+    '科研场景下复杂学术查询的智能论文搜索与推荐演示项目',
+  ])
+  for (const line of bannerLines.filter((value) => value.startsWith('║'))) {
+    const content = line.slice(1, -1)
+    const leading = content.match(/^ */)[0].length
+    const trailing = content.match(/ *$/)[0].length
+    assert.ok(Math.abs(leading - trailing) <= 1)
+  }
 })
 
 function terminalWidth(value) {
@@ -172,11 +177,18 @@ test('renders a Codex-style startup card and shimmer status', async () => {
       PATH: `${fakeBin}:${process.env.PATH}`,
       SCHOLARSEEKER_FORCE_ANIMATION: '1',
       SCHOLARSEEKER_ANIMATION_INTERVAL_MS: '0',
+      SCHOLARSEEKER_BANNER_INTERVAL_MS: '0',
     },
   })
 
   assert.equal(result.status, 0, result.stderr)
   const plainOutput = result.stdout.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '')
+  assert.match(result.stdout, /^\x1b\[2J\x1b\[H/)
+  assert.match(result.stdout, /\x1b\[1;91m/)
+  assert.match(result.stdout, /\x1b\[1;94m/)
+  assert.match(plainOutput, /第八届中国研究生人工智能创新大赛企业赛题/)
+  assert.match(plainOutput, /科研场景下复杂学术查询的智能论文搜索与推荐演示项目/)
+  assert.doesNotMatch(plainOutput, /企业赛题-科研场景/)
   assert.match(plainOutput, />_ ScholarSeeker/)
   assert.match(plainOutput, /Building ScholarSeeker services/)
   assert.match(plainOutput, /ScholarSeeker services ready/)

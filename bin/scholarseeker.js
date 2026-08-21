@@ -47,6 +47,10 @@ const PROJECT_FILES = [
 const EXCLUDED_DIRECTORIES = new Set([
   '.git', '__pycache__', 'dist', 'node_modules', 'venv', 'work', 'outputs',
 ])
+const COMPETITION_TITLE_LINES = [
+  '第八届中国研究生人工智能创新大赛企业赛题',
+  '科研场景下复杂学术查询的智能论文搜索与推荐演示项目',
+]
 
 function includeProjectFile(source) {
   const path = relative(PACKAGE_ROOT, source)
@@ -130,18 +134,85 @@ function wrapByDisplayWidth(value, maximumWidth) {
   return lines
 }
 
-function printBanner() {
-  const title = '第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目'
+function competitionBannerLayout() {
   const terminalWidth = process.stdout.columns || 80
   const contentWidth = Math.max(10, Math.min(72, terminalWidth - 4))
+  const lines = COMPETITION_TITLE_LINES.flatMap((line) => wrapByDisplayWidth(line, contentWidth))
+  return { contentWidth, lines }
+}
+
+function centerByDisplayWidth(value, width) {
+  const remaining = Math.max(0, width - displayWidth(value))
+  const left = Math.floor(remaining / 2)
+  return {
+    left: ' '.repeat(left),
+    right: ' '.repeat(remaining - left),
+  }
+}
+
+function competitionBannerLine(value, contentWidth, coloredValue = value) {
+  const { left, right } = centerByDisplayWidth(value, contentWidth)
+  return `║ ${left}${coloredValue}${right} ║`
+}
+
+function printBanner() {
+  const { contentWidth, lines } = competitionBannerLayout()
   const border = '═'.repeat(contentWidth + 2)
-  const lines = wrapByDisplayWidth(title, contentWidth)
   console.log(`\n╔${border}╗`)
   for (const line of lines) {
-    const padding = ' '.repeat(contentWidth - displayWidth(line))
-    console.log(`║ ${line}${padding} ║`)
+    console.log(competitionBannerLine(line, contentWidth))
   }
   console.log(`╚${border}╝\n`)
+}
+
+function redBlueShimmer(value, frame) {
+  const characters = Array.from(value)
+  const head = frame % (characters.length + 10)
+  return characters.map((character, index) => {
+    const distance = head - index
+    if (distance === 0) return `\x1b[1;97m${character}\x1b[0m`
+    if (distance > 0 && distance <= 3) return `\x1b[1;91m${character}\x1b[0m`
+    if (distance > 3 && distance <= 7) return `\x1b[1;94m${character}\x1b[0m`
+    return `\x1b[2m${character}\x1b[0m`
+  }).join('')
+}
+
+async function showCompetitionIntro() {
+  if (!startupAnimationEnabled()) {
+    printBanner()
+    return
+  }
+
+  const { contentWidth, lines } = competitionBannerLayout()
+  const border = '═'.repeat(contentWidth + 2)
+  const renderedLineCount = lines.length + 2
+  const frameCount = Math.max(...lines.map((line) => Array.from(line).length)) + 10
+  const interval = Number(process.env.SCHOLARSEEKER_BANNER_INTERVAL_MS || 35)
+  const render = (frame, final = false) => {
+    const body = lines.map((line, index) => {
+      const colored = final
+        ? `\x1b[1;${index % 2 === 0 ? 91 : 94}m${line}\x1b[0m`
+        : redBlueShimmer(line, frame)
+      return competitionBannerLine(line, contentWidth, colored)
+    })
+    return [
+      `\x1b[2m╔${border}╗\x1b[0m`,
+      ...body,
+      `\x1b[2m╚${border}╝\x1b[0m`,
+    ].map((line) => `\r\x1b[2K${line}`).join('\n')
+  }
+
+  process.stdout.write('\x1b[2J\x1b[H\x1b[?25l')
+  try {
+    for (let frame = 0; frame < frameCount; frame += 1) {
+      if (frame > 0) process.stdout.write(`\x1b[${renderedLineCount}A\r`)
+      process.stdout.write(`${render(frame)}\n`)
+      if (interval > 0) await delay(interval)
+    }
+    process.stdout.write(`\x1b[${renderedLineCount}A\r${render(0, true)}\n`)
+  } finally {
+    process.stdout.write('\x1b[?25h\n')
+  }
 }
 
 async function exists(path) {
@@ -798,7 +869,8 @@ async function main() {
   }
   const command = aliases[rawCommand] || rawCommand
   if (command === '--help' || command === '-h' || command === 'help') return printHelp()
-  if (['init', 'setup', 'start', 'restart'].includes(command)) printBanner()
+  if (['init', 'setup'].includes(command)) printBanner()
+  if (['start', 'restart'].includes(command)) await showCompetitionIntro()
   if (command === 'init') return initProject(args[0])
 
   const root = await findProjectRoot()
