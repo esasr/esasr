@@ -105,6 +105,7 @@ function openPaper(id: string) {
         <el-select
           v-model="selectedProvider"
           class="llm-provider-select"
+          size="large"
           :loading="providersLoading"
           :disabled="providersLoading || llmProviders.length === 0"
           placeholder="选择大模型"
@@ -194,7 +195,10 @@ function openPaper(id: string) {
 }
 
 .search-box {
+  --search-control-height: 56px;
+
   display: flex;
+  align-items: stretch;
   gap: 10px;
   margin-bottom: 32px;
   border-radius: 8px;
@@ -209,8 +213,21 @@ function openPaper(id: string) {
   padding: 8px 16px;
   font-size: 16px;
 }
-.search-input { flex: 1; }
-.llm-provider-select { width: 230px; flex: 0 0 230px; }
+.search-input {
+  flex: 1;
+  height: var(--search-control-height);
+}
+.llm-provider-select {
+  width: 230px;
+  flex: 0 0 230px;
+  height: var(--search-control-height);
+}
+:deep(.llm-provider-select .el-select__wrapper) {
+  min-height: var(--search-control-height);
+}
+.search-box > .el-button {
+  height: var(--search-control-height);
+}
 .provider-error { margin: -20px 0 24px; color: var(--el-color-danger); font-size: 13px; }
 
 .examples-section {
