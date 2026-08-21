@@ -22,6 +22,17 @@ test('prints CLI help', () => {
   assert.match(result.stdout, /scholarseeker setup/)
 })
 
+test('shows the competition project banner when initializing', () => {
+  const destination = join(mkdtempSync(join(tmpdir(), 'scholarseeker-banner-')), 'project')
+  const result = spawnSync(process.execPath, [cli, 'init', destination], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+
+  assert.equal(result.status, 0, result.stderr)
+  assert.match(result.stdout, /第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目/)
+})
+
 test('creates a clean project without copying local secrets or dependencies', () => {
   const destination = join(mkdtempSync(join(tmpdir(), 'scholarseeker-cli-')), 'project')
   const result = spawnSync(process.execPath, [cli, 'init', destination], {

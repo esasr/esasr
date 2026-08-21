@@ -19,11 +19,13 @@ scholarseeker start
 
 `scholarseeker init` 会启动交互式配置向导：
 
-1. 选择 DeepSeek、Qwen、OpenAI、Kimi 或自定义兼容平台；
+1. 使用 ↑/↓ 选择 DeepSeek、Qwen、OpenAI、Kimi 或自定义兼容平台，按空格确认；
 2. 隐藏输入 API Key；
 3. 可选配置 Semantic Scholar 和 OpenAlex；
 4. 自动生成本地 `.env`、`config.yaml` 和随机 JWT 密钥；
 5. API Key 仅保存在本机 `.env`，不会进入前端构建或 Git。
+
+初始化和启动时会展示“第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目”标识。
 
 随时可以重新配置或检查环境：
 

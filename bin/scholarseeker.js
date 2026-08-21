@@ -16,6 +16,7 @@ import {
 import { constants } from 'node:fs'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { emitKeypressEvents } from 'node:readline'
 import { createInterface } from 'node:readline/promises'
 import { setTimeout as delay } from 'node:timers/promises'
 
@@ -67,6 +68,14 @@ function printHelp() {
   scholarseeker status        查看服务状态
   scholarseeker logs [...]    查看日志
   scholarseeker --help        显示帮助`)
+}
+
+function printBanner() {
+  const title = '第八届中国研究生人工智能创新大赛企业赛题-科研场景下复杂学术查询的智能论文搜索与推荐演示项目'
+  const border = '═'.repeat(54)
+  console.log(`\n╔${border}╗`)
+  console.log(`  ${title}`)
+  console.log(`╚${border}╝\n`)
 }
 
 async function exists(path) {
@@ -182,15 +191,62 @@ async function ensureLocalConfig(root) {
 }
 
 async function chooseProvider() {
-  console.log('\n请选择查询规划使用的大模型平台：')
   const names = Object.keys(PROVIDERS)
-  names.forEach((name, index) => console.log(`  ${index + 1}. ${PROVIDERS[name].label}`))
-  const choice = await ask('输入序号', '1')
-  const index = Number(choice) - 1
-  if (!Number.isInteger(index) || index < 0 || index >= names.length) {
-    throw new Error('无效的平台序号')
+  if (!process.stdin.isTTY || !process.stdin.setRawMode) {
+    console.log('\n请选择查询规划使用的大模型平台：')
+    names.forEach((name, index) => console.log(`  ${index + 1}. ${PROVIDERS[name].label}`))
+    const choice = await ask('输入序号', '1')
+    const index = Number(choice) - 1
+    if (!Number.isInteger(index) || index < 0 || index >= names.length) {
+      throw new Error('无效的平台序号')
+    }
+    return names[index]
   }
-  return names[index]
+
+  console.log('\n请选择查询规划使用的大模型平台：')
+  let selected = 0
+  let rendered = false
+  const lineCount = names.length + 1
+  const draw = () => {
+    if (rendered) process.stdout.write(`\x1b[${lineCount}A`)
+    names.forEach((name, index) => {
+      const active = index === selected
+      process.stdout.write(`\x1b[2K\r${active ? '❯ ◉' : '  ○'} ${PROVIDERS[name].label}\n`)
+    })
+    process.stdout.write('\x1b[2K\r↑/↓ 移动 · 空格选择')
+    rendered = true
+  }
+
+  emitKeypressEvents(process.stdin)
+  process.stdin.setRawMode(true)
+  process.stdin.resume()
+  process.stdout.write('\x1b[?25l')
+  draw()
+  return new Promise((resolveProvider, reject) => {
+    const cleanup = () => {
+      process.stdin.removeListener('keypress', onKeypress)
+      process.stdin.setRawMode(false)
+      process.stdin.pause()
+      process.stdout.write('\x1b[?25h\n')
+    }
+    const onKeypress = (input, key = {}) => {
+      if (key.ctrl && key.name === 'c') {
+        cleanup()
+        reject(new Error('已取消配置'))
+      } else if (key.name === 'up') {
+        selected = (selected - 1 + names.length) % names.length
+        draw()
+      } else if (key.name === 'down') {
+        selected = (selected + 1) % names.length
+        draw()
+      } else if (input === ' ' || key.name === 'return') {
+        const provider = names[selected]
+        cleanup()
+        resolveProvider(provider)
+      }
+    }
+    process.stdin.on('keypress', onKeypress)
+  })
 }
 
 async function setupProject(root) {
@@ -341,6 +397,7 @@ async function runScript(root, script, args) {
 async function main() {
   const [command = '--help', ...args] = process.argv.slice(2)
   if (command === '--help' || command === '-h' || command === 'help') return printHelp()
+  if (command === 'init' || command === 'setup' || command === 'start') printBanner()
   if (command === 'init') return initProject(args[0])
 
   const root = await findProjectRoot()
