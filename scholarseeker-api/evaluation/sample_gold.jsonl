@@ -1,0 +1,2 @@
+{"id":"q1","query":"multimodal models for medical diagnosis","relevant":[{"doi":"10.1000/example-a","title":"Example Medical Multimodal Paper A"},{"id":"W-example-b","title":"Example Medical Multimodal Paper B"}]}
+{"id":"q2","query":"cross encoder reranking for academic retrieval","relevant":[{"title":"Example Cross Encoder Retrieval Paper"}]}

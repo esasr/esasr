@@ -1,0 +1,60 @@
+{
+  "name": "scholarseeker-cli",
+  "version": "1.0.0",
+  "description": "Interactive installer and launcher for ScholarSeeker",
+  "type": "module",
+  "bin": {
+    "scholarseeker": "bin/scholarseeker.js"
+  },
+  "files": [
+    "bin/",
+    "templates/",
+    "scripts/",
+    "scholarseeker-api/*.py",
+    "scholarseeker-api/Dockerfile",
+    "scholarseeker-api/requirements*.txt",
+    "scholarseeker-api/services/*.py",
+    "scholarseeker-api/routers/*.py",
+    "scholarseeker-api/tools/*.py",
+    "scholarseeker-api/tests/*.py",
+    "scholarseeker-api/evaluation/*.py",
+    "scholarseeker-api/evaluation/*.jsonl",
+    "scholarseeker-web/src/",
+    "scholarseeker-web/public/",
+    "scholarseeker-web/Dockerfile",
+    "scholarseeker-web/nginx.conf",
+    "scholarseeker-web/index.html",
+    "scholarseeker-web/env.d.ts",
+    "scholarseeker-web/package*.json",
+    "scholarseeker-web/tsconfig*.json",
+    "scholarseeker-web/vite.config.ts",
+    ".env.example",
+    "config_example.yaml",
+    "docker-compose.yml",
+    "run.sh",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "pack:check": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "keywords": [
+    "academic-search",
+    "research",
+    "llm",
+    "paper-search"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wanglei1123/ScholarSeeker.git"
+  },
+  "homepage": "https://github.com/wanglei1123/ScholarSeeker#readme",
+  "bugs": {
+    "url": "https://github.com/wanglei1123/ScholarSeeker/issues"
+  },
+  "license": "MIT"
+}

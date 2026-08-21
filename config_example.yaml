@@ -1,0 +1,136 @@
+# =============================================================================
+# ScholarSeeker — API 配置模板
+# =============================================================================
+# 请将此文件复制并重命名为 config.yaml，然后填入真实的密码和 API Keys。
+# config.yaml 将会被 Git 忽略。
+# =============================================================================
+
+# ── 应用基础配置 ──────────────────────────────────────────────────────────────
+app:
+  name: ScholarSeeker
+  version: "1.0.0"
+  debug: true
+
+# ── 业务数据库：PostgreSQL ─────────────────────────────────────────────────────
+database:
+  host: localhost
+  port: 5432
+  name: scholarseeker
+  user: scholarseeker
+  password: "your_postgres_password_here"
+  pool_size: 10
+  max_overflow: 20
+  pool_pre_ping: true
+
+# ── 图数据库：Neo4j ───────────────────────────────────────────────────────────
+neo4j:
+  host: localhost
+  bolt_port: 7687
+  http_port: 7474
+  user: neo4j
+  password: "your_neo4j_password_here"
+  database: scholarseeker
+
+# ── 高速缓存：Redis ───────────────────────────────────────────────────────────
+redis:
+  host: localhost
+  port: 6379
+  db: 0
+  password: ""              # 留空表示无密码认证
+  ttl:
+    search_results: 300
+    query_plan: 86400
+    paper_detail: 3600
+    user_profile: 60
+
+# ── 认证配置 ──────────────────────────────────────────────────────────────────
+auth:
+  jwt_secret: "your_very_long_and_secure_jwt_secret_here"
+  jwt_algorithm: HS256
+  access_token_expire_days: 30
+
+# ── 检索排序 ─────────────────────────────────────────────────────────────────
+ranking:
+  cross_encoder:
+    enabled: false
+    model: BAAI/bge-reranker-base
+    top_n: 40
+    batch_size: 8
+    max_length: 512
+    device: auto
+
+# ── LLM 大语言模型配置 ────────────────────────────────────────────────────────
+llm:
+  active_provider: deepseek
+
+  providers:
+    deepseek:
+      base_url: https://api.deepseek.com
+      anthropic_base_url: https://api.deepseek.com/anthropic
+      model: deepseek-v4-flash
+      models:
+        - deepseek-v4-flash
+        - deepseek-v4-pro
+      timeout: 30
+      max_output_tokens: 500
+      api_key: "your_deepseek_api_key_here"
+
+    qwen:
+      base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      model: qwen-turbo
+      timeout: 30
+      max_output_tokens: 500
+      api_key: "your_qwen_api_key_here"
+
+    openai:
+      base_url: https://api.openai.com/v1
+      model: gpt-4o-mini
+      timeout: 30
+      max_output_tokens: 500
+      api_key: "your_openai_api_key_here"
+
+    kimi:
+      base_url: https://api.moonshot.cn/v1
+      model: kimi-k3
+      models:
+        - kimi-k3
+        - kimi-k2.7-code
+        - kimi-k2.6
+      timeout: 120
+      max_output_tokens: 500
+      api_key: "your_kimi_api_key_here"
+
+    custom:
+      base_url: https://api.ikuncode.cc/v1
+      model: gpt-3.5-turbo
+      timeout: 30
+      max_output_tokens: 500
+      api_key: "your_custom_api_key_here"
+
+# ── 学术数据源配置 ────────────────────────────────────────────────────────────
+academic_apis:
+
+  semantic_scholar:
+    base_url: https://api.semanticscholar.org/graph/v1
+    api_key: ""             # Optional
+    timeout: 30
+    default_limit: 10
+    default_fields: "title,authors,venue,year,abstract,citationCount,openAccessPdf"
+    detail_fields: "title,authors,venue,year,abstract,citationCount,openAccessPdf,externalIds,url"
+    graph_fields: "title,citations,citations.title,references,references.title"
+
+  arxiv:
+    base_url: https://export.arxiv.org/api
+    query_endpoint: /query
+    timeout: 30
+    max_results: 10
+
+  openalex:
+    base_url: https://api.openalex.org
+    api_key: ""             # Optional: add your OpenAlex API key
+    email: ""               # Optional
+    works_endpoint: /works
+    authors_endpoint: /authors
+    concepts_endpoint: /concepts
+    timeout: 30
+    per_page: 10

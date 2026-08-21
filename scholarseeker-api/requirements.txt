@@ -1,0 +1,21 @@
+fastapi
+uvicorn[standard]
+openai
+pydantic
+python-dotenv
+# PostgreSQL（异步）
+sqlalchemy[asyncio]
+asyncpg
+aiosqlite
+psycopg2-binary
+# Neo4j 图数据库
+neo4j
+# Redis 缓存
+redis[hiredis]
+# JWT 认证
+python-jose[cryptography]
+python-multipart
+# HTTP 客户端
+httpx
+# 配置管理
+pyyaml

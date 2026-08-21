@@ -1,0 +1,14 @@
+.git
+.env
+config.yaml
+**/.DS_Store
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/venv
+**/node_modules
+**/dist
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+evaluation/report.json

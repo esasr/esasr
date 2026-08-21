@@ -1,0 +1,2 @@
+{"id":"q1","predicted":[{"doi":"https://doi.org/10.1000/example-a","title":"Example Medical Multimodal Paper A"},{"id":"irrelevant-paper","title":"An Unrelated Paper"}]}
+{"id":"q2","predicted":[{"id":"s2-example","title":"Example Cross Encoder Retrieval Paper"}]}
