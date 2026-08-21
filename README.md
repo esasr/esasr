@@ -31,16 +31,40 @@ scholarseeker start
 
 ```bash
 scholarseeker setup
+scholarseeker config
 scholarseeker doctor
 scholarseeker status
 scholarseeker logs api web
 scholarseeker stop
 ```
 
+### 常用终端命令
+
+| 命令 | 作用 |
+| --- | --- |
+| `scholarseeker start` / `scholarseeker up` | 启动服务 |
+| `scholarseeker stop` / `scholarseeker down` | 终止服务 |
+| `scholarseeker restart --no-build` | 不重新构建镜像并重启服务 |
+| `scholarseeker status` | 查看容器运行状态 |
+| `scholarseeker logs api web` | 查看 API 和 Web 日志 |
+| `scholarseeker config` | 安全显示当前配置，不输出 Key 内容 |
+| `scholarseeker key list` | 查看各平台 API Key 配置状态 |
+| `scholarseeker key add deepseek` | 添加 DeepSeek API Key |
+| `scholarseeker key update deepseek` | 修改 DeepSeek API Key |
+| `scholarseeker key set openai` | 添加或覆盖 OpenAI API Key |
+| `scholarseeker key remove openai` | 删除 OpenAI API Key（会确认） |
+| `scholarseeker provider list` | 列出平台、Key 状态和默认平台 |
+| `scholarseeker provider current` | 查看当前默认平台 |
+| `scholarseeker provider use qwen` | 将 Qwen 设为默认平台 |
+
+支持的平台名称为 `deepseek`、`qwen`、`openai`、`kimi` 和 `custom`。API Key
+使用隐藏输入并仅写入当前项目的 `.env`。修改 Key 或默认平台后，运行
+`scholarseeker restart --no-build` 使配置生效。
+
 在 macOS 上，如果执行 `scholarseeker start` 时 Docker Desktop 尚未运行，CLI
 会询问是否自动启动它，并等待 Docker daemon 就绪后继续部署。
 
-启动时终端会显示 `ScholarSeeker` 旋转动效。若 8080、8000、5432、6379、7474
+启动时终端会显示 Codex 风格的 `ScholarSeeker` 品牌卡片与动态扫光状态。若 8080、8000、5432、6379、7474
 或 7687 已被其他程序占用，CLI 会自动寻找相邻空闲端口、保存到 `.env`，再继续
 启动，避免 Docker 因 `port is already allocated` 中断。
 

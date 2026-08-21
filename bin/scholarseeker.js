@@ -60,15 +60,33 @@ function includeProjectFile(source) {
 function printHelp() {
   console.log(`ScholarSeeker CLI
 
-用法：
-  scholarseeker init [目录]   创建项目并引导配置 API Key
-  scholarseeker setup         重新运行配置向导
-  scholarseeker doctor        检查 Docker 和配置
-  scholarseeker start [...]   启动服务，可传 --no-build/--pull/--with-reranker
-  scholarseeker stop          停止服务
-  scholarseeker status        查看服务状态
-  scholarseeker logs [...]    查看日志
-  scholarseeker --help        显示帮助`)
+项目与服务：
+  scholarseeker init [目录]       创建项目并引导配置 API Key
+  scholarseeker start [...]       启动服务（别名：up）
+  scholarseeker stop              终止服务（别名：down）
+  scholarseeker restart [...]     重启服务
+  scholarseeker status            查看服务状态
+  scholarseeker logs [服务...]    查看日志
+  scholarseeker doctor            检查 Docker 和配置
+
+API Key：
+  scholarseeker key list          查看各平台 Key 配置状态
+  scholarseeker key add [平台]    添加 API Key
+  scholarseeker key update [平台] 修改 API Key
+  scholarseeker key set [平台]    添加或修改 API Key
+  scholarseeker key remove [平台] 删除 API Key（支持 --yes）
+
+默认平台：
+  scholarseeker provider list     查看所有平台
+  scholarseeker provider current  查看当前默认平台
+  scholarseeker provider use <平台> 切换默认平台
+
+其他：
+  scholarseeker config            安全显示当前配置（不显示 Key）
+  scholarseeker setup             重新运行完整配置向导
+  scholarseeker --help            显示帮助
+
+平台名称：deepseek、qwen、openai、kimi、custom`)
 }
 
 function characterWidth(character) {
@@ -226,6 +244,144 @@ function updateEnv(content, updates) {
   })
   for (const [key, value] of remaining) lines.push(`${key}=${value}`)
   return `${lines.join('\n').replace(/\n+$/, '')}\n`
+}
+
+function resolveProvider(value) {
+  if (!value) return null
+  const aliases = {
+    moonshot: 'kimi',
+    tongyi: 'qwen',
+    aliyun: 'qwen',
+  }
+  const normalized = String(value).trim().toLowerCase()
+  const provider = aliases[normalized] || normalized
+  if (!PROVIDERS[provider]) {
+    throw new Error(`未知平台：${value}。可用平台：${Object.keys(PROVIDERS).join('、')}`)
+  }
+  return provider
+}
+
+async function providerFromArgument(value) {
+  return resolveProvider(value) || chooseProvider()
+}
+
+async function readEnvConfig(root) {
+  const envPath = await ensureLocalConfig(root)
+  const content = await readFile(envPath, 'utf8')
+  return { envPath, content, values: parseEnv(content) }
+}
+
+async function saveEnvConfig(envPath, content, updates) {
+  await writeFile(envPath, updateEnv(content, updates), { mode: 0o600 })
+  await chmod(envPath, 0o600)
+}
+
+function configuredProviders(values) {
+  return Object.entries(PROVIDERS)
+    .filter(([, config]) => Boolean(values.get(config.key)?.trim()))
+    .map(([name]) => name)
+}
+
+function printProviderList(values) {
+  const active = values.get('LLM_ACTIVE_PROVIDER') || 'deepseek'
+  console.log('\n大模型平台：')
+  for (const [name, config] of Object.entries(PROVIDERS)) {
+    const isActive = name === active
+    const configured = Boolean(values.get(config.key)?.trim())
+    console.log(`${isActive ? '●' : '○'} ${name.padEnd(8)} ${config.label}  ${configured ? '✓ 已配置 Key' : '— 未配置 Key'}${isActive ? '  [默认]' : ''}`)
+  }
+}
+
+async function listProviderConfiguration(root) {
+  const { values } = await readEnvConfig(root)
+  printProviderList(values)
+}
+
+async function showCurrentProvider(root) {
+  const { values } = await readEnvConfig(root)
+  const active = values.get('LLM_ACTIVE_PROVIDER') || 'deepseek'
+  const config = PROVIDERS[active]
+  console.log(`${active} · ${config?.label || active}`)
+}
+
+async function useProvider(root, providerArg) {
+  const provider = resolveProvider(providerArg)
+  if (!provider) throw new Error('请指定平台，例如：scholarseeker provider use deepseek')
+  const { envPath, content, values } = await readEnvConfig(root)
+  const config = PROVIDERS[provider]
+  if (!values.get(config.key)?.trim()) {
+    throw new Error(`${config.label} 尚未配置 API Key。请先运行 scholarseeker key add ${provider}`)
+  }
+  await saveEnvConfig(envPath, content, { LLM_ACTIVE_PROVIDER: provider })
+  console.log(`✓ 默认大模型平台已切换为 ${config.label} (${provider})`)
+  console.log('  运行 scholarseeker restart --no-build 使配置生效。')
+}
+
+async function setProviderKey(root, action, providerArg) {
+  const provider = await providerFromArgument(providerArg)
+  const config = PROVIDERS[provider]
+  const { envPath, content, values } = await readEnvConfig(root)
+  const alreadyConfigured = Boolean(values.get(config.key)?.trim())
+  if (action === 'add' && alreadyConfigured) {
+    throw new Error(`${config.label} 已配置 API Key。请使用 scholarseeker key update ${provider}`)
+  }
+  if (action === 'update' && !alreadyConfigured) {
+    throw new Error(`${config.label} 尚未配置 API Key。请使用 scholarseeker key add ${provider}`)
+  }
+
+  console.log(`\n正在${alreadyConfigured ? '修改' : '添加'} ${config.label} API Key。`)
+  const suppliedKey = process.env.SCHOLARSEEKER_API_KEY || await askSecret('API Key')
+  if (!suppliedKey) throw new Error('API Key 不能为空')
+  const updates = { [config.key]: suppliedKey }
+  if (provider === 'custom') {
+    updates.CUSTOM_LLM_BASE_URL = process.env.SCHOLARSEEKER_LLM_BASE_URL || await ask(
+      'API Base URL',
+      values.get('CUSTOM_LLM_BASE_URL') || 'https://api.example.com/v1',
+    )
+    updates.CUSTOM_LLM_MODEL = process.env.SCHOLARSEEKER_LLM_MODEL || await ask(
+      '模型名称',
+      values.get('CUSTOM_LLM_MODEL') || 'gpt-4o-mini',
+    )
+  }
+  await saveEnvConfig(envPath, content, updates)
+  console.log(`✓ ${config.label} API Key 已${alreadyConfigured ? '修改' : '添加'}`)
+  console.log('  Key 仅保存在本机 .env，终端不会显示其内容。')
+  console.log(`  如需设为默认平台：scholarseeker provider use ${provider}`)
+}
+
+async function removeProviderKey(root, providerArg, confirmed) {
+  const provider = await providerFromArgument(providerArg)
+  const config = PROVIDERS[provider]
+  const { envPath, content, values } = await readEnvConfig(root)
+  if (!values.get(config.key)?.trim()) {
+    console.log(`— ${config.label} 尚未配置 API Key，无需删除。`)
+    return
+  }
+  const allowed = confirmed || (process.stdin.isTTY && await askYesNo(`确认删除 ${config.label} API Key`, false))
+  if (!allowed) {
+    throw new Error('删除已取消；非交互环境请添加 --yes')
+  }
+  await saveEnvConfig(envPath, content, { [config.key]: '' })
+  console.log(`✓ ${config.label} API Key 已从本机 .env 删除`)
+  if ((values.get('LLM_ACTIVE_PROVIDER') || 'deepseek') === provider) {
+    console.log('⚠ 删除的是当前默认平台 Key，请添加新 Key 或切换默认平台。')
+  }
+}
+
+async function showSafeConfig(root) {
+  const { envPath, values } = await readEnvConfig(root)
+  const active = values.get('LLM_ACTIVE_PROVIDER') || 'deepseek'
+  const ports = [
+    ['Web', values.get('WEB_PORT') || '8080'],
+    ['API', values.get('API_PORT') || '8000'],
+    ['Neo4j', values.get('NEO4J_HTTP_PORT') || '7474'],
+  ]
+  console.log(`\n项目目录：${root}`)
+  console.log(`配置文件：${envPath}`)
+  console.log(`默认平台：${active} · ${PROVIDERS[active]?.label || active}`)
+  console.log(`已配置 Key：${configuredProviders(values).join('、') || '无'}`)
+  console.log(`服务端口：${ports.map(([name, port]) => `${name} ${port}`).join(' · ')}`)
+  console.log('安全提示：API Key 内容已隐藏。')
 }
 
 async function ensureLocalConfig(root) {
@@ -632,14 +788,42 @@ async function runStartScript(root, args) {
 }
 
 async function main() {
-  const [command = '--help', ...args] = process.argv.slice(2)
+  const [rawCommand = '--help', ...args] = process.argv.slice(2)
+  const aliases = {
+    up: 'start',
+    down: 'stop',
+    terminate: 'stop',
+    kill: 'stop',
+    'api-key': 'key',
+  }
+  const command = aliases[rawCommand] || rawCommand
   if (command === '--help' || command === '-h' || command === 'help') return printHelp()
-  if (command === 'init' || command === 'setup' || command === 'start') printBanner()
+  if (['init', 'setup', 'start', 'restart'].includes(command)) printBanner()
   if (command === 'init') return initProject(args[0])
 
   const root = await findProjectRoot()
   if (!root) throw new Error('当前目录不在 ScholarSeeker 项目中，请先运行 scholarseeker init')
   if (command === 'setup') return setupProject(root)
+  if (command === 'config') return showSafeConfig(root)
+  if (command === 'key') {
+    const [action = 'list', ...keyArgs] = args
+    const providerArg = keyArgs.find((value) => !value.startsWith('-'))
+    if (action === 'list') return listProviderConfiguration(root)
+    if (action === 'add' || action === 'update' || action === 'set') {
+      return setProviderKey(root, action, providerArg)
+    }
+    if (action === 'remove' || action === 'delete') {
+      return removeProviderKey(root, providerArg, keyArgs.includes('--yes') || keyArgs.includes('-y'))
+    }
+    throw new Error(`未知 key 命令：${action}。可用命令：list、add、update、set、remove`)
+  }
+  if (command === 'provider') {
+    const [action = 'list', providerArg] = args
+    if (action === 'list') return listProviderConfiguration(root)
+    if (action === 'current') return showCurrentProvider(root)
+    if (action === 'use') return useProvider(root, providerArg)
+    throw new Error(`未知 provider 命令：${action}。可用命令：list、current、use`)
+  }
   if (command === 'doctor') {
     if (!(await doctor(root))) process.exitCode = 1
     return
@@ -647,6 +831,13 @@ async function main() {
   if (command === 'start') {
     if (!(await exists(join(root, '.env')))) await setupProject(root)
     await ensureDockerReady()
+    await resolvePortConflicts(root)
+    return runStartScript(root, args)
+  }
+  if (command === 'restart') {
+    if (!(await exists(join(root, '.env')))) await setupProject(root)
+    await ensureDockerReady()
+    await runScript(root, 'stop.sh', [])
     await resolvePortConflicts(root)
     return runStartScript(root, args)
   }

@@ -22,6 +22,9 @@ test('prints CLI help', () => {
   assert.equal(result.status, 0)
   assert.match(result.stdout, /scholarseeker init/)
   assert.match(result.stdout, /scholarseeker setup/)
+  assert.match(result.stdout, /scholarseeker restart/)
+  assert.match(result.stdout, /scholarseeker key add/)
+  assert.match(result.stdout, /scholarseeker provider use/)
 })
 
 test('shows the competition project banner when initializing', () => {
@@ -178,4 +181,94 @@ test('renders a Codex-style startup card and shimmer status', async () => {
   assert.match(plainOutput, /Building ScholarSeeker services/)
   assert.match(plainOutput, /ScholarSeeker services ready/)
   assert.doesNotMatch(plainOutput, /Compose can now delegate builds/)
+})
+
+test('adds, updates, lists, selects, and removes provider API keys safely', () => {
+  const temporary = mkdtempSync(join(tmpdir(), 'scholarseeker-key-management-'))
+  const destination = join(temporary, 'project')
+  const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  assert.equal(initialized.status, 0, initialized.stderr)
+
+  const added = spawnSync(process.execPath, [cli, 'key', 'add', 'deepseek'], {
+    cwd: destination,
+    encoding: 'utf8',
+    env: { ...process.env, SCHOLARSEEKER_API_KEY: 'sk-added-secret' },
+  })
+  assert.equal(added.status, 0, added.stderr)
+  assert.doesNotMatch(added.stdout, /sk-added-secret/)
+  assert.match(readFileSync(join(destination, '.env'), 'utf8'), /^DEEPSEEK_API_KEY=sk-added-secret$/m)
+
+  const listed = spawnSync(process.execPath, [cli, 'key', 'list'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(listed.status, 0, listed.stderr)
+  assert.match(listed.stdout, /DeepSeek\s+✓ 已配置 Key/)
+  assert.doesNotMatch(listed.stdout, /sk-added-secret/)
+
+  const selected = spawnSync(process.execPath, [cli, 'provider', 'use', 'deepseek'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(selected.status, 0, selected.stderr)
+  assert.match(selected.stdout, /默认大模型平台已切换为 DeepSeek/)
+
+  const updated = spawnSync(process.execPath, [cli, 'key', 'update', 'deepseek'], {
+    cwd: destination,
+    encoding: 'utf8',
+    env: { ...process.env, SCHOLARSEEKER_API_KEY: 'sk-updated-secret' },
+  })
+  assert.equal(updated.status, 0, updated.stderr)
+  assert.doesNotMatch(updated.stdout, /sk-updated-secret/)
+  assert.match(readFileSync(join(destination, '.env'), 'utf8'), /^DEEPSEEK_API_KEY=sk-updated-secret$/m)
+
+  const config = spawnSync(process.execPath, [cli, 'config'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(config.status, 0, config.stderr)
+  assert.match(config.stdout, /默认平台：deepseek · DeepSeek/)
+  assert.match(config.stdout, /安全提示：API Key 内容已隐藏/)
+  assert.doesNotMatch(config.stdout, /sk-updated-secret/)
+
+  const removed = spawnSync(process.execPath, [cli, 'key', 'remove', 'deepseek', '--yes'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(removed.status, 0, removed.stderr)
+  assert.match(removed.stdout, /API Key 已从本机 .env 删除/)
+  assert.match(readFileSync(join(destination, '.env'), 'utf8'), /^DEEPSEEK_API_KEY=$/m)
+})
+
+test('restarts services without rebuilding when requested', () => {
+  const temporary = mkdtempSync(join(tmpdir(), 'scholarseeker-restart-'))
+  const destination = join(temporary, 'project')
+  const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  assert.equal(initialized.status, 0, initialized.stderr)
+  copyFileSync(join(destination, '.env.example'), join(destination, '.env'))
+  copyFileSync(join(destination, 'config_example.yaml'), join(destination, 'config.yaml'))
+
+  const fakeBin = join(temporary, 'bin')
+  mkdirSync(fakeBin)
+  const fakeDocker = join(fakeBin, 'docker')
+  writeFileSync(fakeDocker, '#!/bin/sh\nexit 0\n')
+  chmodSync(fakeDocker, 0o755)
+  const fakeCurl = join(fakeBin, 'curl')
+  writeFileSync(fakeCurl, '#!/bin/sh\nexit 0\n')
+  chmodSync(fakeCurl, 0o755)
+
+  const restarted = spawnSync(process.execPath, [cli, 'restart', '--no-build'], {
+    cwd: destination,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` },
+  })
+  assert.equal(restarted.status, 0, restarted.stderr)
+  assert.match(restarted.stdout, /ScholarSeeker is ready/)
 })
