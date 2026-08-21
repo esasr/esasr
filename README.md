@@ -147,38 +147,9 @@ KIMI_API_KEY=你的_Moonshot_API_Key
 ---
 
 ## 系统架构
-graph TD
-    subgraph 用户交互层 (Vue3)
-        A[查询输入界面] --> B[检索看板/可视化图谱]
-        B --> C[报告预览与导出]
-    end
 
-    subgraph 业务逻辑与调度层 (Python)
-        D[Agent 调度引擎] <--> E[任务队列/异步处理]
-        E <--> F[数据清洗与格式统一]
-        F --> G[报告生成引擎]
-    end
+![ScholarSeeker 系统架构图](scholarseeker-web/public/images/system-architecture.png)
 
-    subgraph 智能决策层 (LLM APIs)
-        H[Qwen API]
-        I[DeepSeek API]
-        J[GPT API]
-    end
-
-    subgraph 外部数据接入层 (Academic APIs)
-        K[OpenAlex API]
-        L[Semantic Scholar API]
-        M[arXiv API]
-    end
-
-    A <--> D
-    D <--> H
-    D <--> I
-    D <--> J
-    D <--> K
-    D <--> L
-    D <--> M
-    G --> C
 ---
 
 ## 核心功能
