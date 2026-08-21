@@ -133,7 +133,10 @@
         <strong>ScholarSeeker</strong>
         <span>面向复杂学术查询的智能论文搜索与推荐系统</span>
       </div>
-      <p>第八届中国研究生人工智能创新大赛 · 企业赛题演示项目</p>
+      <div class="team-credit">
+        <span>PROJECT TEAM · 项目团队</span>
+        <strong>Justifying</strong>
+      </div>
     </footer>
   </div>
 </template>
@@ -284,6 +287,7 @@ h1 span { color: var(--about-blue); }
 
 .about-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 20px; padding: 34px 0 48px; border-top: 1px solid var(--border-color); }
 .about-footer div { display: flex; flex-direction: column; gap: 7px; }
+.about-footer .team-credit { align-items: flex-end; text-align: right; }
 .about-footer strong { color: var(--about-blue); font-size: 20px; }
 .about-footer span, .about-footer p { margin: 0; color: var(--text-secondary); font-size: 12px; }
 
@@ -316,5 +320,6 @@ h1 span { color: var(--about-blue); }
   .feedback-loop { align-items: flex-start; border-radius: 16px; }
   .feedback-loop i { display: none; }
   .about-footer { align-items: flex-start; flex-direction: column; }
+  .about-footer .team-credit { align-items: flex-start; text-align: left; }
 }
 </style>

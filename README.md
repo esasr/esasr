@@ -438,5 +438,7 @@ ScholarSeeker/
 
 科研场景下复杂学术查询的智能论文搜索与推荐
 
-ScholarSeeker Team © 2026
+项目团队：Justifying
+
+Justifying © 2026
 ```
