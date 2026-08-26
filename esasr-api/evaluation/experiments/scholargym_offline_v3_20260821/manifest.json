@@ -1,0 +1,53 @@
+{
+  "createdAt": "2026-08-21T12:02:48.802226+00:00",
+  "status": "complete",
+  "scope": "offline lexical baseline; not an official ScholarGym leaderboard score",
+  "retriever": "SQLite FTS5 BM25-compatible ranking, title weight 1, abstract weight 1",
+  "retrievalStrategy": {
+    "name": "single",
+    "rrfK": null,
+    "routeK": null,
+    "titleWeight": null,
+    "focusedWeight": null
+  },
+  "reranker": {
+    "enabled": true,
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "topN": 20,
+    "device": "cpu",
+    "meanLatencyMs": 285.323
+  },
+  "paperDb": {
+    "path": "evaluation/datasets/scholargym/scholargym_paper_db.json",
+    "sha256": "e1e570321e22bf59784d46a9dd28239350d7ad1ddda213eee2f5730710f239e8",
+    "papers": 570206,
+    "reused": true,
+    "seconds": 0.0
+  },
+  "benchmark": {
+    "path": "evaluation/datasets/scholargym/scholargym_bench.jsonl",
+    "sha256": "869f507eacb7f554b8f4e6dc65ea97b01f95140ba5aa86a5119b330c41b9d551"
+  },
+  "budget": {
+    "apiCalls": 0,
+    "llmCalls": 0,
+    "tokens": 0,
+    "retrieveK": 100
+  },
+  "selection": {
+    "method": "proportional stratified sample",
+    "queries": 200,
+    "seed": 2026,
+    "sources": {
+      "PASA_AutoScholar": 156,
+      "PASA_RealScholar": 4,
+      "LitSearch": 40
+    },
+    "recommendedOutputK": 1,
+    "tuningProtocol": "field weight and output K selected on deterministic hash-split development subset"
+  },
+  "latencyMs": {
+    "mean": 741.704,
+    "p95": 974.301
+  }
+}

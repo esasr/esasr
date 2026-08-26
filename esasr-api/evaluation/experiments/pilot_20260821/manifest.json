@@ -1,0 +1,87 @@
+{
+  "createdAt": "2026-08-21T09:14:38.694839+00:00",
+  "dataset": {
+    "name": "ScholarGym",
+    "path": "/Users/wlei/Documents/Codex/2026-08-21/z/work/experiment-runner/raw/scholargym_bench.jsonl",
+    "sha256": "869f507eacb7f554b8f4e6dc65ea97b01f95140ba5aa86a5119b330c41b9d551",
+    "selection": "stratified random sample without replacement",
+    "perSource": 3,
+    "seed": 2026,
+    "queries": 9
+  },
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "configurations": {
+    "A": {
+      "description": "single planned query, OpenAlex only, no second round",
+      "sources": [
+        "OpenAlex"
+      ],
+      "budget": {
+        "max_queries": 1,
+        "results_per_source": 15,
+        "max_api_calls": 1,
+        "second_round_strategy": "none"
+      }
+    },
+    "C0": {
+      "description": "two planned queries, two sources, no second round",
+      "sources": [
+        "OpenAlex",
+        "Semantic Scholar"
+      ],
+      "budget": {
+        "max_queries": 4,
+        "results_per_source": 15,
+        "max_api_calls": 4,
+        "second_round_strategy": "none"
+      }
+    },
+    "C1": {
+      "description": "two sources with a fixed planned second round",
+      "sources": [
+        "OpenAlex",
+        "Semantic Scholar"
+      ],
+      "budget": {
+        "max_queries": 4,
+        "results_per_source": 15,
+        "max_api_calls": 8,
+        "second_round_strategy": "fixed"
+      }
+    },
+    "D": {
+      "description": "two sources with coverage-gap-driven second round",
+      "sources": [
+        "OpenAlex",
+        "Semantic Scholar"
+      ],
+      "budget": {
+        "max_queries": 4,
+        "results_per_source": 15,
+        "max_api_calls": 8,
+        "second_round_strategy": "coverage"
+      }
+    }
+  },
+  "git": {
+    "commit": "f5245233f5ad1e54fdebeb33e2f49df08234be3b",
+    "branch": "main",
+    "dirtyFiles": [
+      "M README.md",
+      " M scholarseeker-api/evaluation/metrics.py",
+      " M scholarseeker-api/evaluation/sample_gold.jsonl",
+      " M scholarseeker-api/evaluation/sample_predictions.jsonl",
+      " M scholarseeker-api/services/scholar_service.py",
+      " M scholarseeker-api/services/search_pipeline.py",
+      " M scholarseeker-api/services/semantic_scholar_client.py",
+      " M scholarseeker-api/tests/test_evaluation_metrics.py",
+      " M scholarseeker-api/tests/test_search_pipeline.py",
+      " M scholarseeker-api/tools/evaluate_retrieval.py",
+      "?? docs/",
+      "?? scholarseeker-api/tools/compare_experiments.py",
+      "?? scholarseeker-api/tools/run_scholargym_pilot.py"
+    ]
+  },
+  "integrityNote": "Pilot results are real live-API runs; they are not full-benchmark or competition scores."
+}

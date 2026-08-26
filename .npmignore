@@ -4,11 +4,11 @@ config.yaml
 Latex/
 work/
 outputs/
-scholarseeker-api/venv/
-scholarseeker-api/__pycache__/
-scholarseeker-api/**/__pycache__/
-scholarseeker-api/*.db
-scholarseeker-web/node_modules/
-scholarseeker-web/dist/
+esasr-api/venv/
+esasr-api/__pycache__/
+esasr-api/**/__pycache__/
+esasr-api/*.db
+esasr-web/node_modules/
+esasr-web/dist/
 *.log
 *.pyc

@@ -1,4 +1,4 @@
-name: scholarseeker
+name: esasr
 
 services:
   postgres:
@@ -74,7 +74,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: scholarseeker-api/Dockerfile
+      dockerfile: esasr-api/Dockerfile
       args:
         INSTALL_RERANKER: ${INSTALL_RERANKER:-false}
     restart: unless-stopped
@@ -137,7 +137,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: scholarseeker-web/Dockerfile
+      dockerfile: esasr-web/Dockerfile
       args:
         VITE_API_BASE_URL: ""
     restart: unless-stopped

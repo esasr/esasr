@@ -14,3 +14,7 @@ __pycache__/
 Latex/
 outputs/
 tmp/
+
+# ScholarGym local evaluation corpus (large downloaded files)
+esasr-api/evaluation/datasets/scholargym/scholargym_paper_db.json
+esasr-api/evaluation/datasets/scholargym/scholargym_bench.jsonl

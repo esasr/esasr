@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="785.99952pt" height="397.19952pt" viewBox="0 0 785.99952 397.19952" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-08-26T19:55:28.133096</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 397.19952
+L 785.99952 397.19952
+L 785.99952 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 40.378779 182.90498
+L 174.637096 182.90498
+Q 183.89629 182.90498 183.89629 178.311385
+L 183.89629 104.048279
+Q 183.89629 99.454684 174.637096 99.454684
+L 40.378779 99.454684
+Q 31.119585 99.454684 31.119585 104.048279
+L 31.119585 178.311385
+Q 31.119585 182.90498 40.378779 182.90498
+z
+" clip-path="url(#p9a341dd155)" style="fill: #ffffff; stroke: #173f5f; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 248.71065 182.90498
+L 413.832947 182.90498
+Q 423.092141 182.90498 423.092141 178.311385
+L 423.092141 104.048279
+Q 423.092141 99.454684 413.832947 99.454684
+L 248.71065 99.454684
+Q 239.451456 99.454684 239.451456 104.048279
+L 239.451456 178.311385
+Q 239.451456 182.90498 248.71065 182.90498
+z
+" clip-path="url(#p9a341dd155)" style="fill: #fff4f1; stroke: #ed553b; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 503.338491 136.969037
+L 622.164817 136.969037
+Q 631.424012 136.969037 631.424012 132.375443
+L 631.424012 73.424317
+Q 631.424012 68.830723 622.164817 68.830723
+L 503.338491 68.830723
+Q 494.079297 68.830723 494.079297 73.424317
+L 494.079297 132.375443
+Q 494.079297 136.969037 503.338491 136.969037
+z
+" clip-path="url(#p9a341dd155)" style="fill: #ffffff; stroke: #ed553b; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 503.338491 244.152903
+L 622.164817 244.152903
+Q 631.424012 244.152903 631.424012 239.559309
+L 631.424012 180.608183
+Q 631.424012 176.014588 622.164817 176.014588
+L 503.338491 176.014588
+Q 494.079297 176.014588 494.079297 180.608183
+L 494.079297 239.559309
+Q 494.079297 244.152903 503.338491 244.152903
+z
+" clip-path="url(#p9a341dd155)" style="fill: #ffffff; stroke: #173f5f; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 680.806381 190.56097
+L 753.336736 190.56097
+Q 762.59593 190.56097 762.59593 185.967376
+L 762.59593 111.704269
+Q 762.59593 107.110675 753.336736 107.110675
+L 680.806381 107.110675
+Q 671.547187 107.110675 671.547187 111.704269
+L 671.547187 185.967376
+Q 671.547187 190.56097 680.806381 190.56097
+z
+" clip-path="url(#p9a341dd155)" style="fill: #eff7f0; stroke: #3a7d44; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 178.948239 141.179832
+Q 211.673751 141.179832 243.057623 141.179832
+" clip-path="url(#p9a341dd155)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 239.057623 139.179832
+L 243.057623 141.179832
+L 239.057623 143.179832
+z
+" clip-path="url(#p9a341dd155)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 418.030827 132.84441
+Q 458.586347 118.211634 497.879859 104.034202
+" clip-path="url(#p9a341dd155)" style="fill: none; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 493.438494 103.510483
+L 497.879859 104.034202
+L 494.796065 107.273062
+z
+" clip-path="url(#p9a341dd155)" style="fill: #ed553b; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 417.802889 153.783548
+Q 458.58408 181.372672 498.254035 208.210028
+" clip-path="url(#p9a341dd155)" style="fill: none; stroke: #173f5f; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 496.061641 204.312156
+L 498.254035 208.210028
+L 493.820301 207.62522
+z
+" clip-path="url(#p9a341dd155)" style="fill: #173f5f; stroke: #173f5f; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 626.164193 103.974401
+Q 651.486319 120.126317 675.67732 135.556737
+" clip-path="url(#p9a341dd155)" style="fill: none; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 673.380502 131.719469
+L 675.67732 135.556737
+L 671.229415 135.091831
+z
+" clip-path="url(#p9a341dd155)" style="fill: #ed553b; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 625.953209 208.72605
+Q 651.486461 185.200983 676.033022 162.585003
+" clip-path="url(#p9a341dd155)" style="fill: none; stroke: #173f5f; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 671.736089 163.824508
+L 676.033022 162.585003
+L 674.446466 166.766252
+z
+" clip-path="url(#p9a341dd155)" style="fill: #173f5f; stroke: #173f5f; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="392.99976" y="36.254481" transform="rotate(-0 392.99976 36.254481)">置信度门控自适应结果集（CARS）</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="107.507938" y="132.252718" transform="rotate(-0 107.507938 132.252718)">排序候选</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(82.781375 152.271625)">s₁ ≥ s₂ ≥ …</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(71.949344 164.655854)">默认保留第 1 篇</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="331.271798" y="132.252718" transform="rotate(-0 331.271798 132.252718)">第二候选三重门控</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(311.678048 146.756074)">s₂ ≥ 0.60</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(306.124142 158.437177)">s₂/s₁ ≥ 0.85</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(305.848361 170.205781)">s₁-s₂ ≤ 0.10</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="562.751654" y="96.356238" transform="rotate(-0 562.751654 96.356238)">全部满足</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="562.751654" y="117.779194" transform="rotate(-0 562.751654 117.779194)">返回 2 篇</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="562.751654" y="203.540103" transform="rotate(-0 562.751654 203.540103)">任一不满足</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="562.751654" y="224.963059" transform="rotate(-0 562.751654 224.963059)">返回 1 篇</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #3a7d44" x="717.071558" y="139.926755" transform="rotate(-0 717.071558 139.926755)">输出</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(689.562965 160.604178)">平均 1.07 篇</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(678.167652 172.300126)">测试集 F1 0.2571</text>
+   </g>
+   <g id="text_12">
+    <g id="patch_12">
+     <path d="M 237.322221 327.365235
+L 548.677299 327.365235
+Q 552.952299 327.365235 552.952299 323.090235
+L 552.952299 313.1542
+Q 552.952299 308.8792 548.677299 308.8792
+L 237.322221 308.8792
+Q 233.047221 308.8792 233.047221 313.1542
+L 233.047221 323.090235
+Q 233.047221 327.365235 237.322221 327.365235
+z
+" style="fill: #f3f4f6; stroke: #d1d5db; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="392.99976" y="321.095606" transform="rotate(-0 392.99976 321.095606)">开发集：100 条，搜索 8,064 组规则  →  独立测试集：100 条，仅评估一次</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7280" x="392.99976" y="351.719568" transform="rotate(-0 392.99976 351.719568)">规则不新增检索或模型调用；现有配对区间包含 0，因此只报告初步正向趋势</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p9a341dd155">
+   <rect x="7.2" y="7.2" width="771.59952" height="382.79952"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,37 +1,39 @@
 {
-  "name": "scholarseeker-cli",
+  "name": "esasr-cli",
   "version": "1.0.0",
-  "description": "Interactive installer and launcher for ScholarSeeker",
+  "description": "Interactive installer and launcher for ESASR (Evidence-State Adaptive Scholarly Retrieval)",
   "type": "module",
   "bin": {
-    "scholarseeker": "bin/scholarseeker.js"
+    "esasr": "bin/esasr.js"
   },
   "files": [
     "bin/",
     "templates/",
     "scripts/",
-    "scholarseeker-api/*.py",
-    "scholarseeker-api/Dockerfile",
-    "scholarseeker-api/requirements*.txt",
-    "scholarseeker-api/services/*.py",
-    "scholarseeker-api/routers/*.py",
-    "scholarseeker-api/tools/*.py",
-    "scholarseeker-api/tests/*.py",
-    "scholarseeker-api/evaluation/*.py",
-    "scholarseeker-api/evaluation/*.jsonl",
-    "scholarseeker-web/src/",
-    "scholarseeker-web/public/",
-    "scholarseeker-web/Dockerfile",
-    "scholarseeker-web/nginx.conf",
-    "scholarseeker-web/index.html",
-    "scholarseeker-web/env.d.ts",
-    "scholarseeker-web/package*.json",
-    "scholarseeker-web/tsconfig*.json",
-    "scholarseeker-web/vite.config.ts",
+    "esasr-api/*.py",
+    "esasr-api/Dockerfile",
+    "esasr-api/requirements*.txt",
+    "esasr-api/services/*.py",
+    "esasr-api/routers/*.py",
+    "esasr-api/tools/*.py",
+    "esasr-api/tests/*.py",
+    "esasr-api/evaluation/*.py",
+    "esasr-api/evaluation/*.jsonl",
+    "esasr-api/evaluation/*.md",
+    "esasr-web/src/",
+    "esasr-web/public/",
+    "esasr-web/Dockerfile",
+    "esasr-web/nginx.conf",
+    "esasr-web/index.html",
+    "esasr-web/env.d.ts",
+    "esasr-web/package*.json",
+    "esasr-web/tsconfig*.json",
+    "esasr-web/vite.config.ts",
     ".env.example",
     "config_example.yaml",
     "docker-compose.yml",
     "run.sh",
+    "docs/",
     "README.md",
     "LICENSE"
   ],
@@ -50,11 +52,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wanglei1123/ScholarSeeker.git"
+    "url": "git+https://github.com/wanglei1123/ESASR.git"
   },
-  "homepage": "https://github.com/wanglei1123/ScholarSeeker#readme",
+  "homepage": "https://github.com/wanglei1123/ESASR#readme",
   "bugs": {
-    "url": "https://github.com/wanglei1123/ScholarSeeker/issues"
+    "url": "https://github.com/wanglei1123/ESASR/issues"
   },
   "license": "MIT"
 }

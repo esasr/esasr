@@ -1,4 +1,6 @@
-# ScholarSeeker
+# ESASR：证据状态驱动的自适应学术检索框架
+
+**Evidence-State Adaptive Scholarly Retrieval (ESASR)**
 
 > 面向复杂学术查询的智能论文搜索与推荐系统  
 > Intelligent Academic Paper Search and Recommendation System for Complex Research Queries
@@ -11,13 +13,13 @@ Engine。项目不要求用户预先安装 Python、PostgreSQL、Redis 或 Neo4j
 仓库发布到 GitHub 后，可以直接从 GitHub 地址全局安装 CLI：
 
 ```bash
-npm install -g git+https://github.com/wanglei1123/ScholarSeeker.git
-scholarseeker init my-scholarseeker
-cd my-scholarseeker
-scholarseeker start
+npm install -g git+https://github.com/wanglei1123/ESASR.git
+esasr init ESASR
+cd ESASR
+esasr start
 ```
 
-`scholarseeker init` 会启动交互式配置向导：
+`esasr init` 会启动交互式配置向导：
 
 1. 使用 ↑/↓ 选择 DeepSeek、Qwen、OpenAI、Kimi 或自定义兼容平台，按空格确认；
 2. 隐藏输入 API Key；
@@ -30,41 +32,56 @@ scholarseeker start
 随时可以重新配置或检查环境：
 
 ```bash
-scholarseeker setup
-scholarseeker config
-scholarseeker doctor
-scholarseeker status
-scholarseeker logs api web
-scholarseeker stop
+esasr setup
+esasr config
+esasr doctor
+esasr status
+esasr logs api web
+esasr stop
 ```
 
 ### 常用终端命令
 
 | 命令 | 作用 |
 | --- | --- |
-| `scholarseeker start` / `scholarseeker up` | 启动服务 |
-| `scholarseeker stop` / `scholarseeker down` | 终止服务 |
-| `scholarseeker restart --no-build` | 不重新构建镜像并重启服务 |
-| `scholarseeker status` | 查看容器运行状态 |
-| `scholarseeker logs api web` | 查看 API 和 Web 日志 |
-| `scholarseeker config` | 安全显示当前配置，不输出 Key 内容 |
-| `scholarseeker key list` | 查看各平台 API Key 配置状态 |
-| `scholarseeker key add deepseek` | 添加 DeepSeek API Key |
-| `scholarseeker key update deepseek` | 修改 DeepSeek API Key |
-| `scholarseeker key set openai` | 添加或覆盖 OpenAI API Key |
-| `scholarseeker key remove openai` | 删除 OpenAI API Key（会确认） |
-| `scholarseeker provider list` | 列出平台、Key 状态和默认平台 |
-| `scholarseeker provider current` | 查看当前默认平台 |
-| `scholarseeker provider use qwen` | 将 Qwen 设为默认平台 |
+| `esasr start` / `esasr up` | 启动服务 |
+| `esasr stop` / `esasr down` | 终止服务 |
+| `esasr restart --no-build` | 不重新构建镜像并重启服务 |
+| `esasr status` | 查看容器运行状态 |
+| `esasr logs api web` | 查看 API 和 Web 日志 |
+| `esasr config` | 安全显示当前配置，不输出 Key 内容 |
+| `esasr agent list` | 查看各平台 API Key 配置状态 |
+| `esasr agent add deepseek` | 添加 DeepSeek API Key |
+| `esasr agent update deepseek` | 修改 DeepSeek API Key |
+| `esasr agent set openai` | 添加或覆盖 OpenAI API Key |
+| `esasr agent remove openai` | 删除 OpenAI API Key（会确认） |
+| `esasr academic list` | 查看 Semantic Scholar 与 OpenAlex Key 状态 |
+| `esasr academic add semantic-scholar` | 添加 Semantic Scholar API Key |
+| `esasr academic set openalex` | 添加或覆盖 OpenAlex API Key 与联系邮箱 |
+| `esasr academic remove openalex --yes` | 删除 OpenAlex API Key 与联系邮箱 |
+| `esasr provider list` | 列出平台、Key 状态和默认平台 |
+| `esasr provider current` | 查看当前默认平台 |
+| `esasr provider use qwen` | 将 Qwen 设为默认平台 |
 
-支持的平台名称为 `deepseek`、`qwen`、`openai`、`kimi` 和 `custom`。API Key
-使用隐藏输入并仅写入当前项目的 `.env`。修改 Key 或默认平台后，运行
-`scholarseeker restart --no-build` 使配置生效。
+支持的 Agent 平台名称为 `deepseek`、`qwen`、`openai`、`kimi` 和 `custom`；学术搜索数据源名称为 `semantic-scholar`（可简写为 `s2`）和 `openalex`。两类 API Key 均使用隐藏输入并仅写入当前项目的 `.env`。
 
-在 macOS 上，如果执行 `scholarseeker start` 时 Docker Desktop 尚未运行，CLI
+推荐配置顺序：
+
+```bash
+esasr agent set deepseek
+esasr provider use deepseek
+esasr academic set semantic-scholar
+esasr academic set openalex
+esasr config
+esasr restart --no-build
+```
+
+`esasr config` 只显示是否已配置，不显示任何 Key 内容。修改 Key 或默认平台后，需要重启服务使配置生效。
+
+在 macOS 上，如果执行 `esasr start` 时 Docker Desktop 尚未运行，CLI
 会询问是否自动启动它，并等待 Docker daemon 就绪后继续部署。
 
-启动时终端会显示 Codex 风格的 `ScholarSeeker` 品牌卡片与动态扫光状态。若 8080、8000、5432、6379、7474
+启动时终端会显示 Codex 风格的 `ESASR` 品牌卡片与动态扫光状态。若 8080、8000、5432、6379、7474
 或 7687 已被其他程序占用，CLI 会自动寻找相邻空闲端口、保存到 `.env`，再继续
 启动，避免 Docker 因 `port is already allocated` 中断。
 
@@ -72,13 +89,13 @@ scholarseeker stop
 
 ```bash
 npm exec --yes \
-  --package=git+https://github.com/wanglei1123/ScholarSeeker.git \
-  -- scholarseeker init my-scholarseeker
+  --package=git+https://github.com/wanglei1123/ESASR.git \
+  -- esasr init ESASR
 ```
 
 ## 项目简介
 
-ScholarSeeker 是面向科研场景设计的智能学术搜索系统，旨在解决传统关键词检索在复杂科研问题下召回率不足、语义理解能力有限以及结果组织能力弱的问题。
+证据状态驱动的自适应学术检索框架（Evidence-State Adaptive Scholarly Retrieval, ESASR）面向科研场景，旨在解决传统关键词检索在复杂科研问题下召回不足、语义理解有限以及结果组织能力弱的问题。
 
 系统基于大语言模型（LLM）构建多阶段 Academic Search Agent，能够自动完成：
 
@@ -116,7 +133,7 @@ ScholarSeeker 是面向科研场景设计的智能学术搜索系统，旨在解
 - Neo4j Browser：`http://127.0.0.1:7474`
 
 建议首次启动前在 `.env` 中填写 LLM 和学术 API 密钥。没有 LLM 密钥时项目
-仍可启动，查询规划会自动使用规则回退。
+仍可启动；前端会提供“本地规则 · heuristic”，规划不产生远端 Token 消耗。
 
 使用 Kimi 时，在 `.env` 中填写：
 
@@ -148,7 +165,7 @@ KIMI_API_KEY=你的_Moonshot_API_Key
 
 ## 系统架构
 
-![ScholarSeeker 系统架构图](scholarseeker-web/public/images/system-architecture.png)
+![ESASR 系统架构图](esasr-web/public/images/system-architecture.png)
 
 ---
 
@@ -264,7 +281,7 @@ LLM Relevance Judge
 大模型；启用方式：
 
 ```bash
-cd scholarseeker-api
+cd esasr-api
 ./venv/bin/pip install -r requirements-reranker.txt
 ```
 
@@ -274,34 +291,67 @@ cd scholarseeker-api
 ranking:
   cross_encoder:
     enabled: true
-    model: BAAI/bge-reranker-base
-    top_n: 40
+    model: cross-encoder/ms-marco-MiniLM-L6-v2
+    top_n: 20
+    threshold: 0.0
+    adaptive_selector:
+      enabled: true
+      max_k: 2
+      min_score: 0.60
+      min_ratio: 0.85
+      max_drop: 0.10
 ```
 
 模型不可用或推理失败时，系统会自动回退到 RRF 融合排序，并在接口的
 `metrics.reranker` 和检索轨迹中记录原因。
 
-### 离线 F1 评测
+自适应选择器只读取已经生成的精排分数：默认保留第一名，只有第二名同时满足
+绝对置信度、相对第一名置信度与相邻分差三个条件时才扩展为两篇，因此不会新增
+API、LLM 或 Cross Encoder 调用。阈值来自冻结开发集，不能在测试集上重新调整。
 
-Gold 与预测文件均采用 JSONL 格式，可使用 DOI、论文 ID 或标题匹配：
+### 可复现实验与离线评测
+
+Gold 与预测文件均采用 JSONL 格式。论文优先使用 DOI 匹配，其次使用
+OpenAlex/Semantic Scholar ID 和规范化标题；Gold 可增加分级相关性、约束及
+学科/语言/难度标签，预测可携带 Token、API 调用、延时、轨迹和关系图：
 
 ```json
-{"id":"q1","query":"检索问题","relevant":[{"doi":"10.xxxx/xxx"},{"title":"Paper title"}]}
-{"id":"q1","predicted":[{"doi":"10.xxxx/xxx"},{"title":"Another title"}]}
+{"id":"q1","query":"检索问题","domain":"medicine","constraints":{"year_from":2022},"relevant":[{"doi":"10.xxxx/xxx","relevance":2}]}
+{"id":"q1","constraints":{"year_from":2022},"predicted":[{"doi":"10.xxxx/xxx","title":"Paper title"}],"metrics":{"apiCalls":4,"llmTokens":180,"totalDurationMs":1250}}
 ```
 
 执行评测：
 
 ```bash
-cd scholarseeker-api
+cd esasr-api
 ./venv/bin/python tools/evaluate_retrieval.py \
   --gold evaluation/sample_gold.jsonl \
   --predictions evaluation/sample_predictions.jsonl \
-  --k 20 \
+  --k 5 --k 10 --k 20 \
+  --bootstrap-samples 5000 \
   --out evaluation/report.json
 ```
 
-报告同时包含 Macro/Micro Precision@K、Recall@K、F1@K、TP/FP/FN 和逐查询结果。
+报告包含 Macro/Micro Precision、Recall、F1，MAP、MRR、nDCG，bootstrap
+置信区间，约束槽位 F1，结构化字段/证据覆盖率，以及 API/HTTP/Token/延时的
+均值、P95 和单位真阳性成本。
+
+比较 A-E 等预算消融：
+
+```bash
+cd esasr-api
+./venv/bin/python tools/compare_experiments.py \
+  --gold evaluation/gold_test.jsonl \
+  --run A=evaluation/predictions_A.jsonl \
+  --run D=evaluation/predictions_D.jsonl \
+  --run E=evaluation/predictions_E.jsonl \
+  --out-json evaluation/experiments.json \
+  --out-csv evaluation/leaderboard.csv \
+  --out-md evaluation/leaderboard.md
+```
+
+完整的 Gold Set 构建、指标解释、等预算消融与结果报告规范见
+[实验与评测协议](docs/EVALUATION.md)。
 
 ---
 
@@ -368,10 +418,10 @@ cd scholarseeker-api
 ## 项目结构
 
 ```text
-ScholarSeeker/
+ESASR/                    # 项目根目录，与 GitHub 仓库同名
 
-├── scholarseeker-web/      # Vue3 Frontend
-├── scholarseeker-api/         # FastAPI Backend
+├── esasr-web/      # Vue3 Frontend
+├── esasr-api/         # FastAPI Backend
 └── README.md
 ```
 
@@ -380,13 +430,18 @@ ScholarSeeker/
 
 ## 创新点
 
-- 基于 LLM 的复杂学术查询理解
-- Query Decomposition 查询分解机制
-- 多源学术检索融合
-- Citation Expansion 引文扩展搜索
-- 多阶段智能排序
-- 科研知识图谱可视化
-- 面向科研场景的结构化结果生成
+项目的主线不是堆叠 LLM、向量库和知识图谱，而是把复杂学术检索改造成一个
+**由证据状态驱动的预算决策过程**：
+
+1. **约束编译**：把主题、方法、数据集、年份、Venue、开放获取等自然语言要求转成可执行计划，降低查询分解时的语义漂移。
+2. **证据缺口路由**：首轮后逐项诊断约束覆盖，只在确有缺口且预算允许时生成补检查询；每次扩展均记录原因、调用量和覆盖变化。
+3. **置信度校准自适应结果集（CARS）**：不固定返回 K 篇，而是依据精排分数分布在 Top-1/Top-2 间选择，抑制“为召回而无差别加结果”造成的误报。
+4. **可审计输出**：推荐理由绑定命中词项、子查询和来源；关系图区分真实引用与算法相关，降级与失败不被隐藏。
+
+在冻结 V3 候选的 100 条独立测试查询上，固定 Top-1/2/3/5 的 Macro F1 分别为
+0.2475/0.1986/0.1665/0.1304；CARS 为 0.2571，平均返回 1.07 篇。相对 Top-1 的
+配对差值为 0.0097，95% CI [0.0000, 0.0267]，因此当前只主张初步正向趋势，
+不宣称统计显著，也不把该结果外推为在线补检已经有效。
 
 ---
 
@@ -398,6 +453,25 @@ ScholarSeeker/
 - 研究热点分析
 - 研究方向发现
 - 学术知识探索
+
+---
+
+## 可信运行边界
+
+- 在线主链路使用 OpenAlex 与 Semantic Scholar；任一来源失败会写入运行轨迹，离线演示记录不会进入完整检索的计分候选池。
+- 单独调用兼容搜索接口时允许回退到内置演示记录，但记录会明确标注 `Offline Demo`、`offline=true` 和 `offline_fallback`，不会伪装成在线结果。
+- 缺失年份、摘要或 DOI 保持缺失并通过 `metadataMissing` 暴露，不使用固定年份或相关度补值。
+- 关系图区分有方向的 `CITES` 与无方向的 `RELATED`；OpenAlex `related_works` 不再解释为被引关系。
+- `/health` 会逐项检查 PostgreSQL、Redis 与 Neo4j；依赖异常时返回 HTTP 503 和 `overall=degraded`。
+- BibTeX/Markdown 导出优先使用 DOI，其次使用来源提供的 URL，不为 Semantic Scholar 或离线记录拼接 OpenAlex 地址。
+
+验证命令：
+
+```bash
+cd esasr-api && ./venv/bin/python -m unittest discover -s tests -v  # 48 项
+cd ../esasr-web && npm run build
+cd .. && npm test && npm run pack:check
+```
 
 ---
 

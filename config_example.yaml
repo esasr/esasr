@@ -1,5 +1,5 @@
 # =============================================================================
-# ScholarSeeker — API 配置模板
+# ESASR — API 配置模板
 # =============================================================================
 # 请将此文件复制并重命名为 config.yaml，然后填入真实的密码和 API Keys。
 # config.yaml 将会被 Git 忽略。
@@ -7,7 +7,7 @@
 
 # ── 应用基础配置 ──────────────────────────────────────────────────────────────
 app:
-  name: ScholarSeeker
+  name: ESASR
   version: "1.0.0"
   debug: true
 
@@ -53,11 +53,21 @@ auth:
 ranking:
   cross_encoder:
     enabled: false
-    model: BAAI/bge-reranker-base
-    top_n: 40
-    batch_size: 8
+    # 轻量本地精排模型；仅处理融合后的少量候选，不消耗 LLM Token。
+    model: cross-encoder/ms-marco-MiniLM-L6-v2
+    top_n: 20
+    batch_size: 16
     max_length: 512
     device: auto
+    # 兼容旧版绝对阈值门控；设为 0 时由下方 CARS 规则决定结果集大小。
+    threshold: 0.0
+    # V5 开发集校准的置信度自适应结果集；只消费现有精排分数，不增加模型调用。
+    adaptive_selector:
+      enabled: true
+      max_k: 2
+      min_score: 0.60
+      min_ratio: 0.85
+      max_drop: 0.10
 
 # ── LLM 大语言模型配置 ────────────────────────────────────────────────────────
 llm:

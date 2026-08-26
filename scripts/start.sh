@@ -94,13 +94,13 @@ API_PORT_VALUE="${API_PORT:-$(sed -n 's/^API_PORT=//p' .env | tail -n 1)}"
 WEB_PORT_VALUE="${WEB_PORT_VALUE:-8080}"
 API_PORT_VALUE="${API_PORT_VALUE:-8000}"
 
-echo "Waiting for ScholarSeeker services..."
+echo "Waiting for ESASR services..."
 deadline=$((SECONDS + ${START_TIMEOUT:-180}))
 while (( SECONDS < deadline )); do
   if curl -fsS "http://127.0.0.1:${API_PORT_VALUE}/health" >/dev/null 2>&1 \
     && curl -fsS "http://127.0.0.1:${WEB_PORT_VALUE}/health" >/dev/null 2>&1; then
     echo
-    echo "ScholarSeeker is ready."
+    echo "ESASR is ready."
     echo "Web:       http://127.0.0.1:${WEB_PORT_VALUE}"
     echo "API docs:  http://127.0.0.1:${API_PORT_VALUE}/docs"
     echo "Neo4j:     http://127.0.0.1:${NEO4J_HTTP_PORT:-7474}"

@@ -15,16 +15,17 @@ import { join, resolve } from 'node:path'
 import test from 'node:test'
 
 const root = resolve(import.meta.dirname, '..')
-const cli = join(root, 'bin', 'scholarseeker.js')
+const cli = join(root, 'bin', 'esasr.js')
 
 test('prints CLI help', () => {
   const result = spawnSync(process.execPath, [cli, '--help'], { encoding: 'utf8' })
   assert.equal(result.status, 0)
-  assert.match(result.stdout, /scholarseeker init/)
-  assert.match(result.stdout, /scholarseeker setup/)
-  assert.match(result.stdout, /scholarseeker restart/)
-  assert.match(result.stdout, /scholarseeker key add/)
-  assert.match(result.stdout, /scholarseeker provider use/)
+  assert.match(result.stdout, /esasr init/)
+  assert.match(result.stdout, /esasr setup/)
+  assert.match(result.stdout, /esasr restart/)
+  assert.match(result.stdout, /esasr academic add/)
+  assert.match(result.stdout, /esasr agent add/)
+  assert.match(result.stdout, /esasr provider use/)
 })
 
 test('shows the competition project banner when initializing', () => {
@@ -72,8 +73,8 @@ test('creates a clean project without copying local secrets or dependencies', ()
   assert.equal(existsSync(join(destination, '.gitignore')), true)
   assert.equal(existsSync(join(destination, '.env')), false)
   assert.equal(existsSync(join(destination, 'config.yaml')), false)
-  assert.equal(existsSync(join(destination, 'scholarseeker-api', 'venv')), false)
-  assert.equal(existsSync(join(destination, 'scholarseeker-web', 'node_modules')), false)
+  assert.equal(existsSync(join(destination, 'esasr-api', 'venv')), false)
+  assert.equal(existsSync(join(destination, 'esasr-web', 'node_modules')), false)
 })
 
 test('explains how to recover when Docker is installed but not running', () => {
@@ -143,7 +144,7 @@ test('moves an occupied web port and continues startup', async (context) => {
   const saved = readFileSync(envPath, 'utf8')
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /Waiting for ScholarSeeker services/)
+  assert.match(result.stdout, /Waiting for ESASR services/)
   assert.match(result.stdout, new RegExp(`Web 端口 ${occupiedPort} 已被占用，自动改用`))
   assert.doesNotMatch(saved, new RegExp(`^WEB_PORT=${occupiedPort}$`, 'm'))
 })
@@ -189,9 +190,9 @@ test('renders a Codex-style startup card and shimmer status', async () => {
   assert.match(plainOutput, /第八届中国研究生人工智能创新大赛企业赛题/)
   assert.match(plainOutput, /科研场景下复杂学术查询的智能论文搜索与推荐演示项目/)
   assert.doesNotMatch(plainOutput, /企业赛题-科研场景/)
-  assert.match(plainOutput, />_ ScholarSeeker/)
-  assert.match(plainOutput, /Building ScholarSeeker services/)
-  assert.match(plainOutput, /ScholarSeeker services ready/)
+  assert.match(plainOutput, />_ ESASR/)
+  assert.match(plainOutput, /Building ESASR services/)
+  assert.match(plainOutput, /ESASR services ready/)
   assert.doesNotMatch(plainOutput, /Compose can now delegate builds/)
 })
 
@@ -204,16 +205,16 @@ test('adds, updates, lists, selects, and removes provider API keys safely', () =
   })
   assert.equal(initialized.status, 0, initialized.stderr)
 
-  const added = spawnSync(process.execPath, [cli, 'key', 'add', 'deepseek'], {
+  const added = spawnSync(process.execPath, [cli, 'agent', 'add', 'deepseek'], {
     cwd: destination,
     encoding: 'utf8',
-    env: { ...process.env, SCHOLARSEEKER_API_KEY: 'sk-added-secret' },
+    env: { ...process.env, ESASR_AGENT_API_KEY: 'sk-added-secret' },
   })
   assert.equal(added.status, 0, added.stderr)
   assert.doesNotMatch(added.stdout, /sk-added-secret/)
   assert.match(readFileSync(join(destination, '.env'), 'utf8'), /^DEEPSEEK_API_KEY=sk-added-secret$/m)
 
-  const listed = spawnSync(process.execPath, [cli, 'key', 'list'], {
+  const listed = spawnSync(process.execPath, [cli, 'agent', 'list'], {
     cwd: destination,
     encoding: 'utf8',
   })
@@ -228,10 +229,10 @@ test('adds, updates, lists, selects, and removes provider API keys safely', () =
   assert.equal(selected.status, 0, selected.stderr)
   assert.match(selected.stdout, /默认大模型平台已切换为 DeepSeek/)
 
-  const updated = spawnSync(process.execPath, [cli, 'key', 'update', 'deepseek'], {
+  const updated = spawnSync(process.execPath, [cli, 'agent', 'update', 'deepseek'], {
     cwd: destination,
     encoding: 'utf8',
-    env: { ...process.env, SCHOLARSEEKER_API_KEY: 'sk-updated-secret' },
+    env: { ...process.env, ESASR_AGENT_API_KEY: 'sk-updated-secret' },
   })
   assert.equal(updated.status, 0, updated.stderr)
   assert.doesNotMatch(updated.stdout, /sk-updated-secret/)
@@ -246,13 +247,74 @@ test('adds, updates, lists, selects, and removes provider API keys safely', () =
   assert.match(config.stdout, /安全提示：API Key 内容已隐藏/)
   assert.doesNotMatch(config.stdout, /sk-updated-secret/)
 
-  const removed = spawnSync(process.execPath, [cli, 'key', 'remove', 'deepseek', '--yes'], {
+  const removed = spawnSync(process.execPath, [cli, 'agent', 'remove', 'deepseek', '--yes'], {
     cwd: destination,
     encoding: 'utf8',
   })
   assert.equal(removed.status, 0, removed.stderr)
   assert.match(removed.stdout, /API Key 已从本机 .env 删除/)
   assert.match(readFileSync(join(destination, '.env'), 'utf8'), /^DEEPSEEK_API_KEY=$/m)
+})
+
+test('configures and removes academic search API keys safely', () => {
+  const temporary = mkdtempSync(join(tmpdir(), 'esasr-academic-key-management-'))
+  const destination = join(temporary, 'project')
+  const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  assert.equal(initialized.status, 0, initialized.stderr)
+
+  const semanticAdded = spawnSync(process.execPath, [cli, 'academic', 'add', 's2'], {
+    cwd: destination,
+    encoding: 'utf8',
+    env: { ...process.env, ESASR_ACADEMIC_API_KEY: 's2-secret' },
+  })
+  assert.equal(semanticAdded.status, 0, semanticAdded.stderr)
+  assert.doesNotMatch(semanticAdded.stdout, /s2-secret/)
+
+  const openAlexAdded = spawnSync(process.execPath, [cli, 'academic', 'set', 'openalex'], {
+    cwd: destination,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ESASR_ACADEMIC_API_KEY: 'openalex-secret',
+      ESASR_OPENALEX_EMAIL: 'research@example.com',
+    },
+  })
+  assert.equal(openAlexAdded.status, 0, openAlexAdded.stderr)
+  assert.doesNotMatch(openAlexAdded.stdout, /openalex-secret/)
+
+  const envContent = readFileSync(join(destination, '.env'), 'utf8')
+  assert.ok(envContent.includes('SEMANTIC_SCHOLAR_API_KEY=s2-secret'))
+  assert.ok(envContent.includes('OPENALEX_API_KEY=openalex-secret'))
+  assert.ok(envContent.includes('OPENALEX_EMAIL=research@example.com'))
+
+  const listed = spawnSync(process.execPath, [cli, 'academic', 'list'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(listed.status, 0, listed.stderr)
+  assert.match(listed.stdout, /Semantic Scholar\s+✓ 已配置 Key/)
+  assert.match(listed.stdout, /OpenAlex\s+✓ 已配置 Key · 联系邮箱已配置/)
+  assert.doesNotMatch(listed.stdout, /s2-secret|openalex-secret/)
+
+  const config = spawnSync(process.execPath, [cli, 'config'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(config.status, 0, config.stderr)
+  assert.match(config.stdout, /已配置学术搜索 Key：semantic-scholar、openalex/)
+  assert.doesNotMatch(config.stdout, /s2-secret|openalex-secret/)
+
+  const removed = spawnSync(process.execPath, [cli, 'academic', 'remove', 'openalex', '--yes'], {
+    cwd: destination,
+    encoding: 'utf8',
+  })
+  assert.equal(removed.status, 0, removed.stderr)
+  const removedEnv = readFileSync(join(destination, '.env'), 'utf8')
+  assert.ok(removedEnv.includes('OPENALEX_API_KEY='))
+  assert.ok(removedEnv.includes('OPENALEX_EMAIL='))
 })
 
 test('restarts services without rebuilding when requested', () => {
@@ -282,5 +344,5 @@ test('restarts services without rebuilding when requested', () => {
     env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` },
   })
   assert.equal(restarted.status, 0, restarted.stderr)
-  assert.match(restarted.stdout, /ScholarSeeker is ready/)
+  assert.match(restarted.stdout, /ESASR is ready/)
 })

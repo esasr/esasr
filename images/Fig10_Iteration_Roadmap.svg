@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="814.79952pt" height="382.79952pt" viewBox="0 0 814.79952 382.79952" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-08-26T19:55:30.256227</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 382.79952
+L 814.79952 382.79952
+L 814.79952 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 97.241282 169.295789
+Q 147.267285 169.295789 195.057219 169.295789
+" clip-path="url(#pab7a68cfb8)" style="fill: none; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 191.057219 167.295789
+L 195.057219 169.295789
+L 191.057219 171.295789
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #d1d5db; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 249.317191 169.295789
+Q 299.343194 169.295789 347.133128 169.295789
+" clip-path="url(#pab7a68cfb8)" style="fill: none; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 343.133128 167.295789
+L 347.133128 169.295789
+L 343.133128 171.295789
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #d1d5db; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 401.3931 169.295789
+Q 451.419102 169.295789 499.209037 169.295789
+" clip-path="url(#pab7a68cfb8)" style="fill: none; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 495.209037 167.295789
+L 499.209037 169.295789
+L 495.209037 171.295789
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #d1d5db; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 553.469008 169.295789
+Q 603.495011 169.295789 651.284946 169.295789
+" clip-path="url(#pab7a68cfb8)" style="fill: none; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 647.284946 167.295789
+L 651.284946 169.295789
+L 647.284946 171.295789
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #d1d5db; stroke: #d1d5db; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="407.39976" y="35.490981" transform="rotate(-0 407.39976 35.490981)">技术迭代：以可证伪实验收敛到最终方案</text>
+   </g>
+   <g id="patch_6">
+    <path d="M 71.231962 179.242576
+C 76.963209 179.242576 82.460492 178.19452 86.513096 176.329229
+C 90.5657 174.463939 92.842749 171.933708 92.842749 169.295789
+C 92.842749 166.65787 90.5657 164.127638 86.513096 162.262348
+C 82.460492 160.397058 76.963209 159.349002 71.231962 159.349002
+C 65.500714 159.349002 60.003432 160.397058 55.950828 162.262348
+C 51.898223 164.127638 49.621175 166.65787 49.621175 169.295789
+C 49.621175 171.933708 51.898223 174.463939 55.950828 176.329229
+C 60.003432 178.19452 65.500714 179.242576 71.231962 179.242576
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #20639b; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #20639b" x="71.231962" y="120.697698" transform="rotate(-0 71.231962 120.697698)">标题偏置暴露</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="71.231962" y="87.024715" transform="rotate(-0 71.231962 87.024715)">F1 0.1862</text>
+   </g>
+   <g id="patch_7">
+    <path d="M 223.30787 179.242576
+C 229.039118 179.242576 234.5364 178.19452 238.589004 176.329229
+C 242.641609 174.463939 244.918657 171.933708 244.918657 169.295789
+C 244.918657 166.65787 242.641609 164.127638 238.589004 162.262348
+C 234.5364 160.397058 229.039118 159.349002 223.30787 159.349002
+C 217.576623 159.349002 212.07934 160.397058 208.026736 162.262348
+C 203.974132 164.127638 201.697083 166.65787 201.697083 169.295789
+C 201.697083 171.933708 203.974132 174.463939 208.026736 176.329229
+C 212.07934 178.19452 217.576623 179.242576 223.30787 179.242576
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #20639b; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #20639b" x="223.30787" y="223.884446" transform="rotate(-0 223.30787 223.884446)">等权词法修正</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="223.30787" y="263.856484" transform="rotate(-0 223.30787 263.856484)">F1 0.2466</text>
+   </g>
+   <g id="patch_8">
+    <path d="M 375.383779 179.242576
+C 381.115027 179.242576 386.612309 178.19452 390.664913 176.329229
+C 394.717517 174.463939 396.994566 171.933708 396.994566 169.295789
+C 396.994566 166.65787 394.717517 164.127638 390.664913 162.262348
+C 386.612309 160.397058 381.115027 159.349002 375.383779 159.349002
+C 369.652531 159.349002 364.155249 160.397058 360.102645 162.262348
+C 356.050041 164.127638 353.772992 166.65787 353.772992 169.295789
+C 353.772992 171.933708 356.050041 174.463939 360.102645 176.329229
+C 364.155249 178.19452 369.652531 179.242576 375.383779 179.242576
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #ed553b; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="375.383779" y="120.697698" transform="rotate(-0 375.383779 120.697698)">局部语义精排</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="375.383779" y="87.024715" transform="rotate(-0 375.383779 87.024715)">F1 0.2649</text>
+   </g>
+   <g id="patch_9">
+    <path d="M 527.459688 179.242576
+C 533.190936 179.242576 538.688218 178.19452 542.740822 176.329229
+C 546.793426 174.463939 549.070475 171.933708 549.070475 169.295789
+C 549.070475 166.65787 546.793426 164.127638 542.740822 162.262348
+C 538.688218 160.397058 533.190936 159.349002 527.459688 159.349002
+C 521.72844 159.349002 516.231158 160.397058 512.178554 162.262348
+C 508.12595 164.127638 505.848901 166.65787 505.848901 169.295789
+C 505.848901 171.933708 508.12595 174.463939 512.178554 176.329229
+C 516.231158 178.19452 521.72844 179.242576 527.459688 179.242576
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #6b7280; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7280" x="527.459688" y="223.954212" transform="rotate(-0 527.459688 223.954212)">多路融合负结果</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(506.070586 258.239238)">F1 0.2562</text>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(503.709688 269.47373)">未进入主线</text>
+   </g>
+   <g id="patch_10">
+    <path d="M 679.535597 179.242576
+C 685.266845 179.242576 690.764127 178.19452 694.816731 176.329229
+C 698.869335 174.463939 701.146384 171.933708 701.146384 169.295789
+C 701.146384 166.65787 698.869335 164.127638 694.816731 162.262348
+C 690.764127 160.397058 685.266845 159.349002 679.535597 159.349002
+C 673.804349 159.349002 668.307067 160.397058 664.254463 162.262348
+C 660.201859 164.127638 657.92481 166.65787 657.92481 169.295789
+C 657.92481 171.933708 660.201859 174.463939 664.254463 176.329229
+C 668.307067 178.19452 673.804349 179.242576 679.535597 179.242576
+z
+" clip-path="url(#pab7a68cfb8)" style="fill: #ed553b; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="679.535597" y="120.802346" transform="rotate(-0 679.535597 120.802346)">自适应结果集</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(647.326886 81.887386)">测试 F1 0.2571</text>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(654.722042 93.112971)">平均 1.07篇</text>
+   </g>
+   <g id="text_12">
+    <g id="patch_11">
+     <path d="M 217.39976 337.661207
+L 597.39976 337.661207
+Q 601.67476 337.661207 601.67476 333.386207
+L 601.67476 323.384859
+Q 601.67476 319.109859 597.39976 319.109859
+L 217.39976 319.109859
+Q 213.12476 319.109859 213.12476 323.384859
+L 213.12476 333.386207
+Q 213.12476 337.661207 217.39976 337.661207
+z
+" style="fill: #f3f4f6; stroke: #d1d5db; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="407.39976" y="331.391578" transform="rotate(-0 407.39976 331.391578)">选择准则：同数据、同候选预算、同指标；正向结果进入最终主线，负结果保留为消融证据</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pab7a68cfb8">
+   <rect x="7.2" y="7.2" width="800.39952" height="368.39952"/>
+  </clipPath>
+ </defs>
+</svg>
