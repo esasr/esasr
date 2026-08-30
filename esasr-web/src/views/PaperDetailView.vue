@@ -150,15 +150,19 @@ async function initGraph() {
           },
         }
       }),
-      edges: (data.data.edges || []).map((edge: any) => ({
-        ...edge,
-        data: { ...edge.data, relation: edge.type || 'RELATED' },
-        style: {
-          ...edge.style,
-          endArrow: edge.type === 'CITES',
-          lineDash: edge.type === 'RELATED' ? [5, 4] : undefined,
-        },
-      })),
+      edges: (data.data.edges || []).map((edge: any) => {
+        const { type: relationType = 'RELATED', ...edgeDefinition } = edge
+        return {
+          ...edgeDefinition,
+          type: 'line',
+          data: { ...edge.data, relation: relationType },
+          style: {
+            ...edge.style,
+            endArrow: relationType === 'CITES',
+            lineDash: relationType === 'RELATED' ? [5, 4] : undefined,
+          },
+        }
+      }),
     }
     graphInstance = new Graph({
       container: graphContainer.value,

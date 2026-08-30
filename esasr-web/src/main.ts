@@ -11,6 +11,18 @@ import i18n from './locales'
 
 import './assets/main.scss'
 
+// A browser may keep an older HTML shell while a deployment replaces its
+// content-hashed lazy chunks. Recover once by loading the current asset map.
+const staleChunkRecoveryKey = 'esasr:stale-chunk-recovery'
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault()
+  const lastRecovery = Number(sessionStorage.getItem(staleChunkRecoveryKey) || 0)
+  if (Date.now() - lastRecovery > 15_000) {
+    sessionStorage.setItem(staleChunkRecoveryKey, String(Date.now()))
+    window.location.reload()
+  }
+})
+
 const app = createApp(App)
 const pinia = createPinia()
 
