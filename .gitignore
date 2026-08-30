@@ -5,7 +5,7 @@ output
 .DS_Store
 node_modules/
 dist/
-images/
+images
 venv/
 Latex
 __pycache__/
