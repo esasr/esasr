@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
+import { Reading } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { usePapersStore } from '@/stores/papers'
 
@@ -49,7 +50,9 @@ const handleUserCommand = async (command: string) => {
   <el-container class="layout-container">
     <el-header class="header">
       <div class="logo" @click="router.push('/')">
-        <el-icon :size="24" color="var(--primary-color)"><Reading /></el-icon>
+        <span class="logo-mark" aria-hidden="true">
+          <el-icon><Reading /></el-icon>
+        </span>
         <span class="logo-text">ESASR</span>
       </div>
       <el-menu
@@ -157,6 +160,30 @@ const handleUserCommand = async (command: string) => {
   gap: 10px;
   cursor: pointer;
   margin-right: 40px;
+}
+
+.logo-mark {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(63, 81, 181, .16);
+  border-radius: 10px;
+  background: rgba(63, 81, 181, .08);
+  color: var(--primary-color);
+}
+
+.logo-mark .el-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.logo-mark :deep(svg) {
+  width: 1em;
+  height: 1em;
 }
 
 .logo-text {
