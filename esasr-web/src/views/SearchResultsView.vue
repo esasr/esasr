@@ -14,6 +14,25 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const searchStore = useSearchStore()
 const query = ref(route.query.q as string || '')
+const requestedBreadth = Number(route.query.breadth)
+const searchBreadth = ref(
+  Number.isInteger(requestedBreadth) && requestedBreadth >= 1 && requestedBreadth <= 5
+    ? requestedBreadth
+    : 3
+)
+const breadthOptions = [
+  { level: 1, label: '精准', description: '只保留最高置信簇；并列候选不会被强行拆开' },
+  { level: 2, label: '聚焦', description: '提高覆盖，同时维持较严格的相关性边界' },
+  { level: 3, label: '均衡', description: '平衡结果覆盖与误报风险' },
+  { level: 4, label: '扩展', description: '覆盖80%候选质量，并保留边界近似项' },
+  { level: 5, label: '广泛', description: '列出候选池内所有达到相关性边界的论文' },
+]
+const breadthMarks = Object.fromEntries(
+  breadthOptions.map(item => [item.level, item.label])
+)
+const selectedBreadth = computed(() =>
+  breadthOptions.find(item => item.level === searchBreadth.value) || breadthOptions[2]!
+)
 const loading = ref(true)
 const searchError = ref('')
 const restoredFromCache = ref(false)
@@ -22,6 +41,9 @@ const selectedProvider = ref('')
 const llmProviders = ref<{id: string, provider: string, label: string, model: string}[]>([])
 const selectedLlm = computed(() =>
   llmProviders.value.find(item => item.id === selectedProvider.value)
+)
+const searchCacheContext = computed(() =>
+  `${selectedProvider.value}::breadth-${searchBreadth.value}`
 )
 
 // LLM Analyzed Data State
@@ -48,6 +70,17 @@ const searchMetrics = ref<{
   totalDurationMs: number
   sourceCounts: Record<string, number>
   failures: string[]
+  resultSelector?: {
+    breadthLevel: number
+    breadthLabel: string
+    targetMass: number
+    achievedMass: number
+    candidatePool: number
+    eligible: number
+    selected: number
+    stopReason: string
+    scoreSource: string
+  }
 } | null>(null)
 
 // Real Papers Data from S2
@@ -91,7 +124,7 @@ const filteredAndSortedPapers = computed(() => {
   if (yearFrom.value) result = result.filter(p => (p.year || 0) >= yearFrom.value!)
   if (citationMinimum.value) result = result.filter(p => (p.citationCount || 0) >= citationMinimum.value!)
   if (openAccessOnly.value) result = result.filter(p => p.isOpenAccess)
-  
+
   // 2. Sort
   result = [...result].sort((a, b) => {
     let valA, valB
@@ -102,12 +135,12 @@ const filteredAndSortedPapers = computed(() => {
       valA = a.year || 0
       valB = b.year || 0
     }
-    
+
     if (valA < valB) return sortOrder.value === 'desc' ? 1 : -1
     if (valA > valB) return sortOrder.value === 'desc' ? -1 : 1
     return 0
   })
-  
+
   return result
 })
 
@@ -164,7 +197,7 @@ const handleSearch = async (forceRefresh = false) => {
     return
   }
   if (!forceRefresh) {
-    const cached = searchStore.get(normalizedQuery, selectedProvider.value)
+    const cached = searchStore.get(normalizedQuery, searchCacheContext.value)
     if (cached) {
       applySearchResponse(cached.response)
       restoreViewState(cached.viewState)
@@ -188,7 +221,8 @@ const handleSearch = async (forceRefresh = false) => {
   try {
     const { data } = await axios.post(`${API_BASE}/api/search/run`, {
       query: normalizedQuery,
-      limit: 20,
+      limit: 50,
+      breadth_level: searchBreadth.value,
       max_queries: 4,
       results_per_source: 15,
       max_api_calls: 8,
@@ -197,11 +231,19 @@ const handleSearch = async (forceRefresh = false) => {
       llm_model: selectedLlm.value.model,
     })
     applySearchResponse(data)
-    searchStore.set(normalizedQuery, selectedProvider.value, data)
-    if (route.query.q !== normalizedQuery || route.query.llm !== selectedProvider.value) {
+    searchStore.set(normalizedQuery, searchCacheContext.value, data)
+    if (
+      route.query.q !== normalizedQuery
+      || route.query.llm !== selectedProvider.value
+      || route.query.breadth !== String(searchBreadth.value)
+    ) {
       await router.replace({
         name: 'search-results',
-        query: { q: normalizedQuery, llm: selectedProvider.value },
+        query: {
+          q: normalizedQuery,
+          llm: selectedProvider.value,
+          breadth: String(searchBreadth.value),
+        },
       })
     }
 
@@ -255,12 +297,12 @@ onMounted(async () => {
 })
 
 const viewPaperDetail = (id: string) => {
-  searchStore.saveViewState(query.value, selectedProvider.value, currentViewState())
+  searchStore.saveViewState(query.value, searchCacheContext.value, currentViewState())
   router.push(`/paper/${id}`)
 }
 
 onBeforeUnmount(() => {
-  searchStore.saveViewState(query.value, selectedProvider.value, currentViewState())
+  searchStore.saveViewState(query.value, searchCacheContext.value, currentViewState())
 })
 
 function bibtexValue(value: unknown) {
@@ -345,6 +387,24 @@ function exportResults(format: 'bibtex' | 'markdown') {
         {{ t('search.searchBtn') }}
       </el-button>
     </div>
+    <section class="breadth-control" aria-label="检索范围强度">
+      <div class="breadth-heading">
+        <div>
+          <strong>检索范围强度：{{ selectedBreadth.label }}</strong>
+          <small>{{ selectedBreadth.description }}</small>
+        </div>
+        <el-tag type="primary" effect="plain">按置信度动态截断</el-tag>
+      </div>
+      <el-slider
+        v-model="searchBreadth"
+        :min="1"
+        :max="5"
+        :step="1"
+        :marks="breadthMarks"
+        :disabled="loading"
+        show-stops
+      />
+    </section>
 
     <div v-if="loading" class="loading-state">
       <el-skeleton :rows="5" animated />
@@ -368,6 +428,10 @@ function exportResults(format: 'bibtex' | 'markdown') {
         <div class="pipeline-metrics">
           <div><strong>{{ searchMetrics.rawCandidates }}</strong><span>原始候选</span></div>
           <div><strong>{{ searchMetrics.returnedPapers }}</strong><span>融合结果</span></div>
+          <div>
+            <strong>{{ searchMetrics.resultSelector?.selected ?? searchMetrics.returnedPapers }}</strong>
+            <span>{{ searchMetrics.resultSelector?.breadthLabel || '默认' }}范围</span>
+          </div>
           <div><strong>{{ searchMetrics.apiCalls }}</strong><span>API 调用</span></div>
           <div><strong>{{ searchMetrics.llmTokens }}</strong><span>规划 Token</span></div>
           <div><strong>{{ (searchMetrics.totalDurationMs / 1000).toFixed(1) }}s</strong><span>端到端耗时</span></div>
@@ -435,8 +499,8 @@ function exportResults(format: 'bibtex' | 'markdown') {
                 </div>
               </template>
               <div class="decomposed-list">
-                <el-tag 
-                  v-for="(subq, index) in decomposedQueries" 
+                <el-tag
+                  v-for="(subq, index) in decomposedQueries"
                   :key="index"
                   class="subq-tag"
                   type="info"
@@ -471,7 +535,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
             </el-card>
           </div>
         </el-col>
-        
+
         <el-col :span="18">
           <!-- Main Results List -->
           <div class="results-list">
@@ -479,14 +543,14 @@ function exportResults(format: 'bibtex' | 'markdown') {
               <div class="results-summary">
                 {{ t('search.found') }} <strong>{{ filteredAndSortedPapers.length }}</strong> {{ t('search.papers') }}
               </div>
-              
+
                 <div class="sort-controls">
                 <span class="sort-label">{{ t('search.sortBy') }}</span>
                 <el-radio-group v-model="sortBy" size="small" class="sort-group">
                   <el-radio-button value="relevance">{{ t('search.relevance') }}</el-radio-button>
                   <el-radio-button value="date">{{ t('search.publishDate') }}</el-radio-button>
                 </el-radio-group>
-                
+
                 <el-radio-group v-model="sortOrder" size="small">
                   <el-radio-button value="desc">{{ t('search.orderDesc') }}</el-radio-button>
                   <el-radio-button value="asc">{{ t('search.orderAsc') }}</el-radio-button>
@@ -497,11 +561,11 @@ function exportResults(format: 'bibtex' | 'markdown') {
                   <template #dropdown><el-dropdown-menu><el-dropdown-item command="bibtex">BibTeX (.bib)</el-dropdown-item><el-dropdown-item command="markdown">Markdown (.md)</el-dropdown-item></el-dropdown-menu></template>
                 </el-dropdown>
             </div>
-            
-            <el-card 
-              v-for="paper in filteredAndSortedPapers" 
-              :key="paper.id" 
-              class="paper-card" 
+
+            <el-card
+              v-for="paper in filteredAndSortedPapers"
+              :key="paper.id"
+              class="paper-card"
               shadow="hover"
               @click="viewPaperDetail(paper.id)"
             >
@@ -523,7 +587,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
                 </el-tag>
               </div>
               <p class="paper-abstract">{{ paper.abstract }}</p>
-              
+
               <div class="recommend-reason">
                 <el-icon color="#e6a23c"><StarFilled /></el-icon>
                 <div>
@@ -556,7 +620,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
                 </div>
               </div>
             </el-card>
-            
+
             <el-empty v-if="filteredAndSortedPapers.length === 0" description="No papers match the selected filters" />
           </div>
         </el-col>
@@ -577,6 +641,24 @@ function exportResults(format: 'bibtex' | 'markdown') {
   display: flex;
   gap: 10px;
 }
+.breadth-control {
+  max-width: 1040px;
+  margin: -18px 0 30px;
+  padding: 14px 22px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-surface);
+}
+.breadth-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 2px;
+}
+.breadth-heading > div { display: flex; flex-direction: column; gap: 3px; }
+.breadth-heading small { color: var(--text-secondary); font-size: 12px; }
+.breadth-control :deep(.el-slider) { margin: 12px 10px 16px; width: calc(100% - 20px); }
 .search-error { max-width: 800px; }
 .pipeline-overview {
   position: relative;
@@ -589,7 +671,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
 .cache-badge { position: absolute; top: 14px; right: 16px; }
 .pipeline-metrics {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -636,7 +718,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
 .analysis-card {
   border-radius: 8px;
   background-color: var(--bg-surface);
-  
+
   .card-header {
     font-weight: 600;
     display: flex;
@@ -673,7 +755,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
   align-items: center;
   margin-bottom: 12px;
   font-size: 14px;
-  
+
   .intention-label {
     color: var(--text-secondary);
   }
@@ -726,7 +808,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
   border-radius: 8px;
   transition: all 0.2s ease;
   background-color: var(--bg-surface);
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -744,7 +826,7 @@ function exportResults(format: 'bibtex' | 'markdown') {
   font-size: 13px;
   color: var(--text-secondary);
   margin-bottom: 12px;
-  
+
   .venue {
     font-weight: 500;
     color: #008080;
@@ -814,6 +896,8 @@ function exportResults(format: 'bibtex' | 'markdown') {
   .search-header { flex-wrap: wrap; }
   .top-search-input { min-width: 100%; }
   .llm-provider-select { width: auto; flex: 1; }
+  .breadth-heading { align-items: flex-start; flex-direction: column; }
+  .pipeline-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pipeline-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pipeline-trace { flex-direction: column; }
   .results-toolbar { align-items: flex-start; flex-direction: column; gap: 12px; }

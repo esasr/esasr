@@ -325,6 +325,42 @@ class RankAndMergeTests(unittest.TestCase):
 
 
 class SearchPipelineTests(unittest.IsolatedAsyncioTestCase):
+    async def test_precise_breadth_keeps_a_near_tied_top_cluster(self):
+        async def retriever(_query, _limit):
+            return [
+                {"id": "a", "title": "A", "abstract": "multimodal diagnosis"},
+                {"id": "b", "title": "B", "abstract": "multimodal diagnosis"},
+                {"id": "c", "title": "C", "abstract": "multimodal diagnosis"},
+            ]
+
+        class StubReranker:
+            model_name = "stub"
+
+            def rerank(self, _query, papers, _top_n):
+                scores = [0.90, 0.88, 0.50]
+                return [
+                    {**paper, "relevanceScore": score}
+                    for paper, score in zip(papers, scores)
+                ]
+
+        result = await run_search_pipeline(
+            "frozen query",
+            limit=50,
+            breadth_level=1,
+            budget=SearchBudget(max_queries=2, max_api_calls=2, second_round_strategy="none"),
+            retrievers={"mock": retriever},
+            reranker=StubReranker(),
+            reranker_metadata={
+                "status": "configured",
+                "topN": 3,
+                "breadthSelector": {"enabled": True, "defaultLevel": 3},
+            },
+            plan_override=_plan(year_from=None, year_to=None),
+        )
+
+        self.assertEqual([paper["id"] for paper in result["papers"]], ["a", "b"])
+        self.assertEqual(result["metrics"]["resultSelector"]["breadthLabel"], "精准")
+
     async def test_applies_calibrated_adaptive_selector_after_reranking(self):
         async def retriever(_query, _limit):
             return [

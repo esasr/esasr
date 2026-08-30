@@ -10,6 +10,7 @@
 - V4 的 Macro F1@1 为 0.2562，低于 V3；不得以版本号替代模型选择证据，正式文档继续以 V3 为当前最佳配置。
 - V5 不重新检索，而是在 V3 冻结候选上验证“置信度校准自适应结果集（CARS）”：按来源分层、按查询 ID 稳定哈希拆分开发/测试各 100 条；只在开发集选择阈值。测试集固定 Top-1 的 F1 为 0.2475，CARS 为 0.2571，配对差值 0.0097、95% CI [0.0000, 0.0267]，平均返回 1.07 篇。该区间包含 0，只能视为初步正向结果。
 - 以上均为固定本地样本结果，不是赛事隐藏测试集或 ScholarGym 官方榜单成绩。
+- 在线效率实验另按三个来源各抽取 10 条查询（共 30 条，随机种子 20260828），强制绕过规划缓存，使用 DeepSeek-V4-Flash-0731（API 模型名 `deepseek-v4-flash`，默认思考模式）完成真实规划，并接入 OpenAlex 与 Semantic Scholar。API `usage` 实测总 Token 为 24,840，均值 828，中位数 886，P95 为 2,453；完整统计见 `scholargym_live_deepseek_v4_flash_formal_20260828/online_efficiency_summary.json`。
 
 归档目录：`esasr-api/evaluation/experiments/scholargym_offline_v3_20260821/`、`scholargym_offline_v4_20260821/` 与 `scholargym_offline_v5_adaptive_20260826/`。正式复跑需核对各目录的 `manifest.json`、数据哈希、模型名称、逐查询预测与比较报告。
 
@@ -25,6 +26,21 @@ cd esasr-api
 ```
 
 该实验必须从完整 V3 候选文件读取数据，不能使用已经截断的 `selected_predictions.jsonl`。阈值搜索只接触 `dev_gold.jsonl`；最终表只读取 `test_gold.jsonl`。固定 Top-2/3/5 是必要负面对照，用于排除“单纯增加返回数量”带来的伪提升。
+
+在线 Token 复跑命令：
+
+```bash
+cd esasr-api
+./venv/bin/python tools/run_scholargym_pilot.py \\
+  --benchmark evaluation/datasets/scholargym/scholargym_bench.jsonl \\
+  --out-dir evaluation/experiments/scholargym_live_deepseek_v4_flash_formal_20260828 \\
+  --per-source 10 --seed 20260828 --config D \\
+  --provider deepseek --model deepseek-v4-flash --fresh-plans
+./venv/bin/python tools/summarize_live_efficiency.py \\
+  --experiment-dir evaluation/experiments/scholargym_live_deepseek_v4_flash_formal_20260828
+```
+
+`--fresh-plans` 只绕过规划缓存，不关闭生产规则路由；因此规则能够无损解析的查询不会调用模型。正式统计同时纳入失败响应后的重试 Token，且将 `reasoning_tokens` 视为 `completion_tokens` 的子集，避免重复计数。
 
 ## 1. 指标体系
 

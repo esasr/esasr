@@ -1,0 +1,1358 @@
+{
+  "k": 20,
+  "queries": 30,
+  "missingPredictions": [],
+  "duplicatePredictionIds": [],
+  "extraPredictionIds": [],
+  "macro": {
+    "precision": 0.016667,
+    "recall": 0.269231,
+    "f1": 0.030303,
+    "averagePrecision": 0.14021,
+    "reciprocalRank": 0.146364,
+    "ndcg": 0.170632
+  },
+  "macroConfidenceIntervals": {
+    "precision": {
+      "low": 0.008333,
+      "high": 0.026667,
+      "confidence": 0.95,
+      "samples": 5000
+    },
+    "recall": {
+      "low": 0.133333,
+      "high": 0.435897,
+      "confidence": 0.95,
+      "samples": 5000
+    },
+    "f1": {
+      "low": 0.014408,
+      "high": 0.048773,
+      "confidence": 0.95,
+      "samples": 5000
+    },
+    "averagePrecision": {
+      "low": 0.043846,
+      "high": 0.264351,
+      "confidence": 0.95,
+      "samples": 5000
+    },
+    "reciprocalRank": {
+      "low": 0.050505,
+      "high": 0.261124,
+      "confidence": 0.95,
+      "samples": 5000
+    },
+    "ndcg": {
+      "low": 0.067259,
+      "high": 0.294014,
+      "confidence": 0.95,
+      "samples": 5000
+    }
+  },
+  "micro": {
+    "precision": 0.016949,
+    "recall": 0.048309,
+    "f1": 0.025094,
+    "tp": 10,
+    "fp": 580,
+    "fn": 197
+  },
+  "constraints": null,
+  "structure": {
+    "paperFieldCoverage": 0.999667,
+    "evidenceCoverage": 0.984706,
+    "traceAvailableRate": 1.0,
+    "graphAvailableRate": 0.0
+  },
+  "efficiency": {
+    "apiCalls": {
+      "count": 30,
+      "total": 166.0,
+      "mean": 5.533333,
+      "median": 4.0,
+      "p95": 8.0,
+      "perTruePositive": 16.6
+    },
+    "llmTokens": {
+      "count": 30,
+      "total": 24840.0,
+      "mean": 828.0,
+      "median": 886.0,
+      "p95": 1994.9,
+      "perTruePositive": 2484.0
+    },
+    "promptTokens": {
+      "count": 30,
+      "total": 5811.0,
+      "mean": 193.7,
+      "median": 240.5,
+      "p95": 374.55
+    },
+    "completionTokens": {
+      "count": 30,
+      "total": 19029.0,
+      "mean": 634.3,
+      "median": 645.0,
+      "p95": 1628.45
+    },
+    "reasoningTokens": {
+      "count": 30,
+      "total": 15759.0,
+      "mean": 525.3,
+      "median": 482.5,
+      "p95": 1550.9
+    },
+    "latencyMs": {
+      "count": 30,
+      "total": 802290.0,
+      "mean": 26743.0,
+      "median": 15911.5,
+      "p95": 85359.8,
+      "perTruePositive": 80229.0
+    }
+  },
+  "reliability": {
+    "completeQueries": 27,
+    "failedQueries": 3,
+    "failureRate": 0.1,
+    "failureEvents": 3,
+    "failureTypes": {
+      "Semantic Scholar: HTTPStatusError": 3
+    }
+  },
+  "groups": {
+    "split": {
+      "scholargym-pilot": {
+        "queries": 30,
+        "macro": {
+          "precision": 0.016667,
+          "recall": 0.269231,
+          "f1": 0.030303,
+          "averagePrecision": 0.14021,
+          "reciprocalRank": 0.146364,
+          "ndcg": 0.170632
+        },
+        "micro": {
+          "precision": 0.016949,
+          "recall": 0.048309,
+          "f1": 0.025094,
+          "tp": 10,
+          "fp": 580,
+          "fn": 197
+        }
+      }
+    },
+    "domain": {
+      "computer-science": {
+        "queries": 30,
+        "macro": {
+          "precision": 0.016667,
+          "recall": 0.269231,
+          "f1": 0.030303,
+          "averagePrecision": 0.14021,
+          "reciprocalRank": 0.146364,
+          "ndcg": 0.170632
+        },
+        "micro": {
+          "precision": 0.016949,
+          "recall": 0.048309,
+          "f1": 0.025094,
+          "tp": 10,
+          "fp": 580,
+          "fn": 197
+        }
+      }
+    },
+    "language": {
+      "en": {
+        "queries": 30,
+        "macro": {
+          "precision": 0.016667,
+          "recall": 0.269231,
+          "f1": 0.030303,
+          "averagePrecision": 0.14021,
+          "reciprocalRank": 0.146364,
+          "ndcg": 0.170632
+        },
+        "micro": {
+          "precision": 0.016949,
+          "recall": 0.048309,
+          "f1": 0.025094,
+          "tp": 10,
+          "fp": 580,
+          "fn": 197
+        }
+      }
+    },
+    "difficulty": {
+      "pilot": {
+        "queries": 30,
+        "macro": {
+          "precision": 0.016667,
+          "recall": 0.269231,
+          "f1": 0.030303,
+          "averagePrecision": 0.14021,
+          "reciprocalRank": 0.146364,
+          "ndcg": 0.170632
+        },
+        "micro": {
+          "precision": 0.016949,
+          "recall": 0.048309,
+          "f1": 0.025094,
+          "tp": 10,
+          "fp": 580,
+          "fn": 197
+        }
+      }
+    }
+  },
+  "perQuery": [
+    {
+      "id": "AutoScholarQuery_dev_177",
+      "query": "What papers propose using model self-consistency for factuality detection in LLM?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 3,
+      "relevant": 3,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 866.0,
+        "promptTokens": 239.0,
+        "completionTokens": 627.0,
+        "reasoningTokens": 457.0,
+        "latencyMs": 79609.0
+      },
+      "failures": [
+        "Semantic Scholar: HTTPStatusError"
+      ]
+    },
+    {
+      "id": "AutoScholarQuery_dev_369",
+      "query": "Are there any research contributions to the study of the noun-based Referring Expression Comprehension model?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 0.076923,
+      "f1": 0.060606,
+      "averagePrecision": 0.015385,
+      "reciprocalRank": 0.2,
+      "ndcg": 0.072236,
+      "tp": 1,
+      "fp": 19,
+      "fn": 12,
+      "relevant": 13,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 1018.0,
+        "promptTokens": 239.0,
+        "completionTokens": 779.0,
+        "reasoningTokens": 639.0,
+        "latencyMs": 26228.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_dev_572",
+      "query": "What works have uncovered inherent challenges in RLHF?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 2,
+      "relevant": 2,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 797.0,
+        "promptTokens": 232.0,
+        "completionTokens": 565.0,
+        "reasoningTokens": 423.0,
+        "latencyMs": 27701.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_dev_875",
+      "query": "In what studies did researchers match the lower bounds of SGD-RR with its upper bounds for both strongly convex and general convex cases?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.1,
+      "recall": 1.0,
+      "f1": 0.181818,
+      "averagePrecision": 1.0,
+      "reciprocalRank": 1.0,
+      "ndcg": 1.0,
+      "tp": 2,
+      "fp": 18,
+      "fn": 0,
+      "relevant": 2,
+      "returned": 20,
+      "duplicatePredictions": 1,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 936.0,
+        "promptTokens": 248.0,
+        "completionTokens": 688.0,
+        "reasoningTokens": 518.0,
+        "latencyMs": 29538.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_dev_908",
+      "query": "Which work is most closely related to the current research and provides an alternative proof of the equivalence between TV indistinguishability, replicability, and differential privacy?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 1.0,
+      "reciprocalRank": 1.0,
+      "ndcg": 1.0,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 1,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 0.95,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 1075.0,
+        "promptTokens": 253.0,
+        "completionTokens": 822.0,
+        "reasoningTokens": 675.0,
+        "latencyMs": 12616.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_test_425",
+      "query": "Can you provide the references of studies that have employed diffusion models for text-driven image editing?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 2,
+      "relevant": 2,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 631.0,
+        "promptTokens": 240.0,
+        "completionTokens": 391.0,
+        "reasoningTokens": 264.0,
+        "latencyMs": 21439.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_test_562",
+      "query": "Can you name the methods that tackle the high-dimensional importance weight estimation problem?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 2,
+      "relevant": 2,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 2453.0,
+        "promptTokens": 474.0,
+        "completionTokens": 1979.0,
+        "reasoningTokens": 1838.0,
+        "latencyMs": 90682.0
+      },
+      "failures": [
+        "Semantic Scholar: HTTPStatusError"
+      ]
+    },
+    {
+      "id": "AutoScholarQuery_test_675",
+      "query": "What papers provided a theoratical analysis of the mechanism with respect to mean squared error of the noise?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 631.0,
+        "promptTokens": 243.0,
+        "completionTokens": 388.0,
+        "reasoningTokens": 241.0,
+        "latencyMs": 10792.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_test_750",
+      "query": "Can you show me some papers that focus on improving sample efficiency with sub-optimal external policies?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 1040.0,
+        "promptTokens": 241.0,
+        "completionTokens": 799.0,
+        "reasoningTokens": 644.0,
+        "latencyMs": 16320.0
+      },
+      "failures": []
+    },
+    {
+      "id": "AutoScholarQuery_test_939",
+      "query": "Could you tell me which paper proposed the fixed pre-decision module to bridge the gap between SimulMT and SimulST?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 1.0,
+      "reciprocalRank": 1.0,
+      "ndcg": 1.0,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 1,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 2641.0,
+        "promptTokens": 496.0,
+        "completionTokens": 2145.0,
+        "reasoningTokens": 1885.0,
+        "latencyMs": 40871.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_162",
+      "query": "Could you recommend research that examines the effect of example sequencing on machine learning model efficacy in few-shot learning scenarios?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 660.0,
+        "promptTokens": 244.0,
+        "completionTokens": 416.0,
+        "reasoningTokens": 289.0,
+        "latencyMs": 12634.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_193",
+      "query": "Could you suggest a study that explores a compression method that merges product quantization with integer quantization for token-level retrieval?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 844.0,
+        "promptTokens": 245.0,
+        "completionTokens": 599.0,
+        "reasoningTokens": 418.0,
+        "latencyMs": 15226.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_21",
+      "query": "Can you suggest any literature that explores the idea of training neural networks to translate text passages into related questions?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 0.066667,
+      "reciprocalRank": 0.066667,
+      "ndcg": 0.25,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 906.0,
+        "promptTokens": 243.0,
+        "completionTokens": 663.0,
+        "reasoningTokens": 508.0,
+        "latencyMs": 14097.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_329",
+      "query": "What resources or toolkits are available to facilitate prompt-based learning model development in PyTorch?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 1147.0,
+        "promptTokens": 242.0,
+        "completionTokens": 905.0,
+        "reasoningTokens": 775.0,
+        "latencyMs": 23641.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_416",
+      "query": "Is there any work that attacks language models in dialogue generation?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 0.5,
+      "reciprocalRank": 0.5,
+      "ndcg": 0.63093,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 930.0,
+        "promptTokens": 234.0,
+        "completionTokens": 696.0,
+        "reasoningTokens": 567.0,
+        "latencyMs": 18307.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_506",
+      "query": "Can we reduce visual tokens in vision transformers right from the beginning?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 17,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 17,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 1435.0,
+        "promptTokens": 235.0,
+        "completionTokens": 1200.0,
+        "reasoningTokens": 1200.0,
+        "latencyMs": 90065.0
+      },
+      "failures": [
+        "Semantic Scholar: HTTPStatusError"
+      ]
+    },
+    {
+      "id": "LitSearch_524",
+      "query": "Is there a theory paper that explains why sometimes tuning momentum does not boost performance for training a neural network?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 1,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 1194.0,
+        "promptTokens": 243.0,
+        "completionTokens": 951.0,
+        "reasoningTokens": 757.0,
+        "latencyMs": 63379.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_526",
+      "query": "Is there any generalizable NeRF paper that disentangles texture and shape?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 0.090909,
+      "reciprocalRank": 0.090909,
+      "ndcg": 0.278943,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 0.95,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 1300.0,
+        "promptTokens": 237.0,
+        "completionTokens": 1063.0,
+        "reasoningTokens": 917.0,
+        "latencyMs": 43342.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_571",
+      "query": "Which paper contains quantitative results demonstrating taking VQ tokens as inputs is inferior to pixel images for dense recognition tasks?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 0.2,
+      "reciprocalRank": 0.2,
+      "ndcg": 0.386853,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 757.0,
+        "promptTokens": 244.0,
+        "completionTokens": 513.0,
+        "reasoningTokens": 372.0,
+        "latencyMs": 26973.0
+      },
+      "failures": []
+    },
+    {
+      "id": "LitSearch_588",
+      "query": "Which paper is the first to model the helpfulness and harmlessness alignment of LLMs as a Constrained MDP problem?",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.05,
+      "recall": 1.0,
+      "f1": 0.095238,
+      "averagePrecision": 0.333333,
+      "reciprocalRank": 0.333333,
+      "ndcg": 0.5,
+      "tp": 1,
+      "fp": 19,
+      "fn": 0,
+      "relevant": 1,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 1391.0,
+        "promptTokens": 247.0,
+        "completionTokens": 1144.0,
+        "reasoningTokens": 967.0,
+        "latencyMs": 14369.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_13",
+      "query": "Provide papers demonstrating that the self-correction of LLMs does not enhance their performance.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 17,
+      "fn": 10,
+      "relevant": 10,
+      "returned": 17,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 0.941176,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 10958.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_23",
+      "query": "Show me papers utilizing reinforcement learning to optimize diffusion models for video generation.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 19,
+      "fn": 2,
+      "relevant": 2,
+      "returned": 19,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 15503.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_24",
+      "query": "Show me all research papers on machine translation agents.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 10,
+      "relevant": 10,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 2.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 12435.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_34",
+      "query": "Show me research on 3d scene understanding leveraging progress on 3D AIGC foundation models.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 17,
+      "fn": 6,
+      "relevant": 6,
+      "returned": 17,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 10906.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_36",
+      "query": "Show me research on identity preservation video generation.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 33,
+      "relevant": 33,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 0.9,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 2.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 6596.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_37",
+      "query": "Give me some papers showing that LLM agents can do schedule planning.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 9,
+      "relevant": 9,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 0.85,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 12380.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_45",
+      "query": "All papers about controllability of video generation.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 58,
+      "relevant": 58,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 0.99,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 2.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 4918.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_47",
+      "query": "How can LLM agents be evaluated and benchmarked for financial tasks? Note that I am referring to agents.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 4,
+      "relevant": 4,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 0.95,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 4.0,
+        "llmTokens": 1257.0,
+        "promptTokens": 244.0,
+        "completionTokens": 1013.0,
+        "reasoningTokens": 838.0,
+        "latencyMs": 14453.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_5",
+      "query": "Papers that apply RLHF to address the hallucination problem in image and video description.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 6,
+      "relevant": 6,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 0.0,
+        "promptTokens": 0.0,
+        "completionTokens": 0.0,
+        "reasoningTokens": 0.0,
+        "latencyMs": 9751.0
+      },
+      "failures": []
+    },
+    {
+      "id": "RealScholarQuery_7",
+      "query": "Show me research on the long video description. Here, long videos are defined as those with a duration of at least several minutes.",
+      "groups": {
+        "split": "scholargym-pilot",
+        "domain": "computer-science",
+        "language": "en",
+        "difficulty": "pilot"
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "averagePrecision": 0.0,
+      "reciprocalRank": 0.0,
+      "ndcg": 0.0,
+      "tp": 0,
+      "fp": 20,
+      "fn": 31,
+      "relevant": 31,
+      "returned": 20,
+      "duplicatePredictions": 0,
+      "constraints": null,
+      "structure": {
+        "paperFieldCoverage": 1.0,
+        "evidenceCoverage": 1.0,
+        "traceAvailable": true,
+        "graphAvailable": false
+      },
+      "costs": {
+        "apiCalls": 8.0,
+        "llmTokens": 931.0,
+        "promptTokens": 248.0,
+        "completionTokens": 683.0,
+        "reasoningTokens": 567.0,
+        "latencyMs": 26561.0
+      },
+      "failures": []
+    }
+  ]
+}

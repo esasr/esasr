@@ -63,11 +63,16 @@ ranking:
     threshold: 0.0
     # V5 开发集校准的置信度自适应结果集；只消费现有精排分数，不增加模型调用。
     adaptive_selector:
-      enabled: true
+      # 仅用于复现实验中的 Top-1/Top-2 规则；生产检索默认使用下方连续范围选择器。
+      enabled: false
       max_k: 2
       min_score: 0.60
       min_ratio: 0.85
       max_drop: 0.10
+    # 五档均按当前查询的置信质量分布动态截断，不映射为固定 K。
+    breadth_selector:
+      enabled: true
+      default_level: 3
 
 # ── LLM 大语言模型配置 ────────────────────────────────────────────────────────
 llm:

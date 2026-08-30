@@ -1,0 +1,199 @@
+{
+  "protocol": {
+    "queries": 30,
+    "sampling": "stratified random sample without replacement",
+    "perSource": 10,
+    "seed": 20260828,
+    "provider": "deepseek",
+    "requestedModel": "deepseek-v4-flash",
+    "responseModels": {
+      "deepseek-v4-flash": 22
+    },
+    "plannerCachePolicy": "bypassed",
+    "retrievalConfiguration": "D: OpenAlex + Semantic Scholar with coverage-gap-driven second round",
+    "maximumLogicalRetrievalCallsPerQuery": 8,
+    "tokenSource": "DeepSeek API response usage; no tokenizer estimate"
+  },
+  "planning": {
+    "plannerModes": {
+      "llm": 22,
+      "heuristic": 8
+    },
+    "requestAttempts": 32,
+    "failedAttempts": 2,
+    "allQueries": {
+      "prompt_tokens": {
+        "total": 5811,
+        "mean": 193.7,
+        "median": 240.5,
+        "p95": 474,
+        "min": 0,
+        "max": 496
+      },
+      "completion_tokens": {
+        "total": 19029,
+        "mean": 634.3,
+        "median": 645.0,
+        "p95": 1979,
+        "min": 0,
+        "max": 2145
+      },
+      "reasoning_tokens": {
+        "total": 15759,
+        "mean": 525.3,
+        "median": 482.5,
+        "p95": 1838,
+        "min": 0,
+        "max": 1885
+      },
+      "total_tokens": {
+        "total": 24840,
+        "mean": 828,
+        "median": 886.0,
+        "p95": 2453,
+        "min": 0,
+        "max": 2641
+      }
+    },
+    "llmQueriesOnly": {
+      "prompt_tokens": {
+        "total": 5811,
+        "mean": 264.1364,
+        "median": 243.0,
+        "p95": 474,
+        "min": 232,
+        "max": 496
+      },
+      "completion_tokens": {
+        "total": 19029,
+        "mean": 864.9545,
+        "median": 737.5,
+        "p95": 1979,
+        "min": 388,
+        "max": 2145
+      },
+      "reasoning_tokens": {
+        "total": 15759,
+        "mean": 716.3182,
+        "median": 603.0,
+        "p95": 1838,
+        "min": 241,
+        "max": 1885
+      },
+      "total_tokens": {
+        "total": 24840,
+        "mean": 1129.0909,
+        "median": 977.0,
+        "p95": 2453,
+        "min": 631,
+        "max": 2641
+      }
+    }
+  },
+  "retrieval": {
+    "logicalApiCalls": {
+      "total": 166,
+      "mean": 5.5333,
+      "median": 4.0,
+      "p95": 8,
+      "min": 2,
+      "max": 8
+    },
+    "endToEndLatencyMs": {
+      "total": 802290,
+      "mean": 26743,
+      "median": 15911.5,
+      "p95": 90065,
+      "min": 4918,
+      "max": 90682
+    },
+    "returnedPapers": {
+      "total": 590,
+      "mean": 19.6667,
+      "median": 20.0,
+      "p95": 20,
+      "min": 17,
+      "max": 20
+    },
+    "completedQueries": 30,
+    "queriesWithExternalFailures": 3,
+    "externalFailureEvents": 3,
+    "failureTypes": {
+      "Semantic Scholar: HTTPStatusError": 3
+    },
+    "sourceBreakdown": {
+      "LitSearch": {
+        "queries": 10,
+        "apiCalls": {
+          "total": 52,
+          "mean": 5.2,
+          "median": 4.0,
+          "p95": 8,
+          "min": 4,
+          "max": 8
+        },
+        "latencyMs": {
+          "total": 322033,
+          "mean": 32203.3,
+          "median": 20974.0,
+          "p95": 90065,
+          "min": 12634,
+          "max": 90065
+        },
+        "queriesWithFailures": 1
+      },
+      "PASA_AutoScholar": {
+        "queries": 10,
+        "apiCalls": {
+          "total": 56,
+          "mean": 5.6,
+          "median": 4.0,
+          "p95": 8,
+          "min": 4,
+          "max": 8
+        },
+        "latencyMs": {
+          "total": 355796,
+          "mean": 35579.6,
+          "median": 26964.5,
+          "p95": 90682,
+          "min": 10792,
+          "max": 90682
+        },
+        "queriesWithFailures": 2
+      },
+      "PASA_RealScholar": {
+        "queries": 10,
+        "apiCalls": {
+          "total": 58,
+          "mean": 5.8,
+          "median": 8.0,
+          "p95": 8,
+          "min": 2,
+          "max": 8
+        },
+        "latencyMs": {
+          "total": 124461,
+          "mean": 12446.1,
+          "median": 11669.0,
+          "p95": 26561,
+          "min": 4918,
+          "max": 26561
+        },
+        "queriesWithFailures": 0
+      }
+    }
+  },
+  "estimatedCost": {
+    "currency": "USD",
+    "basis": "all prompt tokens charged as cache-miss input; completion_tokens already include reasoning",
+    "offPeak": 0.013838,
+    "peak": 0.027675,
+    "pricingSnapshot": "DeepSeek API documentation, accessed 2026-08-28"
+  },
+  "limitations": [
+    "This online sample measures operational cost and latency, not the frozen-corpus quality headline.",
+    "Live API latency and failure rates depend on provider load and rate limits.",
+    "The cost is an estimate from the pricing snapshot because cached-input token detail was not logged."
+  ]
+}

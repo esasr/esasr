@@ -13,10 +13,12 @@ from typing import Awaitable, Callable
 
 from config import cfg
 from redis_db import cache_set
+from services.calibrated_evidence import calibrated_base_score, egrr_decision
 from services.llm_service import plan_search_query
 from services.reranker_service import (
     PaperReranker,
     confidence_aware_select,
+    confidence_mass_select,
     get_configured_reranker,
 )
 from services.scholar_service import get_related_papers, search_papers
@@ -177,11 +179,25 @@ def rank_and_merge(
     plan: dict,
     limit: int,
 ) -> list[dict]:
-    """Fuse source rankings with RRF, constraints, lexical evidence and authority."""
+    """Merge multi-route candidates and apply the validated calibrated base score.
+
+    RRF, route agreement and authority remain attached as auditable evidence,
+    but do not control final ordering because their independent gain did not
+    replicate. The configured Cross Encoder performs the validated local
+    semantic correction after this inexpensive candidate ordering.
+    """
     candidates: dict[str, dict] = {}
     accumulators: dict[str, dict] = defaultdict(
-        lambda: {"rrf": 0.0, "queries": set(), "sources": set()}
+        lambda: {
+            "rrf": 0.0,
+            "queries": set(),
+            "sources": set(),
+            "routes": set(),
+            "primaryReciprocalRank": 0.0,
+        }
     )
+    planned_queries = plan.get("decomposed_queries") or [plan.get("research_question", "")]
+    primary_query = str(planned_queries[0] if planned_queries else "").casefold()
 
     for source, query, papers in ranked_lists:
         for rank, incoming in enumerate(papers, start=1):
@@ -194,6 +210,12 @@ def rank_and_merge(
             # Prefer the record's declared provenance. This prevents an offline
             # demo record returned by a retriever from being labelled OpenAlex.
             accumulators[key]["sources"].add(incoming.get("source") or source)
+            accumulators[key]["routes"].add((source, query))
+            if query.casefold() == primary_query:
+                accumulators[key]["primaryReciprocalRank"] = max(
+                    accumulators[key]["primaryReciprocalRank"],
+                    1.0 / rank,
+                )
 
     query_terms = _tokens(
         " ".join(
@@ -226,7 +248,9 @@ def rank_and_merge(
         if constraints.get("open_source") is True and not paper.get("isOpenAccess"):
             continue
 
-        searchable = f"{paper.get('title', '')} {paper.get('abstract', '')}"
+        title = str(paper.get("title") or "")
+        abstract = str(paper.get("abstract") or "")
+        searchable = f"{title} {abstract}"
         paper_terms = _tokens(searchable)
         methods = constraints.get("methods") or []
         if constraints.get("methods_required") and methods:
@@ -240,7 +264,8 @@ def rank_and_merge(
             continue
 
         matched_terms = sorted(query_terms & paper_terms)
-        lexical = len(matched_terms) / max(1, min(len(query_terms), 12))
+        title_coverage = len(query_terms & _tokens(title)) / max(1, len(query_terms))
+        abstract_coverage = len(query_terms & _tokens(abstract)) / max(1, len(query_terms))
         source_agreement = min(1.0, len(accumulators[key]["sources"]) / 2)
         query_coverage = min(
             1.0,
@@ -249,12 +274,11 @@ def rank_and_merge(
         )
         authority = min(1.0, math.log1p(paper.get("citationCount") or 0) / math.log(10001))
         rrf = accumulators[key]["rrf"] / max_rrf
-        score = (
-            0.48 * rrf
-            + 0.25 * lexical
-            + 0.12 * query_coverage
-            + 0.10 * source_agreement
-            + 0.05 * authority
+        route_agreement = min(1.0, len(accumulators[key]["routes"]) / 3)
+        score = calibrated_base_score(
+            accumulators[key]["primaryReciprocalRank"],
+            title_coverage,
+            abstract_coverage,
         )
 
         sources = sorted(accumulators[key]["sources"])
@@ -267,6 +291,16 @@ def rank_and_merge(
                 "sources": sources,
                 "matchedQueries": matched_queries,
                 "matchedTerms": evidence,
+                "scoreEvidence": {
+                    "primaryReciprocalRank": round(accumulators[key]["primaryReciprocalRank"], 6),
+                    "titleCoverage": round(title_coverage, 6),
+                    "abstractCoverage": round(abstract_coverage, 6),
+                    "normalizedRrfEvidence": round(rrf, 6),
+                    "routeAgreement": round(route_agreement, 6),
+                    "queryCoverage": round(query_coverage, 6),
+                    "sourceAgreement": round(source_agreement, 6),
+                    "authority": round(authority, 6),
+                },
                 "relevanceScore": round(min(score, 1.0), 4),
                 "relevanceLevel": "高度相关" if score >= 0.62 else "部分相关",
                 "recommendReason": (
@@ -587,6 +621,7 @@ async def _expand_citation_seeds(
 async def run_search_pipeline(
     query: str,
     limit: int = 20,
+    breadth_level: int | None = None,
     budget: SearchBudget | None = None,
     llm_provider: str | None = None,
     llm_model: str | None = None,
@@ -664,10 +699,25 @@ async def run_search_pipeline(
 
     evolved_candidates = rank_and_merge(ranked_lists, plan, candidate_pool_size)
     evolved_coverage = analyze_coverage(plan, evolved_candidates)
+    routing_query_terms = _tokens(
+        " ".join(
+            [plan.get("research_question", "")]
+            + list((plan.get("constraints") or {}).get("topics") or [])
+            + list((plan.get("constraints") or {}).get("methods") or [])
+            + list((plan.get("constraints") or {}).get("datasets") or [])
+        )
+    )
+    routing_decision = egrr_decision(
+        routing_query_terms,
+        [
+            _tokens(f"{paper.get('title', '')} {paper.get('abstract', '')}")
+            for paper in evolved_candidates[:20]
+        ],
+    )
     strategy = budget.second_round_strategy.casefold()
     if strategy not in {"none", "fixed", "coverage"}:
         raise ValueError("second_round_strategy must be none, fixed, or coverage")
-    needs_second_round = bool(evolved_coverage["gaps"]) or len(evolved_candidates) < limit
+    needs_second_round = routing_decision["route"]
 
     remaining_queries = max(0, budget.max_queries - len(first_queries))
     gap_queries: list[str] = []
@@ -765,7 +815,27 @@ async def run_search_pipeline(
             }
         )
     adaptive_selector = reranker_metadata.get("adaptiveSelector") or {}
-    if (
+    breadth_selector = reranker_metadata.get("breadthSelector") or {}
+    if breadth_selector.get("enabled") and candidates:
+        selected_level = int(
+            breadth_level
+            if breadth_level is not None
+            else breadth_selector.get("defaultLevel", 3)
+        )
+        candidates, breadth_decision = confidence_mass_select(
+            candidates,
+            breadth_level=selected_level,
+        )
+        reranker_metadata["breadthSelector"] = {
+            **breadth_selector,
+            **breadth_decision,
+            "scoreSource": (
+                "cross_encoder"
+                if reranker_metadata.get("status") == "completed"
+                else "multi_source_fusion"
+            ),
+        }
+    elif (
         reranker_metadata.get("status") == "completed"
         and adaptive_selector.get("enabled")
         and candidates
@@ -865,7 +935,10 @@ async def run_search_pipeline(
         {
             "stage": "结果输出",
             "status": "completed",
-            "detail": f"去重后输出 {len(papers)} 篇论文，最终覆盖率 {final_coverage['score']:.0%}",
+            "detail": (
+                f"去重后输出 {len(papers)} 篇论文，最终覆盖率 {final_coverage['score']:.0%}；"
+                f"{(reranker_metadata.get('breadthSelector') or {}).get('breadthLabel', '默认')}范围"
+            ),
             "durationMs": max(
                 0,
                 total_ms
@@ -889,6 +962,7 @@ async def run_search_pipeline(
             "secondRoundTriggered": bool(second_round["apiCalls"]),
             "secondRoundQueries": second_queries if second_round["apiCalls"] else [],
             "evolutionQueries": evolution_queries if second_round["apiCalls"] else [],
+            "routingDecision": routing_decision,
         },
         "trace": trace,
         "metrics": {
@@ -907,6 +981,11 @@ async def run_search_pipeline(
             "totalDurationMs": total_ms,
             "failures": failures,
             "reranker": reranker_metadata,
+            "resultSelector": (
+                reranker_metadata.get("breadthSelector")
+                or reranker_metadata.get("adaptiveSelector")
+                or {}
+            ),
             "budget": {
                 "maxQueries": budget.max_queries,
                 "resultsPerSource": budget.results_per_source,

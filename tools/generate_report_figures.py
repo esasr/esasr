@@ -6,6 +6,7 @@ import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle
+from matplotlib.text import Text
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,7 +21,8 @@ GRAY = "#6B7280"
 LIGHT = "#F3F4F6"
 MID = "#D1D5DB"
 WHITE = "#FFFFFF"
-INK = "#1F2937"
+BLACK = "#000000"
+INK = BLACK
 GREEN = "#3A7D44"
 
 mpl.rcParams.update({
@@ -35,6 +37,10 @@ mpl.rcParams.update({
     "axes.labelsize": 10,
     "xtick.labelsize": 9.5,
     "ytick.labelsize": 9.5,
+    "text.color": BLACK,
+    "axes.labelcolor": BLACK,
+    "xtick.color": BLACK,
+    "ytick.color": BLACK,
     "axes.spines.right": False,
     "axes.spines.top": False,
     "axes.linewidth": 0.8,
@@ -82,6 +88,10 @@ def tag(ax, x, y, text, color=ORANGE):
 
 
 def save(fig, stem):
+    # Competition submission rule: every glyph inside report figures must be
+    # pure black. Diagram geometry retains the academic accent palette.
+    for text_artist in fig.findobj(match=Text):
+        text_artist.set_color(BLACK)
     fig.savefig(OUT / f"{stem}.png", dpi=300, bbox_inches="tight", facecolor=WHITE)
     fig.savefig(OUT / f"{stem}.svg", bbox_inches="tight", facecolor=WHITE)
     fig.savefig(OUT / f"{stem}.pdf", bbox_inches="tight", facecolor=WHITE)

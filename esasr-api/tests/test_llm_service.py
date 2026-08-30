@@ -11,6 +11,7 @@ from services.llm_service import (
     _normalize_plan,
     analyze_search_query,
     plan_search_query,
+    plan_search_query_uncached,
 )
 
 
@@ -42,6 +43,8 @@ class KimiRequestOptionsTests(unittest.TestCase):
                 completion_tokens=1,
                 total_tokens=2,
             ),
+            model="test-model",
+            system_fingerprint="test-fingerprint",
         )
 
     def test_kimi_k3_uses_low_reasoning_effort_without_temperature(self):
@@ -65,6 +68,7 @@ class KimiRequestOptionsTests(unittest.TestCase):
         self.assertEqual(kwargs["reasoning_effort"], "low")
         self.assertEqual(kwargs["max_tokens"], 1200)
         self.assertEqual(result["model"], "kimi-k3")
+        self.assertEqual(result["responseModel"], "test-model")
 
     def test_kimi_k26_disables_thinking_without_temperature(self):
         settings = SimpleNamespace(
@@ -89,6 +93,46 @@ class KimiRequestOptionsTests(unittest.TestCase):
             kwargs["extra_body"],
             {"thinking": {"type": "disabled"}},
         )
+
+
+class DeepSeekUsageTests(unittest.TestCase):
+    def test_invalid_json_preserves_billed_usage_and_requests_json_output(self):
+        settings = SimpleNamespace(
+            base_url="https://api.deepseek.com",
+            api_key="test-key",
+            get=lambda key, default=None: 30 if key == "timeout" else default,
+        )
+        response = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content='{"broken":'))],
+            usage=SimpleNamespace(
+                prompt_tokens=210,
+                completion_tokens=1200,
+                total_tokens=1410,
+                completion_tokens_details=SimpleNamespace(reasoning_tokens=900),
+            ),
+            model="deepseek-v4-flash",
+            system_fingerprint="fp-test",
+        )
+        with (
+            patch(
+                "services.llm_service._provider_settings",
+                return_value=("deepseek", "deepseek-v4-flash", settings),
+            ),
+            patch("services.llm_service.OpenAI") as openai,
+        ):
+            openai.return_value.chat.completions.create.return_value = response
+            result = analyze_search_query(
+                "compare transformers versus CNNs",
+                "deepseek",
+                "deepseek-v4-flash",
+            )
+
+        kwargs = openai.return_value.chat.completions.create.call_args.kwargs
+        self.assertEqual(kwargs["response_format"], {"type": "json_object"})
+        self.assertEqual(result["plannerMode"], "fallback")
+        self.assertEqual(result["usage"]["total_tokens"], 1410)
+        self.assertEqual(result["usage"]["reasoning_tokens"], 900)
+        self.assertEqual(result["responseModel"], "deepseek-v4-flash")
 
 
 class FallbackPlannerTests(unittest.TestCase):
@@ -159,6 +203,46 @@ class FallbackPlannerTests(unittest.TestCase):
 
 
 class PlannerDeliveryTests(unittest.IsolatedAsyncioTestCase):
+    async def test_uncached_planner_keeps_heuristic_routing_without_cache_io(self):
+        with (
+            patch("services.llm_service.cache_get", new=AsyncMock()) as cache_get,
+            patch("services.llm_service.cache_set", new=AsyncMock()) as cache_set,
+            patch("services.llm_service.analyze_search_query") as llm,
+        ):
+            plan = await plan_search_query_uncached(
+                "image compression 2024 open source", "deepseek", "deepseek-v4-flash"
+            )
+
+        cache_get.assert_not_awaited()
+        cache_set.assert_not_awaited()
+        llm.assert_not_called()
+        self.assertEqual(plan["plannerMode"], "heuristic")
+
+    async def test_uncached_planner_calls_llm_for_complex_query(self):
+        produced = {
+            "research_question": "comparison",
+            "decomposed_queries": ["comparison"],
+            "constraints": {},
+            "plannerMode": "llm",
+            "usage": {"prompt_tokens": 200, "completion_tokens": 300, "total_tokens": 500},
+        }
+        with (
+            patch("services.llm_service.cache_get", new=AsyncMock()) as cache_get,
+            patch("services.llm_service.cache_set", new=AsyncMock()) as cache_set,
+            patch(
+                "services.llm_service.analyze_search_query",
+                return_value=produced,
+            ) as llm,
+        ):
+            plan = await plan_search_query_uncached(
+                "compare transformers versus CNNs", "deepseek", "deepseek-v4-flash"
+            )
+
+        cache_get.assert_not_awaited()
+        cache_set.assert_not_awaited()
+        llm.assert_called_once()
+        self.assertEqual(plan["usage"]["total_tokens"], 500)
+
     async def test_shared_cache_hit_has_zero_request_tokens(self):
         cached = {
             "research_question": "cached",

@@ -16,7 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from services.llm_service import plan_search_query
+from services.llm_service import plan_search_query, plan_search_query_uncached
 from services.scholar_service import search_papers
 from services.search_pipeline import SearchBudget, run_search_pipeline, search_semantic_scholar
 
@@ -73,6 +73,26 @@ def append_jsonl(path: Path, row: dict) -> None:
         stream.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def combine_plan_attempts(attempts: list[dict], delivered: dict) -> dict:
+    usage_fields = ("prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens")
+    combined = {
+        field: sum(int((attempt.get("usage") or {}).get(field, 0) or 0) for attempt in attempts)
+        for field in usage_fields
+    }
+    delivered["usage"] = combined
+    delivered["planningAttempts"] = len(attempts)
+    delivered["planningFailedAttempts"] = sum(bool(attempt.get("fallbackReason")) for attempt in attempts)
+    delivered["attemptUsage"] = [
+        {
+            "plannerMode": attempt.get("plannerMode"),
+            "fallbackReason": attempt.get("fallbackReason"),
+            "usage": attempt.get("usage") or {},
+        }
+        for attempt in attempts
+    ]
+    return delivered
+
+
 def select_pilot(rows: list[dict], per_source: int, seed: int) -> list[dict]:
     rng = random.Random(seed)
     selected: list[dict] = []
@@ -124,19 +144,30 @@ def git_state(root: Path) -> dict:
     }
 
 
-async def freeze_plans(gold: list[dict], path: Path, provider: str | None, model: str | None) -> dict[str, dict]:
+async def freeze_plans(
+    gold: list[dict],
+    path: Path,
+    provider: str | None,
+    model: str | None,
+    *,
+    fresh_plans: bool = False,
+) -> dict[str, dict]:
     existing = {row["id"]: row["plan"] for row in read_jsonl(path)} if path.exists() else {}
+    planner = plan_search_query_uncached if fresh_plans else plan_search_query
     for index, row in enumerate(gold, start=1):
         query_id = row["id"]
         if query_id in existing:
             continue
         started = time.perf_counter()
-        plan = await plan_search_query(row["query"], provider, model)
+        plan = await planner(row["query"], provider, model)
+        attempts = [plan]
         if plan.get("fallbackReason"):
             await asyncio.sleep(0.5)
-            retry = await plan_search_query(row["query"], provider, model)
+            retry = await planner(row["query"], provider, model)
+            attempts.append(retry)
             if not retry.get("fallbackReason"):
                 plan = retry
+        plan = combine_plan_attempts(attempts, plan)
         plan["experimentPlanningDurationMs"] = round((time.perf_counter() - started) * 1000)
         append_jsonl(path, {"id": query_id, "query": row["query"], "plan": plan})
         existing[query_id] = plan
@@ -220,11 +251,16 @@ async def main_async(args: argparse.Namespace) -> int:
 
     project_root = Path(__file__).resolve().parents[2]
     benchmark_hash = hashlib.sha256(args.benchmark.read_bytes()).hexdigest()
+    try:
+        benchmark_manifest_path = str(args.benchmark.resolve().relative_to(project_root.resolve()))
+    except ValueError:
+        benchmark_manifest_path = str(args.benchmark.resolve())
+
     manifest = {
         "createdAt": datetime.now(timezone.utc).isoformat(),
         "dataset": {
             "name": "ScholarGym",
-            "path": str(args.benchmark),
+            "path": benchmark_manifest_path,
             "sha256": benchmark_hash,
             "selection": "stratified random sample without replacement",
             "perSource": args.per_source,
@@ -233,6 +269,7 @@ async def main_async(args: argparse.Namespace) -> int:
         },
         "provider": args.provider,
         "model": args.model,
+        "plannerCachePolicy": "bypassed" if args.fresh_plans else "production-cache",
         "configurations": {
             name: {
                 "description": CONFIGS[name]["description"],
@@ -253,6 +290,7 @@ async def main_async(args: argparse.Namespace) -> int:
         args.out_dir / "plans.jsonl",
         args.provider,
         args.model,
+        fresh_plans=args.fresh_plans,
     )
     for name in args.config:
         await run_config(
@@ -277,6 +315,11 @@ def main() -> int:
     parser.add_argument("--provider")
     parser.add_argument("--model")
     parser.add_argument("--retry-failures", action="store_true")
+    parser.add_argument(
+        "--fresh-plans",
+        action="store_true",
+        help="Bypass the query-plan cache while retaining production heuristic routing.",
+    )
     parser.add_argument("--only-id", action="append", help="Run only a selected query id; repeat as needed")
     args = parser.parse_args()
     args.config = args.config or ["A", "C0", "C1", "D"]

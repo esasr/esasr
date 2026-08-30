@@ -15,7 +15,8 @@ class SearchRequest(BaseModel):
 
 
 class FullSearchRequest(SearchRequest):
-    limit: int = Field(default=20, ge=1, le=50)
+    limit: int = Field(default=50, ge=1, le=50)
+    breadth_level: int = Field(default=3, ge=1, le=5)
     max_queries: int = Field(default=4, ge=1, le=6)
     results_per_source: int = Field(default=15, ge=5, le=50)
     max_api_calls: int = Field(default=8, ge=1, le=12)
@@ -99,6 +100,7 @@ async def run_search(request: FullSearchRequest):
     return await run_search_pipeline(
         query=request.query,
         limit=request.limit,
+        breadth_level=request.breadth_level,
         budget=budget,
         llm_provider=provider,
         llm_model=model,

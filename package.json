@@ -52,11 +52,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wanglei1123/ESASR.git"
+    "url": "git+https://github.com/esasr/esasr.git"
   },
-  "homepage": "https://github.com/wanglei1123/ESASR#readme",
+  "homepage": "https://github.com/esasr/esasr#readme",
   "bugs": {
-    "url": "https://github.com/wanglei1123/ESASR/issues"
+    "url": "https://github.com/esasr/esasr/issues"
   },
   "license": "MIT"
 }

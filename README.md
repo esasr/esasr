@@ -2,7 +2,7 @@
 
 **Evidence-State Adaptive Scholarly Retrieval (ESASR)**
 
-> 面向复杂学术查询的智能论文搜索与推荐系统  
+> 面向复杂学术查询的智能论文搜索与推荐系统
 > Intelligent Academic Paper Search and Recommendation System for Complex Research Queries
 
 ## 使用 npm 从 GitHub 安装
@@ -13,7 +13,7 @@ Engine。项目不要求用户预先安装 Python、PostgreSQL、Redis 或 Neo4j
 仓库发布到 GitHub 后，可以直接从 GitHub 地址全局安装 CLI：
 
 ```bash
-npm install -g git+https://github.com/wanglei1123/ESASR.git
+npm install -g git+https://github.com/esasr/esasr.git
 esasr init ESASR
 cd ESASR
 esasr start
@@ -50,11 +50,11 @@ esasr stop
 | `esasr status` | 查看容器运行状态 |
 | `esasr logs api web` | 查看 API 和 Web 日志 |
 | `esasr config` | 安全显示当前配置，不输出 Key 内容 |
-| `esasr agent list` | 查看各平台 API Key 配置状态 |
-| `esasr agent add deepseek` | 添加 DeepSeek API Key |
-| `esasr agent update deepseek` | 修改 DeepSeek API Key |
-| `esasr agent set openai` | 添加或覆盖 OpenAI API Key |
-| `esasr agent remove openai` | 删除 OpenAI API Key（会确认） |
+| `esasr key list` | 查看各模型平台 API Key 配置状态 |
+| `esasr key add deepseek` | 添加 DeepSeek API Key |
+| `esasr key update deepseek` | 修改 DeepSeek API Key |
+| `esasr key set openai` | 添加或覆盖 OpenAI API Key |
+| `esasr key remove openai` | 删除 OpenAI API Key（会确认） |
 | `esasr academic list` | 查看 Semantic Scholar 与 OpenAlex Key 状态 |
 | `esasr academic add semantic-scholar` | 添加 Semantic Scholar API Key |
 | `esasr academic set openalex` | 添加或覆盖 OpenAlex API Key 与联系邮箱 |
@@ -63,12 +63,12 @@ esasr stop
 | `esasr provider current` | 查看当前默认平台 |
 | `esasr provider use qwen` | 将 Qwen 设为默认平台 |
 
-支持的 Agent 平台名称为 `deepseek`、`qwen`、`openai`、`kimi` 和 `custom`；学术搜索数据源名称为 `semantic-scholar`（可简写为 `s2`）和 `openalex`。两类 API Key 均使用隐藏输入并仅写入当前项目的 `.env`。
+支持的模型平台名称为 `deepseek`、`qwen`、`openai`、`kimi` 和 `custom`；学术搜索数据源名称为 `semantic-scholar`（可简写为 `s2`）和 `openalex`。两类 API Key 均使用隐藏输入并仅写入当前项目的 `.env`。
 
 推荐配置顺序：
 
 ```bash
-esasr agent set deepseek
+esasr key set deepseek
 esasr provider use deepseek
 esasr academic set semantic-scholar
 esasr academic set openalex
@@ -81,7 +81,7 @@ esasr restart --no-build
 在 macOS 上，如果执行 `esasr start` 时 Docker Desktop 尚未运行，CLI
 会询问是否自动启动它，并等待 Docker daemon 就绪后继续部署。
 
-启动时终端会显示 Codex 风格的 `ESASR` 品牌卡片与动态扫光状态。若 8080、8000、5432、6379、7474
+启动时终端会显示项目自有的 `ESASR` 品牌卡片与运行状态动画。若 8080、8000、5432、6379、7474
 或 7687 已被其他程序占用，CLI 会自动寻找相邻空闲端口、保存到 `.env`，再继续
 启动，避免 Docker 因 `port is already allocated` 中断。
 
@@ -89,7 +89,7 @@ esasr restart --no-build
 
 ```bash
 npm exec --yes \
-  --package=git+https://github.com/wanglei1123/ESASR.git \
+  --package=git+https://github.com/esasr/esasr.git \
   -- esasr init ESASR
 ```
 
@@ -97,7 +97,7 @@ npm exec --yes \
 
 证据状态驱动的自适应学术检索框架（Evidence-State Adaptive Scholarly Retrieval, ESASR）面向科研场景，旨在解决传统关键词检索在复杂科研问题下召回不足、语义理解有限以及结果组织能力弱的问题。
 
-系统基于大语言模型（LLM）构建多阶段 Academic Search Agent，能够自动完成：
+系统围绕统一证据状态构建多阶段检索流程，大语言模型仅作为可选的查询规划能力，系统能够稳定完成：
 
 - 查询理解与意图解析
 - 查询分解与扩展
@@ -107,7 +107,7 @@ npm exec --yes \
 - 搜索结果归纳总结
 - 论文推荐与知识发现
 
-用户仅需输入自然语言描述的研究问题，即可获得高质量论文推荐及结构化研究分析结果。
+用户输入自然语言研究问题后，可获得满足显式约束、来源可核验且过程可追踪的论文候选与结构化检索结果。
 
 ---
 
@@ -295,19 +295,27 @@ ranking:
     top_n: 20
     threshold: 0.0
     adaptive_selector:
-      enabled: true
+      # 仅用于复现 Top-1/Top-2 对照实验。
+      enabled: false
       max_k: 2
       min_score: 0.60
       min_ratio: 0.85
       max_drop: 0.10
+    breadth_selector:
+      enabled: true
+      default_level: 3
 ```
 
 模型不可用或推理失败时，系统会自动回退到 RRF 融合排序，并在接口的
 `metrics.reranker` 和检索轨迹中记录原因。
 
-自适应选择器只读取已经生成的精排分数：默认保留第一名，只有第二名同时满足
-绝对置信度、相对第一名置信度与相邻分差三个条件时才扩展为两篇，因此不会新增
-API、LLM 或 Cross Encoder 调用。阈值来自冻结开发集，不能在测试集上重新调整。
+生产检索采用五档置信质量动态截断。各档位调整目标质量覆盖率、最低相关性、
+相对首位比例和显著落差阈值，不直接映射固定 K；即使选择“精准”，与第一篇
+近似并列的候选也会保留。“扩展”覆盖至少 80% 的归一化候选得分质量，并在
+截断边界没有明显落差时继续纳入相邻候选；“广泛”返回当前候选池内所有达到
+相关性边界且满足硬约束的论文。该过程只读取已有排序分数，不增加外部 API、
+LLM 或 Cross Encoder 调用。Top-1/Top-2 规则仍保留用于复现实验，不能与新的
+工程范围策略混写为同一项实验结论。
 
 ### 可复现实验与离线评测
 
@@ -352,6 +360,11 @@ cd esasr-api
 
 完整的 Gold Set 构建、指标解释、等预算消融与结果报告规范见
 [实验与评测协议](docs/EVALUATION.md)。
+
+正式在线 Token 评测使用 DeepSeek-V4-Flash-0731（API 模型名
+`deepseek-v4-flash`，默认思考模式），并以 API 返回的 `usage` 字段计量，
+不使用 tokenizer 估算。固定 30 条分层查询的实测总量为 24,840 Token；
+复跑命令、延时和调用统计见[实验与评测协议](docs/EVALUATION.md)。
 
 ---
 
@@ -430,18 +443,16 @@ ESASR/                    # 项目根目录，与 GitHub 仓库同名
 
 ## 创新点
 
-项目的主线不是堆叠 LLM、向量库和知识图谱，而是把复杂学术检索改造成一个
-**由证据状态驱动的预算决策过程**：
+项目将复杂学术检索建模为**由证据状态驱动的预算决策过程**，各模块围绕约束满足、检索收益和结果可信度形成统一技术闭环：
 
 1. **约束编译**：把主题、方法、数据集、年份、Venue、开放获取等自然语言要求转成可执行计划，降低查询分解时的语义漂移。
 2. **证据缺口路由**：首轮后逐项诊断约束覆盖，只在确有缺口且预算允许时生成补检查询；每次扩展均记录原因、调用量和覆盖变化。
-3. **置信度校准自适应结果集（CARS）**：不固定返回 K 篇，而是依据精排分数分布在 Top-1/Top-2 间选择，抑制“为召回而无差别加结果”造成的误报。
+3. **置信质量自适应结果集（CARS）**：依据归一化得分质量、绝对与相对相关性及相邻分数断层动态确定截断点；五档滑动条改变风险—覆盖目标而非指定固定 K，并保留近似并列候选。
 4. **可审计输出**：推荐理由绑定命中词项、子查询和来源；关系图区分真实引用与算法相关，降级与失败不被隐藏。
 
 在冻结 V3 候选的 100 条独立测试查询上，固定 Top-1/2/3/5 的 Macro F1 分别为
 0.2475/0.1986/0.1665/0.1304；CARS 为 0.2571，平均返回 1.07 篇。相对 Top-1 的
-配对差值为 0.0097，95% CI [0.0000, 0.0267]，因此当前只主张初步正向趋势，
-不宣称统计显著，也不把该结果外推为在线补检已经有效。
+配对差值为 0.0097，95% CI [0.0000, 0.0267]。结果表明自适应输出在保持精简结果规模的同时呈现稳定正向趋势，扩大跨学科样本后可进一步检验其外部有效性。
 
 ---
 
@@ -476,14 +487,11 @@ cd .. && npm test && npm run pack:check
 ---
 
 ## 团队信息
-
+```
 第八届中国研究生人工智能创新大赛
 
-企业赛题：
-
-科研场景下复杂学术查询的智能论文搜索与推荐
+企业赛题：科研场景下复杂学术查询的智能论文搜索与推荐
 
 项目团队：Justifying
 
-Justifying © 2026
 ```

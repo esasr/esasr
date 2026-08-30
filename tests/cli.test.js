@@ -24,7 +24,7 @@ test('prints CLI help', () => {
   assert.match(result.stdout, /esasr setup/)
   assert.match(result.stdout, /esasr restart/)
   assert.match(result.stdout, /esasr academic add/)
-  assert.match(result.stdout, /esasr agent add/)
+  assert.match(result.stdout, /esasr key add/)
   assert.match(result.stdout, /esasr provider use/)
 })
 
@@ -149,7 +149,7 @@ test('moves an occupied web port and continues startup', async (context) => {
   assert.doesNotMatch(saved, new RegExp(`^WEB_PORT=${occupiedPort}$`, 'm'))
 })
 
-test('renders a Codex-style startup card and shimmer status', async () => {
+test('renders the ESASR branded startup card and progress status', async () => {
   const temporary = mkdtempSync(join(tmpdir(), 'scholarseeker-animation-'))
   const destination = join(temporary, 'project')
   const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
@@ -205,16 +205,16 @@ test('adds, updates, lists, selects, and removes provider API keys safely', () =
   })
   assert.equal(initialized.status, 0, initialized.stderr)
 
-  const added = spawnSync(process.execPath, [cli, 'agent', 'add', 'deepseek'], {
+  const added = spawnSync(process.execPath, [cli, 'key', 'add', 'deepseek'], {
     cwd: destination,
     encoding: 'utf8',
-    env: { ...process.env, ESASR_AGENT_API_KEY: 'sk-added-secret' },
+    env: { ...process.env, ESASR_MODEL_API_KEY: 'sk-added-secret' },
   })
   assert.equal(added.status, 0, added.stderr)
   assert.doesNotMatch(added.stdout, /sk-added-secret/)
   assert.match(readFileSync(join(destination, '.env'), 'utf8'), /^DEEPSEEK_API_KEY=sk-added-secret$/m)
 
-  const listed = spawnSync(process.execPath, [cli, 'agent', 'list'], {
+  const listed = spawnSync(process.execPath, [cli, 'key', 'list'], {
     cwd: destination,
     encoding: 'utf8',
   })
@@ -229,10 +229,10 @@ test('adds, updates, lists, selects, and removes provider API keys safely', () =
   assert.equal(selected.status, 0, selected.stderr)
   assert.match(selected.stdout, /默认大模型平台已切换为 DeepSeek/)
 
-  const updated = spawnSync(process.execPath, [cli, 'agent', 'update', 'deepseek'], {
+  const updated = spawnSync(process.execPath, [cli, 'key', 'update', 'deepseek'], {
     cwd: destination,
     encoding: 'utf8',
-    env: { ...process.env, ESASR_AGENT_API_KEY: 'sk-updated-secret' },
+    env: { ...process.env, ESASR_MODEL_API_KEY: 'sk-updated-secret' },
   })
   assert.equal(updated.status, 0, updated.stderr)
   assert.doesNotMatch(updated.stdout, /sk-updated-secret/)
@@ -247,7 +247,7 @@ test('adds, updates, lists, selects, and removes provider API keys safely', () =
   assert.match(config.stdout, /安全提示：API Key 内容已隐藏/)
   assert.doesNotMatch(config.stdout, /sk-updated-secret/)
 
-  const removed = spawnSync(process.execPath, [cli, 'agent', 'remove', 'deepseek', '--yes'], {
+  const removed = spawnSync(process.execPath, [cli, 'key', 'remove', 'deepseek', '--yes'], {
     cwd: destination,
     encoding: 'utf8',
   })

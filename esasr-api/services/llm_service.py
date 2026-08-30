@@ -417,6 +417,13 @@ Schema: {{"decomposed_queries":["query"],"topics":[],"methods":[],
 "datasets":[],"domains":[],"venues":[],"venues_required":false,
 "exclude":[],"year_from":null,"year_to":null,"open_source":null}}
 Preserve all explicit constraints. Output JSON only."""
+    response = None
+    response_usage = {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "reasoning_tokens": 0,
+    }
     try:
         provider_name, model_name, settings = _provider_settings(provider, model)
         client = OpenAI(base_url=settings.base_url, api_key=settings.api_key)
@@ -443,7 +450,17 @@ Preserve all explicit constraints. Output JSON only."""
                 }
         else:
             request_options["temperature"] = 0
+        if provider_name == "deepseek":
+            request_options["response_format"] = {"type": "json_object"}
         response = client.chat.completions.create(**request_options)
+        usage = response.usage
+        details = getattr(usage, "completion_tokens_details", None)
+        response_usage = {
+            "prompt_tokens": getattr(usage, "prompt_tokens", 0) or 0,
+            "completion_tokens": getattr(usage, "completion_tokens", 0) or 0,
+            "total_tokens": getattr(usage, "total_tokens", 0) or 0,
+            "reasoning_tokens": getattr(details, "reasoning_tokens", 0) or 0,
+        }
         content = response.choices[0].message.content or "{}"
         content = content.replace("```json", "").replace("```", "").strip()
         raw = json.loads(content)
@@ -453,14 +470,9 @@ Preserve all explicit constraints. Output JSON only."""
         plan["planner"] = f"llm:{provider_name}/{model_name}"
         plan["provider"] = provider_name
         plan["model"] = model_name
-        usage = response.usage
-        details = getattr(usage, "completion_tokens_details", None)
-        plan["usage"] = {
-            "prompt_tokens": getattr(usage, "prompt_tokens", 0) or 0,
-            "completion_tokens": getattr(usage, "completion_tokens", 0) or 0,
-            "total_tokens": getattr(usage, "total_tokens", 0) or 0,
-            "reasoning_tokens": getattr(details, "reasoning_tokens", 0) or 0,
-        }
+        plan["responseModel"] = getattr(response, "model", None) or model_name
+        plan["systemFingerprint"] = getattr(response, "system_fingerprint", None)
+        plan["usage"] = response_usage
         plan["plannerMode"] = "llm"
         plan["cacheHit"] = False
         plan["coalesced"] = False
@@ -470,6 +482,8 @@ Preserve all explicit constraints. Output JSON only."""
         plan = _fallback_plan(user_query, str(exc))
         plan["provider"] = provider_name
         plan["model"] = model_name
+        plan["responseModel"] = getattr(response, "model", None) if response else None
+        plan["usage"] = response_usage
         plan["plannerMode"] = "fallback"
         plan["cacheHit"] = False
         plan["coalesced"] = False
@@ -514,6 +528,23 @@ async def _produce_plan(
     if not plan.get("fallbackReason"):
         await cache_set(cache_key, plan, ttl=ttl)
     return plan
+
+
+async def plan_search_query_uncached(
+    user_query: str,
+    provider: str | None = None,
+    model: str | None = None,
+) -> dict:
+    """Run the production planner without reading or writing the shared cache.
+
+    Formal cost evaluations use this path so a prior query-plan cache hit
+    cannot be misreported as zero Token consumption.  The deterministic
+    heuristic remains enabled because it is part of the production flow.
+    """
+    plan = _heuristic_plan(user_query)
+    if plan is None:
+        plan = await asyncio.to_thread(analyze_search_query, user_query, provider, model)
+    return copy.deepcopy(plan)
 
 
 async def plan_search_query(

@@ -86,12 +86,12 @@ function printHelp() {
   esasr logs [服务...]    查看日志
   esasr doctor            检查 Docker 和配置
 
-Agent API Key：
-  esasr agent list          查看 Agent 平台 Key 状态
-  esasr agent add [平台]    添加 Agent API Key
-  esasr agent update [平台] 修改 Agent API Key
-  esasr agent set [平台]    添加或覆盖 Agent API Key
-  esasr agent remove [平台] 删除 Agent API Key（支持 --yes）
+模型平台 API Key：
+  esasr key list            查看模型平台 Key 状态
+  esasr key add [平台]      添加模型平台 API Key
+  esasr key update [平台]   修改模型平台 API Key
+  esasr key set [平台]      添加或覆盖模型平台 API Key
+  esasr key remove [平台]   删除模型平台 API Key（支持 --yes）
 
 学术搜索 API Key：
   esasr academic list            查看学术数据源 Key 状态
@@ -110,7 +110,7 @@ Agent API Key：
   esasr setup             重新运行完整配置向导
   esasr --help            显示帮助
 
-Agent 平台：deepseek、qwen、openai、kimi、custom
+模型平台：deepseek、qwen、openai、kimi、custom
 学术数据源：semantic-scholar（别名 s2）、openalex`)
 }
 
@@ -432,7 +432,7 @@ async function useProvider(root, providerArg) {
   const { envPath, content, values } = await readEnvConfig(root)
   const config = PROVIDERS[provider]
   if (!values.get(config.key)?.trim()) {
-    throw new Error(`${config.label} 尚未配置 API Key。请先运行 esasr agent add ${provider}`)
+    throw new Error(`${config.label} 尚未配置 API Key。请先运行 esasr key add ${provider}`)
   }
   await saveEnvConfig(envPath, content, { LLM_ACTIVE_PROVIDER: provider })
   console.log(`✓ 默认大模型平台已切换为 ${config.label} (${provider})`)
@@ -445,14 +445,14 @@ async function setProviderKey(root, action, providerArg) {
   const { envPath, content, values } = await readEnvConfig(root)
   const alreadyConfigured = Boolean(values.get(config.key)?.trim())
   if (action === 'add' && alreadyConfigured) {
-    throw new Error(`${config.label} 已配置 API Key。请使用 esasr agent update ${provider}`)
+    throw new Error(`${config.label} 已配置 API Key。请使用 esasr key update ${provider}`)
   }
   if (action === 'update' && !alreadyConfigured) {
-    throw new Error(`${config.label} 尚未配置 API Key。请使用 esasr agent add ${provider}`)
+    throw new Error(`${config.label} 尚未配置 API Key。请使用 esasr key add ${provider}`)
   }
 
   console.log(`\n正在${alreadyConfigured ? '修改' : '添加'} ${config.label} API Key。`)
-  const suppliedKey = process.env.ESASR_AGENT_API_KEY || process.env.SCHOLARSEEKER_API_KEY || await askSecret('API Key')
+  const suppliedKey = process.env.ESASR_MODEL_API_KEY || process.env.ESASR_AGENT_API_KEY || process.env.SCHOLARSEEKER_API_KEY || await askSecret('API Key')
   if (!suppliedKey) throw new Error('API Key 不能为空')
   const updates = { [config.key]: suppliedKey }
   if (provider === 'custom') {
@@ -548,7 +548,7 @@ async function showSafeConfig(root) {
   console.log(`\n项目目录：${root}`)
   console.log(`配置文件：${envPath}`)
   console.log(`默认平台：${active} · ${PROVIDERS[active]?.label || active}`)
-  console.log(`已配置 Agent Key：${configuredProviders(values).join("、") || "无"}`)
+  console.log(`已配置模型平台密钥：${configuredProviders(values).join("、") || "无"}`)
   console.log(`已配置学术搜索 Key：${configuredAcademicSources(values).join("、") || "无"}`)
   console.log(`服务端口：${ports.map(([name, port]) => `${name} ${port}`).join(' · ')}`)
   console.log('安全提示：API Key 内容已隐藏。')
@@ -630,7 +630,7 @@ async function setupProject(root) {
   const provider = await chooseProvider()
   const providerConfig = PROVIDERS[provider]
   console.log(`\n请从 ${providerConfig.label} 官方控制台创建 API Key。`)
-  const suppliedKey = process.env.ESASR_AGENT_API_KEY || process.env.SCHOLARSEEKER_API_KEY || await askSecret('API Key')
+  const suppliedKey = process.env.ESASR_MODEL_API_KEY || process.env.ESASR_AGENT_API_KEY || process.env.SCHOLARSEEKER_API_KEY || await askSecret('API Key')
   if (!suppliedKey) throw new Error('API Key 不能为空')
 
   const updates = {
@@ -988,7 +988,7 @@ async function main() {
     if (action === 'remove' || action === 'delete') {
       return removeProviderKey(root, providerArg, keyArgs.includes('--yes') || keyArgs.includes('-y'))
     }
-    throw new Error(`未知 Agent Key 命令：${action}。可用命令：list、add、update、set、remove`)
+    throw new Error(`未知密钥管理命令：${action}。可用命令：list、add、update、set、remove`)
   }
   if (command === 'academic') {
     const [action = 'list', ...academicArgs] = args

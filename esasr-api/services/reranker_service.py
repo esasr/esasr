@@ -9,6 +9,15 @@ from typing import Protocol
 from config import cfg
 
 
+BREADTH_POLICIES: dict[int, dict[str, float | str]] = {
+    1: {"label": "精准", "target_mass": 0.35, "min_score": 0.60, "min_ratio": 0.85, "max_gap": 0.08},
+    2: {"label": "聚焦", "target_mass": 0.50, "min_score": 0.55, "min_ratio": 0.70, "max_gap": 0.10},
+    3: {"label": "均衡", "target_mass": 0.65, "min_score": 0.45, "min_ratio": 0.50, "max_gap": 0.12},
+    4: {"label": "扩展", "target_mass": 0.80, "min_score": 0.20, "min_ratio": 0.20, "max_gap": 0.14},
+    5: {"label": "广泛", "target_mass": 1.00, "min_score": 0.20, "min_ratio": 0.15, "max_gap": 1.00},
+}
+
+
 class PaperReranker(Protocol):
     model_name: str
 
@@ -45,6 +54,96 @@ def confidence_aware_select(
         selected.append(paper)
         previous_score = score
     return selected
+
+
+def confidence_mass_select(
+    papers: list[dict],
+    *,
+    breadth_level: int = 3,
+) -> tuple[list[dict], dict]:
+    """Select a query-dependent prefix from score mass and boundary gaps.
+
+    No breadth level maps to a fixed K.  Each level changes the target share
+    of normalized score mass, the relevance floor, and the score-cliff
+    tolerance.  A near-tied candidate is kept even when the target mass has
+    already been reached, so the precise level can legitimately return more
+    than one paper.  The broad level returns every eligible paper in the
+    current candidate pool rather than imposing an arbitrary Top-K.
+    """
+    if not papers:
+        return [], {
+            "status": "completed",
+            "breadthLevel": max(1, min(int(breadth_level), 5)),
+            "selected": 0,
+            "eligible": 0,
+            "stopReason": "empty_candidate_pool",
+        }
+
+    level = max(1, min(int(breadth_level), 5))
+    policy = BREADTH_POLICIES[level]
+    top_score = max(float(papers[0].get("relevanceScore") or 0.0), 1e-12)
+    min_score = float(policy["min_score"])
+    min_ratio = float(policy["min_ratio"])
+    eligible: list[dict] = []
+    eligible_scores: list[float] = []
+    for index, paper in enumerate(papers):
+        score = max(float(paper.get("relevanceScore") or 0.0), 0.0)
+        if index and (score < min_score or score / top_score < min_ratio):
+            break
+        eligible.append(paper)
+        eligible_scores.append(score)
+
+    if not eligible:
+        eligible = papers[:1]
+        eligible_scores = [max(float(papers[0].get("relevanceScore") or 0.0), 0.0)]
+
+    total_mass = sum(eligible_scores)
+    if total_mass <= 1e-12:
+        normalized = [1.0] + [0.0] * (len(eligible_scores) - 1)
+    else:
+        normalized = [score / total_mass for score in eligible_scores]
+
+    target_mass = float(policy["target_mass"])
+    if level == 5:
+        cutoff = len(eligible)
+        stop_reason = "relevance_boundary" if len(eligible) < len(papers) else "candidate_pool_exhausted"
+    else:
+        cumulative = 0.0
+        cutoff = 1
+        for index, mass in enumerate(normalized, start=1):
+            cumulative += mass
+            cutoff = index
+            if cumulative + 1e-12 >= target_mass:
+                break
+
+        max_gap = float(policy["max_gap"])
+        while cutoff < len(eligible):
+            previous_score = eligible_scores[cutoff - 1]
+            next_score = eligible_scores[cutoff]
+            if previous_score - next_score > max_gap + 1e-12:
+                break
+            cutoff += 1
+        if cutoff == len(eligible):
+            stop_reason = "relevance_boundary" if len(eligible) < len(papers) else "candidate_pool_exhausted"
+        else:
+            stop_reason = "significant_score_cliff"
+
+    selected = eligible[:cutoff]
+    achieved_mass = sum(normalized[:cutoff])
+    return selected, {
+        "status": "completed",
+        "breadthLevel": level,
+        "breadthLabel": str(policy["label"]),
+        "targetMass": target_mass,
+        "achievedMass": round(achieved_mass, 4),
+        "minScore": min_score,
+        "minRatio": min_ratio,
+        "maxGap": float(policy["max_gap"]),
+        "candidatePool": len(papers),
+        "eligible": len(eligible),
+        "selected": len(selected),
+        "stopReason": stop_reason,
+    }
 
 
 def _probability(score: float) -> float:
@@ -136,11 +235,17 @@ class CrossEncoderReranker:
 
 def get_configured_reranker() -> tuple[PaperReranker | None, dict]:
     cross = cfg.ranking.get("cross_encoder")
+    breadth = cross.get("breadth_selector") if cross else None
+    breadth_metadata = {
+        "enabled": bool(breadth.get("enabled", True)) if breadth else True,
+        "defaultLevel": int(breadth.get("default_level", 3)) if breadth else 3,
+    }
     if not cross or not cross.get("enabled", False):
         return None, {
             "status": "disabled",
             "model": cross.get("model", "") if cross else "",
             "detail": "Cross Encoder 未启用，保留融合排序结果。",
+            "breadthSelector": breadth_metadata,
         }
 
     reranker = CrossEncoderReranker(
@@ -162,4 +267,5 @@ def get_configured_reranker() -> tuple[PaperReranker | None, dict]:
             "minRatio": float(adaptive.get("min_ratio", 0.85)),
             "maxDrop": float(adaptive.get("max_drop", 0.10)),
         },
+        "breadthSelector": breadth_metadata,
     }

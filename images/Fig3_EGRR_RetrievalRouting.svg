@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-08-26T19:55:27.262476</dc:date>
+    <dc:date>2026-08-27T13:22:30.087916</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 23.70599 97.289889 23.70599 101.969883
 L 23.70599 169.8298
 Q 23.70599 174.509794 33.137984 174.509794
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ffffff; stroke: #173f5f; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ffffff; stroke: #173f5f; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 206.057879 135.509842
@@ -53,7 +53,7 @@ Q 196.625884 62.189932 196.625884 66.869927
 L 196.625884 130.829848
 Q 196.625884 135.509842 206.057879 135.509842
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ffffff; stroke: #20639b; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ffffff; stroke: #20639b; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 206.057879 236.909717
@@ -66,7 +66,7 @@ Q 196.625884 163.589808 196.625884 168.269802
 L 196.625884 232.229723
 Q 196.625884 236.909717 206.057879 236.909717
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ffffff; stroke: #20639b; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ffffff; stroke: #20639b; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 394.697763 182.309784
@@ -79,7 +79,7 @@ Q 385.265769 89.489899 385.265769 94.169893
 L 385.265769 177.62979
 Q 385.265769 182.309784 394.697763 182.309784
 z
-" clip-path="url(#pa87de2c727)" style="fill: #fff4f1; stroke: #ed553b; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #fff4f1; stroke: #ed553b; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 580.97965 182.699784
@@ -92,7 +92,7 @@ Q 573.119654 89.099899 573.119654 92.999894
 L 573.119654 178.799789
 Q 573.119654 182.699784 580.97965 182.699784
 z
-" clip-path="url(#pa87de2c727)" style="fill: #eaf2f8; stroke: #173f5f; stroke-width: 1.3; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #eaf2f8; stroke: #173f5f; stroke-width: 1.3; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 701.237576 131.609847
@@ -105,7 +105,7 @@ Q 691.805582 66.089928 691.805582 70.769922
 L 691.805582 126.929853
 Q 691.805582 131.609847 701.237576 131.609847
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ffffff; stroke: #ed553b; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ffffff; stroke: #ed553b; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_8">
     <path d="M 701.237576 236.909717
@@ -118,140 +118,140 @@ Q 691.805582 171.389798 691.805582 176.069792
 L 691.805582 232.229723
 Q 691.805582 236.909717 701.237576 236.909717
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ffffff; stroke: #3a7d44; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ffffff; stroke: #3a7d44; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_9">
     <path d="M 150.342199 134.780473
 Q 176.192211 117.373306 200.929376 100.71552
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 196.494396 101.290809
 L 200.929376 100.71552
 L 198.728619 104.608677
 z
-" clip-path="url(#pa87de2c727)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_10">
     <path d="M 149.981198 137.421789
 Q 176.190531 168.075544 201.527989 197.709575
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 200.448672 193.369636
 L 201.527989 197.709575
 L 197.408447 195.969065
 z
-" clip-path="url(#pa87de2c727)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_11">
     <path d="M 339.035814 99.8838
 Q 364.830515 115.425308 389.476041 130.27443
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 387.082014 126.497046
 L 389.476041 130.27443
 L 385.017717 129.923221
 z
-" clip-path="url(#pa87de2c727)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_12">
     <path d="M 338.767162 198.864745
 Q 364.83247 173.922222 389.928447 149.907276
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 385.655711 151.22778
 L 389.928447 149.907276
 L 388.421209 154.117767
 z
-" clip-path="url(#pa87de2c727)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_13">
     <path d="M 535.820178 135.899842
 Q 557.400749 135.899842 577.63968 135.899842
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 573.63968 133.899842
 L 577.63968 135.899842
 L 573.63968 137.899842
 z
-" clip-path="url(#pa87de2c727)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #6b7280; stroke: #6b7280; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_14">
     <path d="M 676.839545 119.026364
 Q 687.088752 110.550562 696.304055 102.929769
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 691.946974 103.937661
 L 696.304055 102.929769
 L 694.49612 107.020169
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ed553b; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ed553b; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_15">
     <path d="M 676.199097 157.185094
 Q 687.088746 178.798123 697.37471 199.213001
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #3a7d44; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #3a7d44; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 697.36097 194.740887
 L 697.37471 199.213001
 L 693.788774 196.540725
 z
-" clip-path="url(#pa87de2c727)" style="fill: #3a7d44; stroke: #3a7d44; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #3a7d44; stroke: #3a7d44; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="patch_16">
     <path d="M 736.657623 126.798638
 Q 612.958891 21.632098 466.127055 87.722176
-" clip-path="url(#pa87de2c727)" style="fill: none; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: none; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
     <path d="M 470.595486 87.904162
 L 466.127055 87.722176
 L 468.953702 84.256622
 z
-" clip-path="url(#pa87de2c727)" style="fill: #ed553b; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
+" clip-path="url(#p8b7d6ea8b2)" style="fill: #ed553b; stroke: #ed553b; stroke-width: 1.2; stroke-linecap: round"/>
    </g>
    <g id="text_1">
-    <text style="font-weight: 700; font-size: 16px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="400.19976" y="36.207481" transform="rotate(-0 400.19976 36.207481)">证据缺口驱动检索路由（EGRR）</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="400.19976" y="36.207481" transform="rotate(-0 400.19976 36.207481)">证据缺口驱动检索路由（EGRR）</text>
    </g>
    <g id="text_2">
-    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="89.72995" y="127.990326" transform="rotate(-0 89.72995 127.990326)">首轮子查询</text>
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="89.72995" y="127.990326" transform="rotate(-0 89.72995 127.990326)">首轮子查询</text>
    </g>
    <g id="text_3">
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="89.72995" y="152.414732" transform="rotate(-0 89.72995 152.414732)">最多 4 个</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="89.72995" y="152.414732" transform="rotate(-0 89.72995 152.414732)">最多 4 个</text>
    </g>
    <g id="text_4">
-    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #20639b" x="270.509839" y="90.961749" transform="rotate(-0 270.509839 90.961749)">OpenAlex</text>
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="270.509839" y="90.961749" transform="rotate(-0 270.509839 90.961749)">OpenAlex</text>
    </g>
    <g id="text_5">
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="270.509839" y="114.675279" transform="rotate(-0 270.509839 114.675279)">并行召回</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="270.509839" y="114.675279" transform="rotate(-0 270.509839 114.675279)">并行召回</text>
    </g>
    <g id="text_6">
-    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #20639b" x="270.509839" y="192.361624" transform="rotate(-0 270.509839 192.361624)">Semantic Scholar</text>
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="270.509839" y="192.361624" transform="rotate(-0 270.509839 192.361624)">Semantic Scholar</text>
    </g>
    <g id="text_7">
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="270.509839" y="216.075154" transform="rotate(-0 270.509839 216.075154)">并行召回</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="270.509839" y="216.075154" transform="rotate(-0 270.509839 216.075154)">并行召回</text>
    </g>
    <g id="text_8">
-    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="463.079722" y="125.494329" transform="rotate(-0 463.079722 125.494329)">候选证据状态</text>
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="463.079722" y="125.494329" transform="rotate(-0 463.079722 125.494329)">候选证据状态</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(444.190659 143.510375)">覆盖率 c</text>
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(432.801597 155.235229)">未覆盖约束 G</text>
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; fill: #1f2937" transform="translate(438.355503 166.953051)">剩余预算 B</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif" transform="translate(444.190659 143.510375)">覆盖率 c</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif" transform="translate(432.801597 155.235229)">未覆盖约束 G</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif" transform="translate(438.355503 166.953051)">剩余预算 B</text>
    </g>
    <g id="text_10">
-    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #173f5f" x="628.139621" y="138.58823" transform="rotate(-0 628.139621 138.58823)">G≠∅ 且 B&gt;0?</text>
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="628.139621" y="138.58823" transform="rotate(-0 628.139621 138.58823)">G≠∅ 且 B&gt;0?</text>
    </g>
    <g id="text_11">
-    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="738.179554" y="92.812369" transform="rotate(-0 738.179554 92.812369)">定向补检</text>
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="738.179554" y="92.812369" transform="rotate(-0 738.179554 92.812369)">定向补检</text>
    </g>
    <g id="text_12">
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="738.179554" y="113.220499" transform="rotate(-0 738.179554 113.220499)">缺口词组</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="738.179554" y="113.220499" transform="rotate(-0 738.179554 113.220499)">缺口词组</text>
    </g>
    <g id="text_13">
-    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #3a7d44" x="738.179554" y="198.050716" transform="rotate(-0 738.179554 198.050716)">进入排序</text>
+    <text style="font-weight: 700; font-size: 10.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="738.179554" y="198.050716" transform="rotate(-0 738.179554 198.050716)">进入排序</text>
    </g>
    <g id="text_14">
-    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="738.179554" y="218.554745" transform="rotate(-0 738.179554 218.554745)">冻结候选</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="738.179554" y="218.554745" transform="rotate(-0 738.179554 218.554745)">冻结候选</text>
    </g>
    <g id="text_15">
-    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="687.089585" y="98.805256" transform="rotate(-0 687.089585 98.805256)">是</text>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="687.089585" y="98.805256" transform="rotate(-0 687.089585 98.805256)">是</text>
    </g>
    <g id="text_16">
-    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #3a7d44" x="687.089585" y="167.055172" transform="rotate(-0 687.089585 167.055172)">否</text>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="687.089585" y="167.055172" transform="rotate(-0 687.089585 167.055172)">否</text>
    </g>
    <g id="text_17">
-    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ed553b" x="600.629638" y="96.855258" transform="rotate(-0 600.629638 96.855258)">更新证据状态</text>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="600.629638" y="96.855258" transform="rotate(-0 600.629638 96.855258)">更新证据状态</text>
    </g>
    <g id="text_18">
     <g id="patch_17">
@@ -267,12 +267,12 @@ Q 220.211127 333.744235 224.961127 333.744235
 z
 " style="fill: #f3f4f6; stroke: #d1d5db; stroke-linejoin: miter"/>
     </g>
-    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2937" x="400.19976" y="326.999606" transform="rotate(-0 400.19976 326.999606)">共享预算：子查询 ≤ 4，数据源任务 ≤ 8；补检由缺口确定性生成，不新增 LLM 调用</text>
+    <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'PingFang SC', 'Songti SC', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="400.19976" y="326.999606" transform="rotate(-0 400.19976 326.999606)">共享预算：子查询 ≤ 4，API 任务 ≤ 8，可选 1 个引文种子；补检不新增 LLM 调用</text>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="pa87de2c727">
+  <clipPath id="p8b7d6ea8b2">
    <rect x="7.2" y="7.2" width="785.99952" height="389.99952"/>
   </clipPath>
  </defs>
