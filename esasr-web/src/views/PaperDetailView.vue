@@ -265,7 +265,14 @@ onUnmounted(destroyGraph)
     <el-row v-if="!loading && paper.title" :gutter="24" class="content-section">
       <el-col :xs="24" :lg="16">
         <el-card shadow="never" class="content-card">
-          <template #header><div class="card-header"><Document />{{ t('paper.abstract') }}</div></template>
+          <template #header>
+            <div class="card-header">
+              <span class="card-header-icon abstract-icon" aria-hidden="true">
+                <el-icon><Document /></el-icon>
+              </span>
+              <span>{{ t('paper.abstract') }}</span>
+            </div>
+          </template>
           <p class="abstract-text">{{ paper.abstract || 'No abstract available.' }}</p>
           <div v-if="paper.concepts?.length" class="concepts">
             <span>研究主题</span>
@@ -275,7 +282,13 @@ onUnmounted(destroyGraph)
 
         <el-card shadow="never" class="content-card graph-card">
           <template #header>
-            <div class="card-header"><Connection />{{ t('paper.citationNetwork') }}<small>点击节点可继续查看文献</small></div>
+            <div class="card-header">
+              <span class="card-header-icon graph-icon" aria-hidden="true">
+                <el-icon><Connection /></el-icon>
+              </span>
+              <span>{{ t('paper.citationNetwork') }}</span>
+              <small>点击节点可继续查看文献</small>
+            </div>
           </template>
           <div ref="graphContainer" class="graph-container">
             <el-empty v-if="!graphInitialized" :description="t('paper.graphPlaceholder')" />
@@ -319,6 +332,11 @@ onUnmounted(destroyGraph)
 .metric span { color: var(--text-secondary); font-size: 12px; }
 .content-card { margin-bottom: 24px; border-radius: 10px; background: var(--bg-surface); }
 .card-header { display: flex; align-items: center; gap: 8px; color: var(--text-primary); font-size: 16px; font-weight: 650; }
+.card-header-icon { display: inline-flex; width: 30px; height: 30px; flex: 0 0 30px; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 8px; }
+.card-header-icon .el-icon { width: 16px; height: 16px; font-size: 16px; }
+.card-header-icon :deep(svg) { width: 1em; height: 1em; }
+.abstract-icon { border-color: rgba(63, 81, 181, .14); background: rgba(63, 81, 181, .08); color: #3f51b5; }
+.graph-icon { border-color: rgba(45, 139, 126, .16); background: rgba(45, 139, 126, .09); color: #2d8b7e; }
 .card-header small { margin-left: auto; color: var(--text-secondary); font-size: 12px; font-weight: 400; }
 .abstract-text { margin: 0; color: var(--text-primary); font-size: 15px; line-height: 1.9; text-align: justify; white-space: pre-line; }
 .concepts { align-items: center; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-color); }
