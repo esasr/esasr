@@ -2,10 +2,11 @@
 config.yaml
 .env
 output
+outputs
 .DS_Store
 node_modules/
 dist/
-images
+images/
 venv/
 Latex
 __pycache__/
@@ -20,6 +21,8 @@ Latex/*
 !Latex/project_usage_guide.tex
 outputs/
 tmp/
+tools/
+docs/
 
 # ScholarGym local evaluation corpus (large downloaded files)
 esasr-api/evaluation/datasets/scholargym/scholargym_paper_db.json
