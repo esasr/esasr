@@ -26,6 +26,50 @@ test('prints CLI help', () => {
   assert.match(result.stdout, /esasr academic add/)
   assert.match(result.stdout, /esasr key add/)
   assert.match(result.stdout, /esasr provider use/)
+  assert.match(result.stdout, /esasr cache clear/)
+})
+
+test('lists and clears only shared query planning cache keys', () => {
+  const temporary = mkdtempSync(join(tmpdir(), 'esasr-cache-management-'))
+  const destination = join(temporary, 'project')
+  const initialized = spawnSync(process.execPath, [cli, 'init', destination], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  assert.equal(initialized.status, 0, initialized.stderr)
+
+  const fakeBin = join(temporary, 'bin')
+  mkdirSync(fakeBin)
+  const dockerLog = join(temporary, 'docker.log')
+  const fakeDocker = join(fakeBin, 'docker')
+  writeFileSync(fakeDocker, `#!/bin/sh
+echo "$*" >> "${dockerLog}"
+case "$*" in
+  *"redis-cli --scan --pattern query_plan:"*)
+    echo "query_plan:v3:deepseek:model:first"
+    echo "query_plan:v3:deepseek:model:second"
+    ;;
+  *"redis-cli del "*) echo "2" ;;
+esac
+exit 0
+`)
+  chmodSync(fakeDocker, 0o755)
+  const env = { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` }
+
+  const status = spawnSync(process.execPath, [cli, 'cache', 'status'], {
+    cwd: destination, encoding: 'utf8', env,
+  })
+  assert.equal(status.status, 0, status.stderr)
+  assert.match(status.stdout, /共享规划缓存：2 条/)
+
+  const cleared = spawnSync(process.execPath, [cli, 'cache', 'clear', '--yes'], {
+    cwd: destination, encoding: 'utf8', env,
+  })
+  assert.equal(cleared.status, 0, cleared.stderr)
+  assert.match(cleared.stdout, /已清除 2 条共享规划缓存/)
+  const commands = readFileSync(dockerLog, 'utf8')
+  assert.match(commands, /redis-cli del query_plan:/)
+  assert.doesNotMatch(commands, /FLUSHDB|FLUSHALL/i)
 })
 
 test('shows the competition project banner when initializing', () => {

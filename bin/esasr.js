@@ -105,6 +105,10 @@ function printHelp() {
   esasr provider current  查看当前默认平台
   esasr provider use <平台> 切换默认平台
 
+查询规划缓存：
+  esasr cache status      查看共享规划缓存数量
+  esasr cache clear       清除共享规划缓存（支持 --yes）
+
 其他：
   esasr config            安全显示当前配置（不显示 Key）
   esasr setup             重新运行完整配置向导
@@ -856,6 +860,65 @@ async function doctor(root) {
   return checks.every(([, ok]) => ok)
 }
 
+function scanPlannerCache(root) {
+  const result = spawnSync(
+    'docker',
+    ['compose', 'exec', '-T', 'redis', 'redis-cli', '--scan', '--pattern', 'query_plan:*'],
+    { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  )
+  if (result.status !== 0) {
+    const detail = result.stderr.trim()
+    throw new Error(`无法读取共享规划缓存。请确认 Redis 容器正在运行${detail ? `：${detail}` : ''}`)
+  }
+  return result.stdout
+    .split(/\r?\n/)
+    .map((key) => key.trim())
+    .filter((key) => key.startsWith('query_plan:'))
+}
+
+function showPlannerCacheStatus(root) {
+  const keys = scanPlannerCache(root)
+  console.log(`共享规划缓存：${keys.length} 条`)
+  console.log('范围：query_plan:*（不包含检索结果、登录状态或其他 Redis 数据）')
+}
+
+async function clearPlannerCache(root, confirmed = false) {
+  const keys = scanPlannerCache(root)
+  if (!keys.length) {
+    console.log('✓ 当前没有共享规划缓存')
+    return
+  }
+  if (!confirmed) {
+    if (!process.stdin.isTTY) {
+      throw new Error('非交互环境清除缓存需要添加 --yes')
+    }
+    const accepted = await askYesNo(`确认清除 ${keys.length} 条共享规划缓存`, false)
+    if (!accepted) {
+      console.log('已取消，未删除任何缓存')
+      return
+    }
+  }
+
+  let deleted = 0
+  const batchSize = 100
+  for (let index = 0; index < keys.length; index += batchSize) {
+    const batch = keys.slice(index, index + batchSize)
+    const result = spawnSync(
+      'docker',
+      ['compose', 'exec', '-T', 'redis', 'redis-cli', 'del', ...batch],
+      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+    )
+    if (result.status !== 0) {
+      const detail = result.stderr.trim()
+      throw new Error(`清除共享规划缓存失败${detail ? `：${detail}` : ''}`)
+    }
+    const count = Number(result.stdout.trim())
+    deleted += Number.isFinite(count) ? count : batch.length
+  }
+  console.log(`✓ 已清除 ${deleted} 条共享规划缓存`)
+  console.log('再次检索前，请在结果页使用强制刷新，或清除浏览器会话中的检索结果缓存。')
+}
+
 async function runScript(root, script, args) {
   const path = join(root, 'scripts', script)
   if (!(await exists(path))) throw new Error(`缺少启动脚本：${path}`)
@@ -1008,6 +1071,14 @@ async function main() {
     if (action === 'current') return showCurrentProvider(root)
     if (action === 'use') return useProvider(root, providerArg)
     throw new Error(`未知 provider 命令：${action}。可用命令：list、current、use`)
+  }
+  if (command === 'cache') {
+    const [action = 'status', ...cacheArgs] = args
+    if (action === 'status' || action === 'list') return showPlannerCacheStatus(root)
+    if (action === 'clear') {
+      return clearPlannerCache(root, cacheArgs.includes('--yes') || cacheArgs.includes('-y'))
+    }
+    throw new Error(`未知缓存管理命令：${action}。可用命令：status、clear`)
   }
   if (command === 'doctor') {
     if (!(await doctor(root))) process.exitCode = 1

@@ -62,6 +62,9 @@ esasr stop
 | `esasr provider list` | 列出平台、Key 状态和默认平台 |
 | `esasr provider current` | 查看当前默认平台 |
 | `esasr provider use qwen` | 将 Qwen 设为默认平台 |
+| `esasr cache status` | 查看 Redis 中共享查询规划缓存的数量 |
+| `esasr cache clear` | 确认后仅清除共享查询规划缓存 |
+| `esasr cache clear --yes` | 非交互方式仅清除共享查询规划缓存 |
 
 支持的模型平台名称为 `deepseek`、`qwen`、`openai`、`kimi` 和 `custom`；学术搜索数据源名称为 `semantic-scholar`（可简写为 `s2`）和 `openalex`。两类 API Key 均使用隐藏输入并仅写入当前项目的 `.env`。
 
@@ -77,6 +80,23 @@ esasr restart --no-build
 ```
 
 `esasr config` 只显示是否已配置，不显示任何 Key 内容。修改 Key 或默认平台后，需要重启服务使配置生效。
+
+### 清除共享查询规划缓存
+
+查询规划结果默认缓存在 Redis 中。同一查询再次执行时，界面可能显示“共享规划缓存 · 未消耗 Token”。录制首次模型规划或重新测量 Token 前，可以先查看并清除该缓存：
+
+```bash
+esasr cache status
+esasr cache clear
+```
+
+自动化脚本或非交互终端可使用：
+
+```bash
+esasr cache clear --yes
+```
+
+该命令仅扫描并删除 `query_plan:*` 键，不执行 `FLUSHDB` 或 `FLUSHALL`，不会删除其他 Redis 数据。CLI 清除的是后端规划缓存；如果浏览器仍显示“已从缓存恢复”，还需在结果页强制刷新，或在浏览器会话存储中删除 `scholarseeker_search_cache_v5`。
 
 在 macOS 上，如果执行 `esasr start` 时 Docker Desktop 尚未运行，CLI
 会询问是否自动启动它，并等待 Docker daemon 就绪后继续部署。
