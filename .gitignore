@@ -1,0 +1,29 @@
+# Configuration files containing secrets
+config.yaml
+.env
+output
+outputs
+.DS_Store
+node_modules/
+dist/
+/images/
+venv/
+Latex
+__pycache__/
+*.py[cod]
+*.db
+*.log
+.vite-temp/
+.vscode/
+Latex/*
+!Latex/template.tex
+!Latex/technical_iteration_record.tex
+!Latex/project_usage_guide.tex
+outputs/
+tmp/
+tools/
+docs/
+
+# ScholarGym local evaluation corpus (large downloaded files)
+esasr-api/evaluation/datasets/scholargym/scholargym_paper_db.json
+esasr-api/evaluation/datasets/scholargym/scholargym_bench.jsonl

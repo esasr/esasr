@@ -1,0 +1,67 @@
+:root {
+  --page-width: 1280px;
+  --page-gutter: clamp(16px, 3vw, 40px);
+  --header-height: 64px;
+  --surface-tint: rgba(99, 102, 190, .07);
+  --shadow-soft: 0 4px 20px rgba(28, 40, 78, .045);
+  --primary-color: #3f51b5; /* Academic Blue */
+  --primary-light: #757de8;
+  --primary-dark: #002984;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --bg-color: #f5f7fa;
+  --bg-surface: #ffffff;
+  --border-color: #e4e7ed;
+}
+
+html.dark {
+  --primary-color: #757de8;
+  --primary-light: #9fa8da;
+  --primary-dark: #3f51b5;
+  --text-primary: #e5eaf3;
+  --text-secondary: #a3a6ad;
+  --bg-color: #141414;
+  --bg-surface: #1d1e1f;
+  --border-color: #414243;
+}
+
+/* Base styles to use these Element Plus dark mode if available, but we use our own vars */
+html.dark body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+html { scroll-padding-top: calc(var(--header-height) + 76px); }
+button, input, select, textarea { font: inherit; }
+:where(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--primary-light); outline-offset: 3px; }
+.el-icon { flex-shrink: 0; }
+.el-icon > svg { width: 1em; height: 1em; display: block; }
+.action-buttons .el-button + .el-button, .header-actions .el-button + .el-button { margin-left: 0; }
+.el-tag { max-width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

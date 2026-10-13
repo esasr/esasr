@@ -1,0 +1,14 @@
+.env
+config.yaml
+.DS_Store
+Latex/
+work/
+outputs/
+esasr-api/venv/
+esasr-api/__pycache__/
+esasr-api/**/__pycache__/
+esasr-api/*.db
+esasr-web/node_modules/
+esasr-web/dist/
+*.log
+*.pyc

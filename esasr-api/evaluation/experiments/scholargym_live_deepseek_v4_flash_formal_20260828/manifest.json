@@ -1,0 +1,93 @@
+{
+  "createdAt": "2026-08-27T16:48:07.527462+00:00",
+  "dataset": {
+    "name": "ScholarGym",
+    "path": "esasr-api/evaluation/datasets/scholargym/scholargym_bench.jsonl",
+    "sha256": "869f507eacb7f554b8f4e6dc65ea97b01f95140ba5aa86a5119b330c41b9d551",
+    "selection": "stratified random sample without replacement",
+    "perSource": 10,
+    "seed": 20260828,
+    "queries": 30
+  },
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "plannerCachePolicy": "bypassed",
+  "configurations": {
+    "D": {
+      "description": "two sources with coverage-gap-driven second round",
+      "sources": [
+        "OpenAlex",
+        "Semantic Scholar"
+      ],
+      "budget": {
+        "max_queries": 4,
+        "results_per_source": 15,
+        "max_api_calls": 8,
+        "second_round_strategy": "coverage",
+        "enable_citation_expansion": false,
+        "max_citation_seeds": 1,
+        "citation_results_per_seed": 5
+      }
+    }
+  },
+  "git": {
+    "commit": "8f0a4b8b55632fc81c75f2099e2fa5ed88434d85",
+    "branch": "main",
+    "dirtyFiles": [
+      "M .gitignore",
+      " M README.md",
+      " M bin/esasr.js",
+      " M config_example.yaml",
+      " M esasr-api/routers/search.py",
+      " M esasr-api/services/llm_service.py",
+      " M esasr-api/services/reranker_service.py",
+      " M esasr-api/services/search_pipeline.py",
+      " M esasr-api/tests/test_adaptive_selector.py",
+      " M esasr-api/tests/test_llm_service.py",
+      " M esasr-api/tests/test_search_pipeline.py",
+      " M esasr-api/tests/test_search_router.py",
+      " M esasr-api/tools/run_scholargym_pilot.py",
+      " M esasr-web/src/views/SearchResultsView.vue",
+      " M images/Fig10_Iteration_Roadmap.pdf",
+      " M images/Fig10_Iteration_Roadmap.png",
+      " M images/Fig10_Iteration_Roadmap.svg",
+      " M images/Fig1_ESASR_OverallFramework.pdf",
+      " M images/Fig1_ESASR_OverallFramework.png",
+      " M images/Fig1_ESASR_OverallFramework.svg",
+      " M images/Fig2_CQC_QueryCompiler.pdf",
+      " M images/Fig2_CQC_QueryCompiler.png",
+      " M images/Fig2_CQC_QueryCompiler.svg",
+      " M images/Fig3_EGRR_RetrievalRouting.pdf",
+      " M images/Fig3_EGRR_RetrievalRouting.png",
+      " M images/Fig3_EGRR_RetrievalRouting.svg",
+      " M images/Fig4_MEFR_LCER_RankingPipeline.pdf",
+      " M images/Fig4_MEFR_LCER_RankingPipeline.png",
+      " M images/Fig4_MEFR_LCER_RankingPipeline.svg",
+      " M images/Fig5_CARS_AdaptiveSelection.pdf",
+      " M images/Fig5_CARS_AdaptiveSelection.png",
+      " M images/Fig5_CARS_AdaptiveSelection.svg",
+      " M images/Fig6_System_EndToEndDataFlow.pdf",
+      " M images/Fig6_System_EndToEndDataFlow.png",
+      " M images/Fig6_System_EndToEndDataFlow.svg",
+      " M images/Fig7_Experiment_EvidenceProtocol.pdf",
+      " M images/Fig7_Experiment_EvidenceProtocol.png",
+      " M images/Fig7_Experiment_EvidenceProtocol.svg",
+      " M images/Fig8_Ablation_Performance.pdf",
+      " M images/Fig8_Ablation_Performance.png",
+      " M images/Fig8_Ablation_Performance.svg",
+      " M images/Fig9_Deployment_Topology.pdf",
+      " M images/Fig9_Deployment_Topology.png",
+      " M images/Fig9_Deployment_Topology.svg",
+      " M \"output/pdf/ESASR_\\346\\212\\200\\346\\234\\257\\350\\277\\255\\344\\273\\243\\344\\270\\216\\351\\227\\256\\351\\242\\230\\350\\247\\243\\345\\206\\263\\350\\256\\260\\345\\275\\225.pdf\"",
+      " M \"output/pdf/ESASR_\\351\\241\\271\\347\\233\\256\\344\\275\\277\\347\\224\\250\\350\\257\\264\\346\\230\\216\\344\\270\\216\\344\\273\\243\\347\\240\\201\\344\\273\\223\\345\\272\\223.pdf\"",
+      " M \"output/pdf/ESASR_\\351\\241\\271\\347\\233\\256\\346\\212\\245\\345\\221\\212.pdf\"",
+      " M tests/cli.test.js",
+      " M tools/generate_report_figures.py",
+      "?? Latex/",
+      "?? esasr-api/evaluation/experiments/scholargym_live_deepseek_v4_flash_20260828/",
+      "?? esasr-api/evaluation/experiments/scholargym_live_deepseek_v4_flash_formal_20260828/",
+      "?? esasr-api/tools/summarize_live_efficiency.py"
+    ]
+  },
+  "integrityNote": "Pilot results are real live-API runs; they are not full-benchmark or competition scores."
+}
