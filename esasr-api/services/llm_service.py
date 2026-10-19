@@ -12,7 +12,7 @@ from redis_db import cache_get, cache_set
 
 
 _llm = cfg.llm
-_PLANNER_CACHE_VERSION = "v4"
+_PLANNER_CACHE_VERSION = "v6"
 _planner_tasks: dict[str, asyncio.Task] = {}
 _planner_tasks_lock: asyncio.Lock | None = None
 _planner_loop: asyncio.AbstractEventLoop | None = None
@@ -159,7 +159,8 @@ def _explicit_retrieval_queries(user_query: str, constraints: dict) -> list[str]
     methods = constraints.get("methods") or []
     topics = constraints.get("topics") or []
     datasets = constraints.get("datasets") or []
-    if not (methods or topics or datasets):
+    # A method name alone (e.g. LLM) is not a research intent.
+    if not topics:
         return []
 
     method = methods[0] if methods else ""
@@ -290,6 +291,7 @@ def _heuristic_plan(user_query: str) -> dict | None:
         normalized.isascii()
         and len(normalized.split()) <= 14
         and not re.search(r"[?!;:]", normalized)
+        and not re.search(r"\b(?:what|how|why|which|show|give|find|looking|search|recommend|provide)\b", lowered)
     )
     if not (structured_explicit or is_image_compression or is_short_english_topic):
         return None
@@ -373,8 +375,14 @@ def _normalize_plan(raw: dict, user_query: str) -> dict:
             query for query in planned_queries
             if " ".join(str(query).split()).casefold() != user_query.casefold()
         ]
+    generic_methods = {value.casefold() for value in normalized_constraints["methods"]}
+    contextual_queries = [
+        str(value).strip() for value in planned_queries
+        if str(value).strip().casefold() not in generic_methods
+        or str(value).strip().casefold() == user_query.strip().casefold()
+    ]
     subqueries = _unique_text(
-        explicit_queries + planned_queries + ([] if explicit_queries else [user_query]),
+        explicit_queries + contextual_queries + ([] if explicit_queries else [user_query]),
         limit=6,
     )
     intentions = _intentions_from_constraints(normalized_constraints, user_query)
@@ -411,7 +419,12 @@ def analyze_search_query(
     provider_name = provider or _llm.active_provider
     model_name = model or ""
     prompt = f"""Convert this academic search request into JSON; do not answer it or
-invent constraints. Use English retrieval terms and at most 5 queries.
+invent constraints. Use English retrieval terms and at most 4 distinct queries.
+The first query must be a concise high-recall search (3-8 core technical terms).
+The second should use an alternative name or terminology, not just reorder words.
+Other queries may target a specific method, comparison or dataset. Avoid long
+question sentences and unnecessary words such as studies, papers, research.
+Preserve the distinctive research objective. Never broaden to just a generic method.
 Request: {json.dumps(user_query, ensure_ascii=False)}
 Schema: {{"decomposed_queries":["query"],"topics":[],"methods":[],
 "datasets":[],"domains":[],"venues":[],"venues_required":false,
@@ -452,6 +465,11 @@ Preserve all explicit constraints. Output JSON only."""
             request_options["temperature"] = 0
         if provider_name == "deepseek":
             request_options["response_format"] = {"type": "json_object"}
+            thinking = settings.get("thinking")
+            if thinking in {"enabled", "disabled"}:
+                request_options["extra_body"] = {
+                    "thinking": {"type": thinking}
+                }
         response = client.chat.completions.create(**request_options)
         usage = response.usage
         details = getattr(usage, "completion_tokens_details", None)

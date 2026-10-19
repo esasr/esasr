@@ -309,10 +309,13 @@ cd esasr-api
 
 ```yaml
 ranking:
+  relevance_verifier:
+    enabled: true
+    max_candidates: 24
   cross_encoder:
     enabled: true
     model: cross-encoder/ms-marco-MiniLM-L6-v2
-    top_n: 20
+    top_n: 80
     threshold: 0.0
     adaptive_selector:
       # 仅用于复现 Top-1/Top-2 对照实验。
@@ -381,11 +384,20 @@ cd esasr-api
 完整的 Gold Set 构建、指标解释、等预算消融与结果报告规范见
 [实验与评测协议](docs/EVALUATION.md)。
 
-正式在线 Token 评测使用 DeepSeek-V4-Flash-0731（API 模型名
-`deepseek-v4-flash`，默认思考模式），并以 API 返回的 `usage` 字段计量，
-不使用 tokenizer 估算。固定 30 条分层查询的实测总量为 24,840 Token；
-复跑命令、延时和调用统计见[实验与评测协议](docs/EVALUATION.md)。
+### 决赛版：同模型、同检索源的 PaSa 流程适配版对比
 
+随机抽取 30 条此前未使用的查询，固定样本重复 10 轮，共完成 600 次系统执行。双方共用 `deepseek-v4-flash`（关闭思考模式）、OpenAlex 与 Semantic Scholar，关闭应用层缓存，每条查询最多 8 次逻辑检索调用。
+
+| 每条查询均值 | PaSa 流程适配版 | ESASR | 相对减少 |
+| --- | ---: | ---: | ---: |
+| LLM Token | 18,439.09 | 6,712.68 | **63.6%** |
+| LLM 请求次数 | 9.657 | 2.000 | **79.3%** |
+| 逻辑检索调用 | 5.937 | 4.400 | **25.9%** |
+| 实际端到端耗时 | 25.746 s | 20.660 s | **19.8%** |
+
+PaSa 为共享模型与数据源的元数据/API 流程适配版，不是原版 PaSa-7B。耗时包含网络及上游等待；统计以 30 个查询为独立单位，异常与失败尝试均保留。协议、全部指标和配对区间见[实验归档](esasr-api/evaluation/final_pasa_comparison/README.md)。历史冻结模块实验单独解释。
+
+决赛版可启用一次批量相关性核验（至多 24 篇），用于识别与原始研究意图直接相关的论文；核验失败保留语义排序。总 Token 包含规划与核验。规划缓存命中仅免除规划阶段的模型调用。
 ---
 
 ### 结构化结果输出

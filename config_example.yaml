@@ -51,11 +51,16 @@ auth:
 
 # ── 检索排序 ─────────────────────────────────────────────────────────────────
 ranking:
+  # 可选：一次批量相关性核验，会产生远端 LLM 消耗；在线对比启用。
+  relevance_verifier:
+    enabled: false
+    max_candidates: 24
   cross_encoder:
     enabled: false
     # 轻量本地精排模型；仅处理融合后的少量候选，不消耗 LLM Token。
     model: cross-encoder/ms-marco-MiniLM-L6-v2
-    top_n: 20
+    # 决赛在线对比采用 80；历史冻结模块实验采用 20。
+    top_n: 80
     batch_size: 16
     max_length: 512
     device: auto

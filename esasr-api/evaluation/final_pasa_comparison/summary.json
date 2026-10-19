@@ -1,0 +1,424 @@
+{
+  "status": "complete",
+  "completeRounds": 10,
+  "independentQueries": 30,
+  "armExecutions": 600,
+  "rows": [
+    {
+      "metric": "f1",
+      "ESASR-v2": 0.10424270333333334,
+      "PaSa-adapted": 0.06359335333333334,
+      "difference95CI": [
+        -0.010286793333333336,
+        0.10319891
+      ],
+      "relativeChangePercent": 63.920752514701995,
+      "roundSD": {
+        "ESASR-v2": 0.026723290368014144,
+        "PaSa-adapted": 0.00863197972837984
+      }
+    },
+    {
+      "metric": "precision",
+      "ESASR-v2": 0.08020255333333333,
+      "PaSa-adapted": 0.03949002,
+      "difference95CI": [
+        -0.00442352333333334,
+        0.10094626333333333
+      ],
+      "relativeChangePercent": 103.09575263150874,
+      "roundSD": {
+        "ESASR-v2": 0.02069970606471813,
+        "PaSa-adapted": 0.006633622396348267
+      }
+    },
+    {
+      "metric": "recall",
+      "ESASR-v2": 0.26277779333333334,
+      "PaSa-adapted": 0.23805556333333333,
+      "difference95CI": [
+        -0.05777776666666667,
+        0.11249999999999999
+      ],
+      "relativeChangePercent": 10.385067105272029,
+      "roundSD": {
+        "ESASR-v2": 0.06311528011790944,
+        "PaSa-adapted": 0.01915794364034872
+      }
+    },
+    {
+      "metric": "ndcg",
+      "ESASR-v2": 0.20780711333333332,
+      "PaSa-adapted": 0.18391615666666666,
+      "difference95CI": [
+        -0.06103833000000001,
+        0.11086947666666666
+      ],
+      "relativeChangePercent": 12.990134798198882,
+      "roundSD": {
+        "ESASR-v2": 0.054510863417220924,
+        "PaSa-adapted": 0.0259341771663012
+      }
+    },
+    {
+      "metric": "llmTokens",
+      "ESASR-v2": 6712.683333333333,
+      "PaSa-adapted": 18439.093333333334,
+      "difference95CI": [
+        -13510.23,
+        -9842.083333333334
+      ],
+      "relativeChangePercent": -63.59537200672195,
+      "roundSD": {
+        "ESASR-v2": 62.83310295664618,
+        "PaSa-adapted": 4538.32843039955
+      }
+    },
+    {
+      "metric": "llmCalls",
+      "ESASR-v2": 2,
+      "PaSa-adapted": 9.656666666666666,
+      "difference95CI": [
+        -8.403333333333332,
+        -6.903333333333333
+      ],
+      "relativeChangePercent": -79.28891957197101,
+      "roundSD": {
+        "ESASR-v2": 0.0,
+        "PaSa-adapted": 2.217275048787432
+      }
+    },
+    {
+      "metric": "apiCalls",
+      "ESASR-v2": 4.4,
+      "PaSa-adapted": 5.9366666666666665,
+      "difference95CI": [
+        -1.8566666666666667,
+        -1.15
+      ],
+      "relativeChangePercent": -25.88433464345873,
+      "roundSD": {
+        "ESASR-v2": 0.1662958838566196,
+        "PaSa-adapted": 0.05317104939557962
+      }
+    },
+    {
+      "metric": "totalDurationMs",
+      "ESASR-v2": 20660.356666666667,
+      "PaSa-adapted": 25745.543333333335,
+      "difference95CI": [
+        -6771.096666666666,
+        -3245.3233333333333
+      ],
+      "relativeChangePercent": -19.751716251731853,
+      "roundSD": {
+        "ESASR-v2": 7304.975721274329,
+        "PaSa-adapted": 5829.117435390018
+      }
+    },
+    {
+      "metric": "httpAttempts",
+      "ESASR-v2": 17.13,
+      "PaSa-adapted": 26.133333333333333,
+      "difference95CI": [
+        -10.696666666666667,
+        -7.086666666666666
+      ],
+      "relativeChangePercent": -34.451530612244895,
+      "roundSD": {
+        "ESASR-v2": 8.131731020066765,
+        "PaSa-adapted": 4.729314934859638
+      }
+    },
+    {
+      "metric": "returned",
+      "ESASR-v2": 9.723333333333333,
+      "PaSa-adapted": 11.923333333333334,
+      "difference95CI": [
+        -3.84,
+        -0.5366666666666668
+      ],
+      "relativeChangePercent": -18.45121610287952,
+      "roundSD": {
+        "ESASR-v2": 0.3131086664994072,
+        "PaSa-adapted": 1.0404237028641177
+      }
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "ESASR-v2": {
+        "f1": 0.1276583,
+        "precision": 0.0962785,
+        "recall": 0.3305555666666667,
+        "ndcg": 0.26381746666666667,
+        "llmTokens": 6769.1,
+        "llmCalls": 2,
+        "apiCalls": 4.266666666666667,
+        "totalDurationMs": 11207.833333333334,
+        "httpAttempts": 6.933333333333334,
+        "returned": 10.1
+      },
+      "PaSa-adapted": {
+        "f1": 0.0638465,
+        "precision": 0.03944446666666667,
+        "recall": 0.2388889,
+        "ndcg": 0.1659958,
+        "llmTokens": 24040.766666666666,
+        "llmCalls": 12.433333333333334,
+        "apiCalls": 6,
+        "totalDurationMs": 20085.466666666667,
+        "httpAttempts": 20.566666666666666,
+        "returned": 13.266666666666667
+      }
+    },
+    {
+      "round": 2,
+      "ESASR-v2": {
+        "f1": 0.12389353333333333,
+        "precision": 0.09183126666666666,
+        "recall": 0.3305555666666667,
+        "ndcg": 0.2649614,
+        "llmTokens": 6775.9,
+        "llmCalls": 2,
+        "apiCalls": 4.266666666666667,
+        "totalDurationMs": 11645.5,
+        "httpAttempts": 7,
+        "returned": 10.1
+      },
+      "PaSa-adapted": {
+        "f1": 0.05361046666666667,
+        "precision": 0.031681100000000004,
+        "recall": 0.23333333333333334,
+        "ndcg": 0.16253036666666668,
+        "llmTokens": 24042.633333333335,
+        "llmCalls": 12.366666666666667,
+        "apiCalls": 6,
+        "totalDurationMs": 18332.033333333333,
+        "httpAttempts": 20.333333333333332,
+        "returned": 13.3
+      }
+    },
+    {
+      "round": 3,
+      "ESASR-v2": {
+        "f1": 0.12787616666666668,
+        "precision": 0.09640103333333333,
+        "recall": 0.3305555666666667,
+        "ndcg": 0.2656567,
+        "llmTokens": 6778.733333333334,
+        "llmCalls": 2,
+        "apiCalls": 4.266666666666667,
+        "totalDurationMs": 11032.333333333334,
+        "httpAttempts": 6.8,
+        "returned": 10.066666666666666
+      },
+      "PaSa-adapted": {
+        "f1": 0.0599402,
+        "precision": 0.03626986666666667,
+        "recall": 0.23333333333333334,
+        "ndcg": 0.16147073333333334,
+        "llmTokens": 24098.233333333334,
+        "llmCalls": 12.466666666666667,
+        "apiCalls": 6,
+        "totalDurationMs": 18122.5,
+        "httpAttempts": 20.366666666666667,
+        "returned": 12.933333333333334
+      }
+    },
+    {
+      "round": 4,
+      "ESASR-v2": {
+        "f1": 0.15199836666666666,
+        "precision": 0.12145503333333334,
+        "recall": 0.34722223333333335,
+        "ndcg": 0.28518313333333334,
+        "llmTokens": 6767.633333333333,
+        "llmCalls": 2,
+        "apiCalls": 4.266666666666667,
+        "totalDurationMs": 15448.4,
+        "httpAttempts": 10.433333333333334,
+        "returned": 9.7
+      },
+      "PaSa-adapted": {
+        "f1": 0.052731233333333336,
+        "precision": 0.032147433333333336,
+        "recall": 0.225,
+        "ndcg": 0.1544862,
+        "llmTokens": 22362.133333333335,
+        "llmCalls": 11.566666666666666,
+        "apiCalls": 5.933333333333334,
+        "totalDurationMs": 19933.466666666667,
+        "httpAttempts": 21.333333333333332,
+        "returned": 12.933333333333334
+      }
+    },
+    {
+      "round": 5,
+      "ESASR-v2": {
+        "f1": 0.0756385,
+        "precision": 0.05838976666666667,
+        "recall": 0.2138889,
+        "ndcg": 0.1652127,
+        "llmTokens": 6709.2,
+        "llmCalls": 2,
+        "apiCalls": 4.4,
+        "totalDurationMs": 24973.066666666666,
+        "httpAttempts": 22.666666666666668,
+        "returned": 9.7
+      },
+      "PaSa-adapted": {
+        "f1": 0.05565776666666667,
+        "precision": 0.034101733333333335,
+        "recall": 0.22222223333333332,
+        "ndcg": 0.1774455,
+        "llmTokens": 14742.8,
+        "llmCalls": 7.766666666666667,
+        "apiCalls": 5.866666666666666,
+        "totalDurationMs": 30525.266666666666,
+        "httpAttempts": 29.666666666666668,
+        "returned": 11.233333333333333
+      }
+    },
+    {
+      "round": 6,
+      "ESASR-v2": {
+        "f1": 0.08622236666666667,
+        "precision": 0.06620473333333333,
+        "recall": 0.21944446666666667,
+        "ndcg": 0.17066056666666668,
+        "llmTokens": 6719.366666666667,
+        "llmCalls": 2,
+        "apiCalls": 4.8,
+        "totalDurationMs": 27188.666666666668,
+        "httpAttempts": 25.033333333333335,
+        "returned": 9.333333333333334
+      },
+      "PaSa-adapted": {
+        "f1": 0.07631073333333334,
+        "precision": 0.05051936666666667,
+        "recall": 0.2388889,
+        "ndcg": 0.22576,
+        "llmTokens": 14600.833333333334,
+        "llmCalls": 7.9,
+        "apiCalls": 5.9,
+        "totalDurationMs": 28450.766666666666,
+        "httpAttempts": 29.6,
+        "returned": 10.8
+      }
+    },
+    {
+      "round": 7,
+      "ESASR-v2": {
+        "f1": 0.08485483333333334,
+        "precision": 0.06496383333333333,
+        "recall": 0.21944446666666667,
+        "ndcg": 0.17146796666666667,
+        "llmTokens": 6687.733333333334,
+        "llmCalls": 2,
+        "apiCalls": 4.4,
+        "totalDurationMs": 25505.766666666666,
+        "httpAttempts": 22.533333333333335,
+        "returned": 9.7
+      },
+      "PaSa-adapted": {
+        "f1": 0.07667413333333334,
+        "precision": 0.0498928,
+        "recall": 0.2388889,
+        "ndcg": 0.20805893333333333,
+        "llmTokens": 14207,
+        "llmCalls": 7.7,
+        "apiCalls": 5.966666666666667,
+        "totalDurationMs": 31062.4,
+        "httpAttempts": 29.933333333333334,
+        "returned": 11.033333333333333
+      }
+    },
+    {
+      "round": 8,
+      "ESASR-v2": {
+        "f1": 0.07378956666666667,
+        "precision": 0.05786026666666667,
+        "recall": 0.18611113333333335,
+        "ndcg": 0.14309526666666667,
+        "llmTokens": 6683.4,
+        "llmCalls": 2,
+        "apiCalls": 4.533333333333333,
+        "totalDurationMs": 26895.9,
+        "httpAttempts": 23.7,
+        "returned": 9.6
+      },
+      "PaSa-adapted": {
+        "f1": 0.0644916,
+        "precision": 0.039540533333333336,
+        "recall": 0.2388889,
+        "ndcg": 0.17122323333333334,
+        "llmTokens": 14387.233333333334,
+        "llmCalls": 7.866666666666666,
+        "apiCalls": 5.9,
+        "totalDurationMs": 32130.933333333334,
+        "httpAttempts": 29.566666666666666,
+        "returned": 11
+      }
+    },
+    {
+      "round": 9,
+      "ESASR-v2": {
+        "f1": 0.10002173333333333,
+        "precision": 0.07793653333333334,
+        "recall": 0.23055556666666666,
+        "ndcg": 0.17704453333333334,
+        "llmTokens": 6644.9,
+        "llmCalls": 2,
+        "apiCalls": 4.4,
+        "totalDurationMs": 27187.033333333333,
+        "httpAttempts": 23.433333333333334,
+        "returned": 9.166666666666666
+      },
+      "PaSa-adapted": {
+        "f1": 0.0700697,
+        "precision": 0.0427941,
+        "recall": 0.2888889,
+        "ndcg": 0.21995586666666667,
+        "llmTokens": 16184.2,
+        "llmCalls": 8.266666666666667,
+        "apiCalls": 5.866666666666666,
+        "totalDurationMs": 28731.233333333334,
+        "httpAttempts": 30,
+        "returned": 11.366666666666667
+      }
+    },
+    {
+      "round": 10,
+      "ESASR-v2": {
+        "f1": 0.09047366666666667,
+        "precision": 0.07070456666666666,
+        "recall": 0.21944446666666667,
+        "ndcg": 0.1709714,
+        "llmTokens": 6590.866666666667,
+        "llmCalls": 2,
+        "apiCalls": 4.4,
+        "totalDurationMs": 25519.066666666666,
+        "httpAttempts": 22.766666666666666,
+        "returned": 9.766666666666667
+      },
+      "PaSa-adapted": {
+        "f1": 0.06260120000000001,
+        "precision": 0.0385088,
+        "recall": 0.22222223333333332,
+        "ndcg": 0.19223493333333333,
+        "llmTokens": 15725.1,
+        "llmCalls": 8.233333333333333,
+        "apiCalls": 5.933333333333334,
+        "totalDurationMs": 30081.366666666665,
+        "httpAttempts": 29.966666666666665,
+        "returned": 11.366666666666667
+      }
+    }
+  ],
+  "anomalyExecutions": {
+    "ESASR-v2": 185,
+    "PaSa-adapted": 185
+  }
+}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import threading
+from functools import lru_cache
 from typing import Protocol
 
 from config import cfg
@@ -117,10 +118,12 @@ def confidence_mass_select(
                 break
 
         max_gap = float(policy["max_gap"])
+        boundary_score = eligible_scores[cutoff - 1]
         while cutoff < len(eligible):
-            previous_score = eligible_scores[cutoff - 1]
             next_score = eligible_scores[cutoff]
-            if previous_score - next_score > max_gap + 1e-12:
+            # Preserve ties to the original boundary, not an arbitrarily long
+            # chain of adjacent small gaps down the entire ranking tail.
+            if boundary_score - next_score > max_gap + 1e-12:
                 break
             cutoff += 1
         if cutoff == len(eligible):
@@ -147,8 +150,7 @@ def confidence_mass_select(
 
 
 def _probability(score: float) -> float:
-    if 0.0 <= score <= 1.0:
-        return score
+    # predict() below explicitly returns logits; never guess from their range.
     if score >= 40:
         return 1.0
     if score <= -40:
@@ -186,11 +188,19 @@ class CrossEncoderReranker:
                     "Cross Encoder dependencies are not installed. "
                     "Install esasr-api/requirements-reranker.txt."
                 ) from exc
-            self._model = CrossEncoder(
-                self.model_name,
-                max_length=self.max_length,
-                device=self.device,
-            )
+            try:
+                self._model = CrossEncoder(
+                    self.model_name,
+                    max_length=self.max_length,
+                    device=self.device,
+                    local_files_only=True,
+                )
+            except OSError:
+                self._model = CrossEncoder(
+                    self.model_name,
+                    max_length=self.max_length,
+                    device=self.device,
+                )
             return self._model
 
     def rerank(self, query: str, papers: list[dict], top_n: int) -> list[dict]:
@@ -204,10 +214,13 @@ class CrossEncoderReranker:
             )
             for paper in selected
         ]
+        from torch import nn
+
         scores = self._load().predict(
             pairs,
             batch_size=self.batch_size,
             show_progress_bar=False,
+            activation_fn=nn.Identity(),
         )
 
         reranked: list[dict] = []
@@ -218,7 +231,9 @@ class CrossEncoderReranker:
                 raw_score = raw_score[-1]
             cross_score = _probability(float(raw_score))
             base_score = float(paper.get("relevanceScore") or 0)
-            final_score = 0.65 * cross_score + 0.35 * base_score
+            # Retrieval position is useful for recall, not evidence that a paper
+            # answers the request. Keep it for audit/ties, not score blending.
+            final_score = cross_score
             reranked.append(
                 {
                     **paper,
@@ -231,6 +246,12 @@ class CrossEncoderReranker:
 
         reranked.sort(key=lambda paper: paper["relevanceScore"], reverse=True)
         return reranked
+
+
+@lru_cache(maxsize=2)
+def _configured_model(model_name: str, batch_size: int, max_length: int, device: str):
+    """Reuse the loaded local model across requests, without caching results."""
+    return CrossEncoderReranker(model_name, batch_size, max_length, device)
 
 
 def get_configured_reranker() -> tuple[PaperReranker | None, dict]:
@@ -248,7 +269,7 @@ def get_configured_reranker() -> tuple[PaperReranker | None, dict]:
             "breadthSelector": breadth_metadata,
         }
 
-    reranker = CrossEncoderReranker(
+    reranker = _configured_model(
         model_name=cross.get("model", "BAAI/bge-reranker-base"),
         batch_size=int(cross.get("batch_size", 8)),
         max_length=int(cross.get("max_length", 512)),

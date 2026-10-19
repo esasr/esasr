@@ -33,7 +33,7 @@ const records = computed(() => {
     const label = info.title || n.style?.labelText || ''
     const placeholder = !label || /^(Reference|Related) \d+$/.test(label)
     return { id: String(n.id), group, title: placeholder ? '题名暂未提供' : label, year: info.year, venue: info.venue, relations }
-  })
+  }).filter(n => n.group === 'current' || (n.title !== '题名暂未提供' && !/^W\d+$/.test(n.title)))
 })
 const groups = computed(() => ['reference', 'citing', 'related'].map(id => ({ id, label: labels[id], count: records.value.filter(n => n.group === id).length })))
 const visible = computed(() => records.value.filter(n => n.group === 'current' || filter.value === 'all' || n.group === filter.value))
@@ -42,17 +42,24 @@ const nodes = computed(() => {
   const size = Math.max(1, ...groups.value.filter(g => filter.value === 'all' || filter.value === g.id).map(g => g.count))
   return visible.value.map(n => {
     const index = n.group === 'current' ? 0 : counts[n.group as keyof typeof counts]++
-    const x = n.group === 'reference' ? 0 : n.group === 'citing' ? 720 : n.group === 'related' ? 360 : 360
-    const y = n.group === 'current' ? (size - 1) * 85 : n.group === 'related' ? size * 170 + index * 170 : index * 170
+    const x = n.group === 'reference' ? 0 : n.group === 'citing' ? 720 : n.group === 'related' ? (groups.value.some(g => g.id === 'citing' && g.count > 0) ? 1080 : 720) : 360
+    const y = n.group === 'current' ? (size - 1) * 85 : index * 170
     return { id: n.id, type: 'paper', position: { x, y }, data: n, selectable: false, draggable: false }
   })
 })
 const edges = computed(() => {
   const ids = new Set(visible.value.map(n => n.id))
+  const positions = new Map(nodes.value.map(n => [n.id, n.position]))
   return raw.value.edges.filter(e => ids.has(e.source) && ids.has(e.target)).map((e, i) => {
     const semantic = e.type === 'RELATED'
-    return { id: `relation-${i}`, source: e.source, target: e.target, type: 'default',
-      sourceHandle: semantic ? 'bottom-out' : 'left-out', targetHandle: semantic ? 'top-in' : 'right-in',
+    const source = positions.get(String(e.source))
+    const target = positions.get(String(e.target))
+    const toRight = (target?.x ?? 0) > (source?.x ?? 0)
+    const vertical = source?.x === target?.x
+    const toBottom = (target?.y ?? 0) > (source?.y ?? 0)
+    return { id: `relation-${i}`, source: e.source, target: e.target, type: 'straight',
+      sourceHandle: vertical ? (toBottom ? 'bottom-out' : 'top-out') : (toRight ? 'right-out' : 'left-out'),
+      targetHandle: vertical ? (toBottom ? 'top-in' : 'bottom-in') : (toRight ? 'left-in' : 'right-in'),
       markerEnd: semantic ? undefined : { type: MarkerType.ArrowClosed, color: '#8699b1', width: 16, height: 16 },
       style: { stroke: '#8699b1', strokeWidth: 1.5, strokeDasharray: semantic ? '5 5' : undefined, opacity: selected.value && e.source !== selected.value && e.target !== selected.value ? 0.25 : 0.85 },
     }
@@ -100,7 +107,9 @@ async function fullscreen() { try { await toggle(); fit() } catch { error.value 
       <VueFlow :nodes="nodes" :edges="edges" :min-zoom="0.12" :max-zoom="1.5" :nodes-connectable="false" :nodes-draggable="false" :zoom-on-scroll="false" :prevent-scrolling="false" :delete-key-code="null" :edges-updatable="false" @nodes-initialized="fit" @pane-click="selected = ''">
         <template #node-paper="{ data, id }">
           <Handle id="left-out" type="source" :position="Position.Left" /><Handle id="right-in" type="target" :position="Position.Right" />
+          <Handle id="right-out" type="source" :position="Position.Right" /><Handle id="left-in" type="target" :position="Position.Left" />
           <Handle id="bottom-out" type="source" :position="Position.Bottom" /><Handle id="top-in" type="target" :position="Position.Top" />
+          <Handle id="top-out" type="source" :position="Position.Top" /><Handle id="bottom-in" type="target" :position="Position.Bottom" />
           <button class="paper-node nodrag" :class="{ active: selected === id, central: data.group === 'current' }" :style="{ '--node-accent': colors[data.group] }" :aria-pressed="selected === id" :title="data.title" @click.stop="selected = id">
             <span class="node-kind"><FileText :size="14" />{{ labels[data.group] }}</span>
             <strong>{{ data.title }}</strong>
@@ -113,7 +122,7 @@ async function fullscreen() { try { await toggle(); fit() } catch { error.value 
       <div><span>{{ labels[active.group] }} · {{ active.id }}</span><h4>{{ active.title }}</h4><p v-if="active.group === 'related'">相关性推荐不代表真实引用关系。</p></div>
       <button v-if="active.id !== paperId" class="open-paper" @click="emit('openPaper', active.id)">查看论文 <ExternalLink :size="15" /></button>
     </div>
-    <footer class="relationship-footer"><span>实线箭头：引用方 → 被引用方</span><span>虚线：相关研究</span><span>拖动画布 · 双指缩放 · 点击卡片预览</span></footer>
+    <footer class="relationship-footer"><span>仅展示已取得题名的节点</span><span>实线箭头：引用方 → 被引用方</span><span>虚线：相关研究</span><span>拖动画布 · 双指缩放 · 点击卡片预览</span></footer>
   </section>
 </template>
 
@@ -126,12 +135,12 @@ async function fullscreen() { try { await toggle(); fit() } catch { error.value 
 .relationship-toolbar button:hover,.relationship-toolbar button[aria-pressed=true] { background: var(--surface-tint); color: var(--primary-color); }
 .relationship button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 3px; }
 .relationship-filters span { opacity: .7; font-variant-numeric: tabular-nums; }
-.relationship-canvas { height: 570px; background-color: var(--bg-color); background-image: radial-gradient(#8794aa35 .8px, transparent .8px); background-size: 18px 18px; }
-.paper-node { width: 240px; height: 138px; display: flex; flex-direction: column; gap: 10px; padding: 15px; text-align: left; border: 1px solid var(--border-color); border-top: 3px solid var(--node-accent); border-radius: 11px; background: var(--bg-surface); color: var(--text-primary); box-shadow: 0 4px 14px #24344a0b; transition: box-shadow .18s, border-color .18s; }
+.relationship-canvas { height: 640px; background-color: var(--bg-color); background-image: radial-gradient(#8794aa35 .8px, transparent .8px); background-size: 18px 18px; }
+.paper-node { pointer-events: auto; width: 260px; height: 154px; display: flex; flex-direction: column; gap: 10px; padding: 15px; text-align: left; border: 1px solid var(--border-color); border-top: 3px solid var(--node-accent); border-radius: 11px; background: var(--bg-surface); color: var(--text-primary); box-shadow: 0 4px 14px #24344a0b; transition: box-shadow .18s, border-color .18s; }
 .paper-node:hover,.paper-node.active { border-color: var(--node-accent); box-shadow: 0 5px 20px #24344a23; }
 .paper-node.central { box-shadow: 0 5px 22px #5865c921; }
 .node-kind { display: flex; gap: 6px; align-items: center; color: var(--node-accent); font-size: 11px; font-weight: 600; }
-.paper-node strong { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 1.5; }
+.paper-node strong { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.5; }
 .node-meta { margin-top: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--text-secondary); max-width: 100%; }
 .relationship :deep(.vue-flow__handle) { opacity: 0; pointer-events: none; }
 .relationship-preview { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px; border-top: 1px solid var(--border-color); }

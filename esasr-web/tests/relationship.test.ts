@@ -11,7 +11,7 @@ vi.mock('@vue-flow/core', () => ({
   Position: { Left: 'left', Right: 'right', Top: 'top', Bottom: 'bottom' },
   useVueFlow: () => ({ fitView: vi.fn(), zoomIn: vi.fn(), zoomOut: vi.fn() }),
 }))
-const graph = { nodes: ['center', 'ref', 'cite', 'related'].map(id => ({ id, style: { labelText: id === 'ref' ? 'Reference 1' : id } })), edges: [
+const graph = { nodes: ['center', 'ref', 'cite', 'related'].map(id => ({ id, style: { labelText: id === 'ref' ? 'A real reference title' : id } })), edges: [
   { source: 'center', target: 'ref', type: 'CITES' },
   { source: 'cite', target: 'center', type: 'CITES' },
   { source: 'center', target: 'related', type: 'RELATED' },
@@ -22,15 +22,31 @@ describe('relationship graph', () => {
   it('preserves citation direction and distinguishes related evidence', async () => {
     const w = create(); await flushPromises()
     expect(w.findAll('.paper-node')).toHaveLength(4)
-    expect(w.text()).toContain('题名暂未提供')
+    expect(w.text()).toContain('A real reference title')
+    expect(w.text()).not.toContain('题名暂未提供')
     const edges = w.findComponent(VueFlow).props('edges')!
     expect(edges[0]).toMatchObject({ source: 'center', target: 'ref', markerEnd: { type: 'arrowclosed' } })
     expect(edges[2]?.markerEnd).toBeUndefined()
+    expect(edges.every((edge: { type: string }) => edge.type === 'straight')).toBe(true)
+    expect(edges[0]).toMatchObject({ sourceHandle: 'left-out', targetHandle: 'right-in' })
+    expect(edges[2]).toMatchObject({ sourceHandle: 'right-out', targetHandle: 'left-in' })
+    const nodes = w.findComponent(VueFlow).props('nodes')!
+    expect(nodes.find((n: { id: string }) => n.id === 'related')?.position.x).toBeGreaterThan(nodes.find((n: { id: string }) => n.id === 'cite')?.position.x)
     expect(w.text()).toContain('引用方 → 被引用方')
     await w.findAll('.paper-node')[3]!.trigger('click')
     expect(w.text()).toContain('相关性推荐不代表真实引用关系')
     await w.get('.open-paper').trigger('click')
     expect(w.emitted('openPaper')?.[0]).toEqual(['related'])
+    w.unmount()
+  })
+  it('hides missing titles and their edges without fabricating metadata', async () => {
+    const missing = { ...graph, nodes: graph.nodes.map(n => n.id === 'ref' ? { ...n, style: { labelText: 'Reference 1' } } : n) }
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: { data: missing } })
+    const w = create(); await flushPromises()
+    expect(w.findAll('.paper-node')).toHaveLength(3)
+    expect(w.text()).not.toContain('题名暂未提供')
+    const edges = w.findComponent(VueFlow).props('edges')!
+    expect(edges.some((e: { target: string }) => e.target === 'ref')).toBe(false)
     w.unmount()
   })
   it('filters references without navigating away', async () => {

@@ -439,34 +439,46 @@ async def get_citation_graph(paper_id: str):
                 {"id": paper_id, "title": center_title}
             )
 
-            # 参考文献 (References)
-            refs = data.get("referenced_works", [])[:5]
-            for i, ref_url in enumerate(refs):
-                rid = ref_url.split("/")[-1]
-                rtitle = f"Reference {i+1}"
-                nodes.append({"id": rid, "style": {"labelText": rtitle, "fill": "#e6a23c"}})
-                edges.append({"source": paper_id, "target": rid, "type": "CITES"})
-                
+            # Hydrate IDs with real metadata instead of persisting numbered labels.
+            refs = list(dict.fromkeys(u.rsplit("/", 1)[-1] for u in data.get("referenced_works", [])[:5]))
+            related = list(dict.fromkeys(u.rsplit("/", 1)[-1] for u in data.get("related_works", [])[:5]))
+            ids = list(dict.fromkeys(refs + related))
+            details = await asyncio.gather(
+                *(get_paper_details(work_id) for work_id in ids),
+                return_exceptions=True,
+            )
+            metadata = {}
+            for work_id, detail in zip(ids, details):
+                if not isinstance(detail, dict):
+                    continue
+                title = (detail.get("title") or "").strip()
+                if title and "API Error" not in title and not title.startswith("[Mock]"):
+                    metadata[work_id] = detail
+            for work_id in ids:
+                detail = metadata.get(work_id, {})
+                # A source ID is an honest fallback if upstream metadata is unavailable.
+                title = detail.get("title") or work_id
+                nodes.append({
+                    "id": work_id,
+                    "data": {"title": title, "year": detail.get("year"), "venue": detail.get("venue")},
+                    "style": {"labelText": title, "fill": "#e6a23c" if work_id in refs else "#67c23a"},
+                })
+                if detail.get("title"):
+                    await run_query(
+                        "MERGE (r:Paper {paperId: $id}) SET r.title = $title",
+                        {"id": work_id, "title": title},
+                    )
+            for work_id in refs:
+                edges.append({"source": paper_id, "target": work_id, "type": "CITES"})
                 await run_query(
-                    "MERGE (r:Paper {paperId: $rid}) SET r.title = $title "
-                    "WITH r MERGE (p:Paper {paperId: $pid}) "
-                    "MERGE (p)-[:CITES]->(r)",
-                    {"rid": rid, "title": rtitle, "pid": paper_id}
+                    "MERGE (p:Paper {paperId: $pid}) MERGE (r:Paper {paperId: $rid}) MERGE (p)-[:CITES]->(r)",
+                    {"pid": paper_id, "rid": work_id},
                 )
-
-            # 相关文献是语义近邻，不伪装成“被引用”关系。
-            related = data.get("related_works", [])[:5]
-            for i, rel_url in enumerate(related):
-                cid = rel_url.split("/")[-1]
-                ctitle = f"Related {i+1}"
-                nodes.append({"id": cid, "style": {"labelText": ctitle, "fill": "#67c23a"}})
-                edges.append({"source": paper_id, "target": cid, "type": "RELATED"})
-                
+            for work_id in related:
+                edges.append({"source": paper_id, "target": work_id, "type": "RELATED"})
                 await run_query(
-                    "MERGE (c:Paper {paperId: $cid}) SET c.title = $title "
-                    "WITH c MERGE (p:Paper {paperId: $pid}) "
-                    "MERGE (p)-[:RELATED]-(c)",
-                    {"cid": cid, "title": ctitle, "pid": paper_id}
+                    "MERGE (p:Paper {paperId: $pid}) MERGE (r:Paper {paperId: $rid}) MERGE (p)-[:RELATED]-(r)",
+                    {"pid": paper_id, "rid": work_id},
                 )
 
             return {"nodes": nodes, "edges": edges}

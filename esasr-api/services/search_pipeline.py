@@ -7,6 +7,7 @@ import copy
 import math
 import re
 import time
+import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Awaitable, Callable
@@ -15,6 +16,7 @@ from config import cfg
 from redis_db import cache_set
 from services.calibrated_evidence import calibrated_base_score, egrr_decision
 from services.llm_service import plan_search_query
+from services.relevance_service import verify_relevance
 from services.reranker_service import (
     PaperReranker,
     confidence_aware_select,
@@ -97,10 +99,43 @@ def _unique_text(values: list[str], limit: int | None = None) -> list[str]:
 
 def _canonical_key(paper: dict) -> str:
     doi = str(paper.get("doi") or "").casefold().replace("https://doi.org/", "").strip()
+    arxiv = str(paper.get("arxivId") or "").casefold()
+    if not arxiv and doi.startswith("10.48550/arxiv."):
+        arxiv = doi.removeprefix("10.48550/arxiv.")
+    arxiv = re.sub(r"^https?://arxiv\.org/(?:abs|pdf)/|^arxiv:", "", arxiv)
+    arxiv = re.sub(r"v\d+(?:\.pdf)?$|\.pdf$", "", arxiv)
+    if arxiv:
+        return f"arxiv:{arxiv}"
     if doi:
         return f"doi:{doi}"
     title = re.sub(r"\W+", "", str(paper.get("title") or "").casefold())
     return f"title:{title[:180]}" if title else f"id:{paper.get('id')}"
+
+
+def _same_title_work(left: dict, right: dict) -> bool:
+    """Merge cross-source/preprint records only with compatible bibliography."""
+    title = re.sub(r"\W+", "", str(left.get("title") or "").casefold())
+    other = re.sub(r"\W+", "", str(right.get("title") or "").casefold())
+    if len(title) < 12 or title != other:
+        return False
+    if left.get("year") and right.get("year"):
+        if abs(int(left["year"]) - int(right["year"])) > 2:
+            return False
+    def names(paper):
+        text = unicodedata.normalize("NFKD", str(paper.get("authors") or ""))
+        text = "".join(c for c in text if not unicodedata.combining(c)).casefold()
+        parts = text.split(",")
+        first = re.sub(r"[^a-z]", "", parts[0])
+        tokens = set(re.findall(r"[a-z]{3,}", text.replace("-", ""))) - {"unknown", "authors", "author", "association", "for", "et", "al"}
+        return first, tokens
+    af, a = names(left); bf, b = names(right)
+    if af and bf and af == bf:
+        return True
+    if len(a & b) >= 2:
+        return True
+    # A long distinctive title can match sparse metadata; short/generic titles
+    # require corroborating authors and are never merged on title alone.
+    return len(title) >= 30 and (not a or not b)
 
 
 def _venue_matches(paper_venue: str, allowed_venues: list[str]) -> bool:
@@ -187,6 +222,8 @@ def rank_and_merge(
     semantic correction after this inexpensive candidate ordering.
     """
     candidates: dict[str, dict] = {}
+    key_aliases: dict[str, str] = {}
+    title_aliases: dict[str, list[str]] = defaultdict(list)
     accumulators: dict[str, dict] = defaultdict(
         lambda: {
             "rrf": 0.0,
@@ -201,10 +238,22 @@ def rank_and_merge(
 
     for source, query, papers in ranked_lists:
         for rank, incoming in enumerate(papers, start=1):
-            key = _canonical_key(incoming)
+            raw_key = _canonical_key(incoming)
+            key = key_aliases.get(raw_key, raw_key)
+            normalized_title = re.sub(r"\W+", "", str(incoming.get("title") or "").casefold())
+            if key not in candidates:
+                for previous in title_aliases.get(normalized_title, []):
+                    if _same_title_work(incoming, candidates[previous]):
+                        key = previous
+                        break
+            key_aliases[raw_key] = key
+            if key not in title_aliases[normalized_title]:
+                title_aliases[normalized_title].append(key)
             current = candidates.get(key)
-            if current is None or len(incoming.get("abstract") or "") > len(current.get("abstract") or ""):
-                candidates[key] = {**(current or {}), **incoming}
+            merged = {**(current or {}), **incoming} if current is None or len(incoming.get("abstract") or "") > len(current.get("abstract") or "") else dict(current)
+            merged["recordIds"] = _unique_text([*((current or {}).get("recordIds") or []), str(incoming.get("id") or "")])
+            merged["doiAliases"] = _unique_text([*((current or {}).get("doiAliases") or []), str(incoming.get("doi") or "")])
+            candidates[key] = merged
             accumulators[key]["rrf"] += 1.0 / (60 + rank)
             accumulators[key]["queries"].add(query)
             # Prefer the record's declared provenance. This prevents an offline
@@ -618,6 +667,34 @@ async def _expand_citation_seeds(
     }
 
 
+def _rerank_query(plan: dict, query: str, model_name: str) -> str | None:
+    """Use compiled English intent for English-only rerankers on CJK queries."""
+    original = plan.get("research_question") or query
+    if not ("ms-marco" in model_name.casefold() and "minilm" in model_name.casefold()):
+        return original
+    has_cjk = lambda value: bool(re.search(r"[\u3400-\u9fff]", value))
+    if not has_cjk(original):
+        return original
+    compiled = [
+        value for value in _unique_text(plan.get("decomposed_queries") or [])
+        if not has_cjk(value) and len(_tokens(value)) >= 2
+    ]
+    return " ; ".join(compiled[:2]) or None
+
+
+def select_initial_queries(queries: list[str], limit: int = 2) -> list[str]:
+    """Preserve the primary route and prefer a complementary second route."""
+    options = _unique_text(queries)
+    if len(options) <= 1 or limit <= 1:
+        return options[:max(0, limit)]
+    first = _tokens(options[0])
+    def novelty(query):
+        terms = _tokens(query)
+        return len(terms - first) / max(1, len(terms | first))
+    alternate = max(options[1:], key=novelty)
+    return [options[0], alternate][:limit]
+
+
 async def run_search_pipeline(
     query: str,
     limit: int = 20,
@@ -653,7 +730,7 @@ async def run_search_pipeline(
     if isinstance(plan_override, dict):
         planner_ms = int(plan.get("experimentPlanningDurationMs") or planner_ms)
     all_queries = _unique_text(plan.get("decomposed_queries") or [query], budget.max_queries)
-    first_queries = all_queries[: min(2, budget.max_queries)]
+    first_queries = select_initial_queries(all_queries, min(2, budget.max_queries))
 
     first_round = await _retrieve_round(
         first_queries,
@@ -668,7 +745,7 @@ async def run_search_pipeline(
         failures.insert(0, f"查询规划已降级：{plan['fallbackReason']}")
     api_calls = first_round["apiCalls"]
 
-    candidate_pool_size = min(100, max(limit * 3, 30))
+    candidate_pool_size = min(100, max(limit * 4, 40))
     first_candidates = rank_and_merge(ranked_lists, plan, candidate_pool_size)
     first_coverage = analyze_coverage(plan, first_candidates)
 
@@ -717,7 +794,15 @@ async def run_search_pipeline(
     strategy = budget.second_round_strategy.casefold()
     if strategy not in {"none", "fixed", "coverage"}:
         raise ValueError("second_round_strategy must be none, fixed, or coverage")
-    needs_second_round = routing_decision["route"]
+    critical_gaps = [
+        gap for gap in evolved_coverage.get("gaps", [])
+        if gap.get("dimension") in {"topics", "methods", "datasets", "domains"}
+    ]
+    needs_second_round = bool(
+        routing_decision["route"] or critical_gaps or not evolved_candidates
+    )
+    routing_decision["criticalEvidenceGaps"] = critical_gaps
+    routing_decision["route"] = needs_second_round
 
     remaining_queries = max(0, budget.max_queries - len(first_queries))
     gap_queries: list[str] = []
@@ -777,9 +862,12 @@ async def run_search_pipeline(
         try:
             configured_top_n = int(reranker_metadata.get("topN", 40))
             top_n = max(limit, min(configured_top_n, len(candidates)))
+            semantic_query = _rerank_query(plan, query, getattr(reranker, "model_name", ""))
+            if semantic_query is None:
+                raise ValueError("English reranker requires a compiled English research intent")
             candidates = await asyncio.to_thread(
                 reranker.rerank,
-                plan.get("research_question") or query,
+                semantic_query,
                 candidates,
                 top_n,
             )
@@ -814,6 +902,16 @@ async def run_search_pipeline(
                 "selectorFallback": not bool(selected),
             }
         )
+    verification = {"status": "disabled", "llmCalls": 0, "usage": {}}
+    verifier_settings = cfg.ranking.get("relevance_verifier")
+    if verifier_settings and verifier_settings.get("enabled", False) and candidates:
+        candidates, verification = await verify_relevance(
+            query, candidates, llm_provider or plan.get("provider"), llm_model or plan.get("model"),
+            max_candidates=int(verifier_settings.get("max_candidates", 24)),
+        )
+        if verification["status"] == "fallback":
+            failures.append("RelevanceVerifier: " + verification.get("detail", "unknown"))
+    reranker_metadata["relevanceVerifier"] = verification
     adaptive_selector = reranker_metadata.get("adaptiveSelector") or {}
     breadth_selector = reranker_metadata.get("breadthSelector") or {}
     if breadth_selector.get("enabled") and candidates:
@@ -856,6 +954,7 @@ async def run_search_pipeline(
         }
         reranker_metadata["adaptiveSelector"] = adaptive_selector
     papers = attach_query_evidence(plan, candidates[: max(1, min(limit, 50))])
+    selected_coverage = analyze_coverage(plan, papers)
     rerank_ms = round((time.perf_counter() - rerank_started) * 1000)
     total_ms = round((time.perf_counter() - started) * 1000)
     if isinstance(plan_override, dict):
@@ -878,6 +977,9 @@ async def run_search_pipeline(
     if repaired_fields:
         planner_detail += f"；确定性校验补全 {', '.join(repaired_fields)}"
 
+    verification_trace = {"stage": "相关性核验", "status": verification["status"],
+        "detail": f"核验 {verification.get('evaluated', 0)} 篇候选，保留 {verification.get('selected', len(papers))} 篇",
+        "durationMs": verification.get("durationMs", 0)}
     trace = [
         {
             "stage": "查询规划",
@@ -930,13 +1032,13 @@ async def run_search_pipeline(
                 f"{reranker_metadata.get('model', '未配置')}；"
                 f"精排 {reranker_metadata.get('reranked', 0)} 篇"
             ),
-            "durationMs": rerank_ms,
+            "durationMs": max(0, rerank_ms - verification.get("durationMs", 0)),
         },
         {
             "stage": "结果输出",
             "status": "completed",
             "detail": (
-                f"去重后输出 {len(papers)} 篇论文，最终覆盖率 {final_coverage['score']:.0%}；"
+                f"去重后输出 {len(papers)} 篇论文，输出证据覆盖率 {selected_coverage['score']:.0%}；"
                 f"{(reranker_metadata.get('breadthSelector') or {}).get('breadthLabel', '默认')}范围"
             ),
             "durationMs": max(
@@ -951,6 +1053,8 @@ async def run_search_pipeline(
         },
     ]
 
+    if verification["status"] != "disabled":
+        trace.insert(-1, verification_trace)
     return {
         "query": query,
         "plan": plan,
@@ -959,6 +1063,7 @@ async def run_search_pipeline(
             "firstRound": first_coverage,
             "afterCitation": evolved_coverage,
             "final": final_coverage,
+            "selected": selected_coverage,
             "secondRoundTriggered": bool(second_round["apiCalls"]),
             "secondRoundQueries": second_queries if second_round["apiCalls"] else [],
             "evolutionQueries": evolution_queries if second_round["apiCalls"] else [],
@@ -967,9 +1072,10 @@ async def run_search_pipeline(
         "trace": trace,
         "metrics": {
             "apiCalls": api_calls,
-            "llmTokens": plan.get("usage", {}).get("total_tokens", 0),
-            "llmPromptTokens": plan.get("usage", {}).get("prompt_tokens", 0),
-            "llmCompletionTokens": plan.get("usage", {}).get("completion_tokens", 0),
+            "llmTokens": plan.get("usage", {}).get("total_tokens", 0) + verification.get("usage", {}).get("total_tokens", 0),
+            "verificationLlmCalls": verification.get("llmCalls", 0),
+            "llmPromptTokens": plan.get("usage", {}).get("prompt_tokens", 0) + verification.get("usage", {}).get("prompt_tokens", 0),
+            "llmCompletionTokens": plan.get("usage", {}).get("completion_tokens", 0) + verification.get("usage", {}).get("completion_tokens", 0),
             "llmReasoningTokens": plan.get("usage", {}).get("reasoning_tokens", 0),
             "plannerMode": plan.get("plannerMode", "llm"),
             "plannerCacheHit": bool(plan.get("cacheHit", False)),
