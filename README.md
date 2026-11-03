@@ -5,23 +5,9 @@
 > 面向复杂学术查询的智能论文搜索与推荐系统
 > Intelligent Academic Paper Search and Recommendation System for Complex Research Queries
 
-## 演示视频与获奖证书
+## 线上演示
 
-### 线上演示
-
-[![ESASR 线上演示视频预览](docs/media/demo-preview.jpg)](https://github.com/esasr/esasr/raw/refs/heads/main/docs/media/demo.mp4)
-
-[观看 / 下载线上演示视频（MP4，约 1 分 48 秒，88 MB）](https://github.com/esasr/esasr/raw/refs/heads/main/docs/media/demo.mp4)
-
-### 获奖证书
-
-项目获“华为杯”第八届中国研究生人工智能创新大赛一等奖。
-
-[![获奖证书（匿名展示版）](docs/media/award-preview.png)](docs/media/award-certificate.pdf)
-
-[查看 / 下载获奖证书（PDF，匿名展示版）](docs/media/award-certificate.pdf)
-
-为保护参赛者隐私，展示版已移除成员姓名、证书编号、验真二维码及文件身份元数据。
+![ESASR 线上演示（自动循环、静音）](docs/media/demo-autoplay.gif)
 
 ## 使用 npm 从 GitHub 安装
 
@@ -545,3 +531,11 @@ cd .. && npm test && npm run pack:check
 项目团队：Justifying
 
 ```
+
+---
+
+## 获奖证书
+
+项目获“华为杯”第八届中国研究生人工智能创新大赛一等奖。
+
+![获奖证书（匿名展示版）](docs/media/award-preview.png)
